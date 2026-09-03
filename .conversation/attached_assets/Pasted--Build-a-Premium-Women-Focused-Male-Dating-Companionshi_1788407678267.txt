@@ -1,0 +1,955 @@
+# Build a Premium Women-Focused Male Dating & Companionship Platform
+
+Create a modern, premium, responsive web platform inspired by a profile discovery and membership marketplace.
+
+The platform's primary audience is **adult women (18+) looking to discover and connect with adult men for dating, companionship, social activities, private meetups, and mutually consensual adult relationships**.
+
+The platform should feel like a **premium dating and lifestyle platform**, not a traditional classified website.
+
+---
+
+# CORE BUSINESS MODEL
+
+There are two primary user types:
+
+## 1. Women / Visitors
+
+Women can:
+
+* Browse male profiles
+* Search men by city
+* Filter profiles by age and interests
+* View detailed public profiles
+* Discover featured and premium members
+* Save or favourite profiles
+* Contact or send interest to profiles
+* Browse recently active members
+
+Women should have a smooth and simple experience.
+
+The main conversion goal for women is:
+
+**Visit Website → Browse Men → View Profile → Connect / Send Interest**
+
+---
+
+## 2. Male Members
+
+Men can:
+
+* Register an account
+* Create and manage their profile
+* Upload profile photos
+* Select their city
+* Add their age
+* Add interests
+* Add a personal description
+* Select availability
+* Manage profile visibility
+* Upgrade to Premium
+* Purchase featured profile placement
+* View subscription status
+
+The main business model should generate revenue from men purchasing increased profile visibility.
+
+Main conversion flow:
+
+**Register → Create Profile → Profile Approval → Basic Listing → Upgrade to Premium → Featured Visibility**
+
+---
+
+# WEBSITE DESIGN DIRECTION
+
+Create a visually premium and elegant design.
+
+The website should feel:
+
+* Modern
+* Romantic
+* Luxurious
+* Private
+* Exclusive
+* Clean
+* High-end
+* Mobile-first
+
+Avoid making the website look like a cheap classified directory.
+
+Use a design style similar to premium dating, lifestyle and luxury membership platforms.
+
+---
+
+# COLOR & VISUAL STYLE
+
+Use a dark luxury theme.
+
+Primary colors:
+
+* Black / near-black background
+* Charcoal sections
+* White and warm cream typography
+* Deep pink or magenta accent color
+* Optional subtle gold accents
+
+Visual elements:
+
+* Large professional profile photography
+* Dark image overlays
+* Soft gradients
+* Rounded cards
+* Elegant shadows
+* Premium typography
+* Spacious layouts
+* Smooth hover animations
+
+The design should be highly responsive for:
+
+* Desktop
+* Tablet
+* Mobile
+
+---
+
+# HEADER / NAVIGATION
+
+Create a sticky responsive header.
+
+Logo on the left.
+
+Navigation:
+
+* Home
+* Browse Men
+* How It Works
+* Premium
+* Popular Cities
+* Blog
+
+Right side buttons:
+
+* Login
+* Join Now
+
+On mobile, convert the navigation into a clean hamburger menu.
+
+---
+
+# HERO SECTION
+
+Create a visually strong hero section.
+
+Layout:
+
+Left side:
+
+Small heading:
+
+**FOR WOMEN WHO KNOW WHAT THEY WANT**
+
+Main heading:
+
+**Find the Right Man For Your Moments**
+
+Supporting text:
+
+Meet attractive, interesting and verified men near you. Whether you're looking for dating, companionship, a dinner partner, travel company or a meaningful private connection, discover profiles that match your preferences.
+
+Primary CTA:
+
+**Find Men Near You**
+
+Secondary CTA:
+
+**Create Your Profile**
+
+Trust indicators below:
+
+* Private & Discreet
+* Verified Profiles
+* Adults Only (18+)
+
+Right side:
+
+Large premium lifestyle image representing an adult dating/relationship platform.
+
+Use a dark overlay and elegant typography.
+
+---
+
+# PROFILE SEARCH SECTION
+
+Directly below the hero section, create a large floating search card.
+
+Title:
+
+**Find Your Perfect Match**
+
+Subtitle:
+
+Search men based on your preferences and location.
+
+Filters:
+
+* Location / City
+* Looking For
+* Age Range
+
+Looking for options:
+
+* Dating
+* Companionship
+* Dinner & Social Companion
+* Travel Companion
+* Events & Parties
+* Weekend Company
+* Casual Connections
+* Long-Term Dating
+
+Primary button:
+
+**Browse Men**
+
+The search should filter and redirect users to the browse profiles page.
+
+---
+
+# FEATURED MEN SECTION
+
+Create a section titled:
+
+**Featured Men Near You**
+
+Display a responsive grid or horizontal carousel of male profile cards.
+
+Each profile card should contain:
+
+* Large profile photo
+* Name
+* Age
+* Verification status
+* Online / active indicator
+* City
+* Interests
+* Short profile introduction
+* Favourite icon
+* Premium badge where applicable
+
+Example profile information:
+
+Rahul, 28
+Coimbatore
+Fitness & Lifestyle
+
+Arjun, 32
+Chennai
+Travel Companion
+
+Vikram, 29
+Bangalore
+Active Lifestyle
+
+Karan, 31
+Hyderabad
+Social & Fun
+
+Aditya, 27
+Mumbai
+Dinner & Events
+
+Add:
+
+**View All Men →**
+
+Premium and featured profiles should automatically receive higher placement.
+
+---
+
+# HOW IT WORKS SECTION
+
+Create a clean light or contrasting section.
+
+Heading:
+
+**Simple. Private. Your Choice.**
+
+Display four steps.
+
+## Step 1
+
+### Browse Profiles
+
+Search men based on your city, age and interests.
+
+## Step 2
+
+### Find Someone You Like
+
+Explore profiles, photos and interests.
+
+## Step 3
+
+### Connect
+
+Send interest or contact someone you're interested in.
+
+## Step 4
+
+### Meet Your Way
+
+Plan a mutually agreed date, social outing or private connection.
+
+Use premium icons and a modern horizontal layout on desktop.
+
+On mobile, convert it to a vertical layout.
+
+---
+
+# WHAT ARE YOU LOOKING FOR SECTION
+
+Create a visually attractive two-column section.
+
+Left:
+
+Lifestyle image.
+
+Center content:
+
+## Looking for Someone Different?
+
+Supporting content explaining that women can discover men for different types of companionship and dating preferences.
+
+CTA:
+
+**Start Browsing**
+
+Right side card:
+
+## You Decide What You're Looking For
+
+Display categories:
+
+✓ Dating
+✓ Dinner & Social Companion
+✓ Travel Companion
+✓ Events & Parties
+✓ Weekend Company
+✓ Private Adult Dating
+✓ Casual Connections
+✓ Long-Term Dating
+
+Footer text:
+
+**Your preferences. Your privacy. Your choice.**
+
+---
+
+# PREMIUM MEMBERSHIP SECTION
+
+This section is important because premium subscriptions are the main revenue model.
+
+Heading:
+
+## Get More Profile Views With Premium
+
+Subtitle:
+
+Stand out from other profiles and increase your visibility.
+
+Create four pricing cards.
+
+---
+
+## FREE
+
+₹0
+
+Features:
+
+* Basic Profile
+* Limited Photos
+* City Listing
+* Standard Visibility
+
+CTA:
+
+**Create Free Profile**
+
+---
+
+## WEEKLY PREMIUM
+
+₹299 / Week
+
+Features:
+
+* Featured Listing
+* Higher Search Ranking
+* More Profile Photos
+* Premium Badge
+
+CTA:
+
+**Go Premium**
+
+---
+
+## MONTHLY PREMIUM
+
+₹799 / Month
+
+Mark this plan as:
+
+**MOST POPULAR**
+
+Features:
+
+* Homepage Visibility
+* Top Search Placement
+* More Profile Photos
+* Premium Badge
+* Increased Profile Exposure
+
+CTA:
+
+**Get Monthly Premium**
+
+---
+
+## FEATURED PROFILE
+
+₹149 / 3 Days
+
+Features:
+
+* Highlighted Profile
+* Homepage Visibility
+* Higher Search Placement
+* Quick Visibility Boost
+
+CTA:
+
+**Feature My Profile**
+
+Make all pricing configurable from the admin panel.
+
+Do not hardcode pricing logic.
+
+---
+
+# POPULAR CITIES SECTION
+
+Heading:
+
+## Find Men in Popular Cities
+
+Display clickable city tags or cards.
+
+Example cities:
+
+* Coimbatore
+* Chennai
+* Bangalore
+* Hyderabad
+* Mumbai
+* Delhi
+* Pune
+* Kochi
+* Madurai
+* Trichy
+
+Each city should link to a dynamic SEO-friendly listing page.
+
+Example URL structure:
+
+/men/coimbatore
+
+/men/chennai
+
+/men/bangalore
+
+Each city page should contain:
+
+* Unique heading
+* Profile listings
+* Search filters
+* Featured profiles
+* Related cities
+* SEO content area
+
+---
+
+# CTA SECTION FOR MEN
+
+Create a visually powerful call-to-action section.
+
+Heading:
+
+## Are You Ready to Get Discovered?
+
+Supporting text:
+
+Create your profile and connect with women looking for interesting and compatible men.
+
+CTA:
+
+**Register as a Member**
+
+Background should contain a premium lifestyle image with dark overlay.
+
+---
+
+# FOOTER
+
+Create a large premium footer.
+
+Logo and short description.
+
+Column 1:
+
+## Platform
+
+* Browse Men
+* Popular Cities
+* Featured Profiles
+* How It Works
+* Premium Membership
+
+Column 2:
+
+## Members
+
+* Create Profile
+* Login
+* Upgrade Profile
+* Manage Profile
+
+Column 3:
+
+## Information
+
+* Privacy Policy
+* Terms & Conditions
+* Safety Guidelines
+* Contact Us
+
+Include:
+
+**Adults Only – 18+**
+
+Footer text should clearly state that the platform is intended only for consenting adults.
+
+---
+
+# PROFILE PAGE
+
+Create a detailed public profile page.
+
+Profile header should include:
+
+* Large profile photo gallery
+* Name
+* Age
+* Verification badge
+* City
+* Online status
+* Premium badge
+
+Profile sections:
+
+## About Me
+
+Personal description.
+
+## Interests
+
+Display tags.
+
+Examples:
+
+* Fitness
+* Travel
+* Movies
+* Dining
+* Music
+* Social Events
+
+## Looking For
+
+Display selected connection preferences.
+
+## Availability
+
+Optional availability status.
+
+Sidebar or sticky contact area:
+
+* Send Interest
+* Favourite Profile
+* Report Profile
+
+Add related profiles below.
+
+---
+
+# BROWSE MEN PAGE
+
+Create a profile discovery page.
+
+Filters:
+
+* City
+* Age
+* Interests
+* Premium Members
+* Verified Profiles
+* Recently Active
+
+Sort options:
+
+* Featured
+* Recently Active
+* Newest Profiles
+* Age
+
+Use pagination or infinite scrolling.
+
+Premium profiles should receive priority based on subscription level.
+
+---
+
+# MEMBER REGISTRATION
+
+Create a simple multi-step registration flow.
+
+Step 1:
+
+* Email
+* Password
+* Confirm Password
+
+Step 2:
+
+* Display Name
+* Age / Date of Birth
+* City
+
+Step 3:
+
+* About Me
+* Interests
+* What I'm Looking For
+
+Step 4:
+
+* Upload Profile Photos
+
+Step 5:
+
+* Review Profile
+
+After submission:
+
+**Profile Pending Approval**
+
+The profile should not become publicly visible until approved by an administrator.
+
+---
+
+# MEMBER DASHBOARD
+
+Create a member dashboard.
+
+Dashboard sections:
+
+* Profile Overview
+* Edit Profile
+* Photos
+* Profile Visibility
+* Subscription
+* Payments
+* Upgrade Premium
+
+Show useful statistics:
+
+* Profile Views
+* Profile Favourites
+* Interest Requests
+* Premium Status
+* Subscription Expiry
+
+---
+
+# PREMIUM SUBSCRIPTION SYSTEM
+
+Create a flexible subscription system.
+
+Plans:
+
+* Free
+* Weekly Premium
+* Monthly Premium
+* Featured Boost
+
+Each plan should have configurable properties:
+
+* Price
+* Duration
+* Search ranking priority
+* Homepage placement
+* Number of allowed photos
+* Premium badge
+* Featured status
+
+When a subscription expires:
+
+Automatically:
+
+* Remove premium badge
+* Remove featured placement
+* Reset search ranking
+* Return profile to free plan limits
+
+Use a payment system appropriate for the deployment country and business model.
+
+Maintain payment records in the member dashboard and admin panel.
+
+---
+
+# ADMIN PANEL
+
+Create a secure admin dashboard.
+
+Admin should manage:
+
+## Users
+
+* View users
+* Search users
+* Suspend users
+* Delete users
+
+## Profiles
+
+* Approve profiles
+* Reject profiles
+* Edit profiles
+* Feature profiles
+* Verify profiles
+
+## Photos
+
+* Approve photos
+* Reject photos
+* Remove inappropriate content
+
+## Subscriptions
+
+* View active subscriptions
+* View expired subscriptions
+* Change plan
+* Extend subscription
+
+## Payments
+
+* View transactions
+* Payment status
+* Revenue statistics
+
+## Cities
+
+* Add city
+* Edit city
+* Enable / disable city
+
+## Content
+
+Manage:
+
+* Homepage content
+* Pricing
+* SEO titles
+* Meta descriptions
+* City page content
+
+---
+
+# DATABASE STRUCTURE
+
+Create scalable database models for:
+
+## Users
+
+* id
+* email
+* password_hash
+* role
+* status
+* created_at
+
+## Profiles
+
+* user_id
+* display_name
+* age
+* city
+* bio
+* interests
+* looking_for
+* verification_status
+* profile_status
+* visibility_status
+
+## Profile Photos
+
+* profile_id
+* image_url
+* approval_status
+* sort_order
+
+## Subscriptions
+
+* user_id
+* plan_id
+* start_date
+* expiry_date
+* status
+
+## Subscription Plans
+
+* name
+* price
+* duration
+* ranking_priority
+* featured
+* homepage_visibility
+* photo_limit
+
+## Payments
+
+* user_id
+* amount
+* payment_status
+* payment_reference
+* plan_id
+
+## Cities
+
+* name
+* slug
+* active
+
+## Reports
+
+* reporter_id
+* profile_id
+* reason
+* status
+
+---
+
+# SEO REQUIREMENTS
+
+Build the website with strong technical SEO foundations.
+
+Requirements:
+
+* Server-side rendering or SEO-friendly rendering
+* Fast loading speed
+* Responsive design
+* Clean semantic HTML
+* Proper H1, H2 and H3 structure
+* Dynamic meta titles
+* Dynamic meta descriptions
+* Canonical URLs
+* XML sitemap
+* robots.txt
+* Open Graph metadata
+* Schema markup where appropriate
+* Clean URL structure
+
+Example URLs:
+
+/men
+
+/men/coimbatore
+
+/men/chennai
+
+/profile/rahul-coimbatore
+
+/premium
+
+/blog
+
+Avoid generating thousands of thin or duplicate city pages.
+
+Each important location page should have unique, useful content and real profile inventory.
+
+---
+
+# SAFETY & MODERATION
+
+Build privacy and moderation features.
+
+Include:
+
+* Adults-only age gate
+* Profile reporting
+* Photo moderation
+* Admin approval
+* User blocking
+* Clear community guidelines
+* Consent-focused safety messaging
+* Privacy controls
+
+Do not expose private contact information publicly unless the profile owner explicitly chooses to do so.
+
+---
+
+# TECHNICAL REQUIREMENTS
+
+Build the platform using a modern scalable architecture.
+
+Requirements:
+
+* Responsive frontend
+* Secure authentication
+* Role-based access control
+* Database-driven profiles
+* Image upload and optimization
+* Subscription system
+* Payment integration architecture
+* Admin dashboard
+* SEO-friendly rendering
+* API-based backend
+* Secure environment variables
+* Input validation
+* Rate limiting
+* Protection against common web vulnerabilities
+
+The UI should feel extremely polished and production-ready.
+
+---
+
+# FINAL USER EXPERIENCE GOAL
+
+The final product should feel like a premium, modern discovery platform where:
+
+**Women can quickly discover interesting male profiles based on location and preferences.**
+
+**Men can create profiles and purchase premium visibility to receive more exposure.**
+
+The website should prioritize:
+
+1. Profile discovery
+2. Premium visual design
+3. Easy registration
+4. Subscription monetization
+5. Mobile experience
+6. Privacy
+7. Profile moderation
+8. SEO scalability
+
+Build the entire system with reusable components, scalable database architecture and configurable admin controls.
+
+The final design should be elegant, luxurious, fast and easy to use.

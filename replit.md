@@ -1,6 +1,6 @@
-# [Project name]
+# Him For You
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A premium women-focused discovery platform for finding verified male companions by city, interests, and intent.
 
 ## Run & Operate
 
@@ -22,15 +22,22 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/him-for-you/` — responsive React/Vite web app, route shell, discovery UI, profile detail, membership, and onboarding
+- `artifacts/api-server/src/routes/discovery.ts` — discovery and engagement API with curated launch data
+- `lib/api-spec/openapi.yaml` — source-of-truth API contract for profiles, cities, plans, and engagement
+- `artifacts/him-for-you/src/index.css` — shared dark editorial theme and typography tokens
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The public discovery surface is contract-first: generated React Query hooks are the only client data access layer.
+- Profile photos are generated local assets served from the web artifact so the launch experience does not depend on third-party image hosts.
+- Public engagement actions are intentionally lightweight and API-backed now; authentication, payments, and durable member records are the next production layer.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Women can browse curated profiles, filter by city and intent, view detailed profiles, save favourites, and send interest.
+- Men have a dedicated join path and membership comparison surface for increasing visibility.
+- Public pages include discovery, city listings, profile details, premium plans, and onboarding.
 
 ## User preferences
 
@@ -38,7 +45,8 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Re-run `pnpm --filter @workspace/api-spec run codegen` after changing `lib/api-spec/openapi.yaml`.
+- The current Orval/Zod combination accepts numeric OpenAPI fields but emits unsupported `zod.int()` for `integer`; keep generated-compatible numeric fields until the validation dependency is upgraded.
 
 ## Pointers
 

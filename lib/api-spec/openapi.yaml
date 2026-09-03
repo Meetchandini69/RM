@@ -3,20 +3,25 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Him For You discovery and membership API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: discovery
+    description: Public profile discovery
+  - name: engagement
+    description: Public interest and favourite actions
+  - name: membership
+    description: Membership and city metadata
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +29,315 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /profiles:
+    get:
+      operationId: listProfiles
+      tags: [discovery]
+      summary: Browse approved male profiles
+      parameters:
+        - $ref: "#/components/parameters/City"
+        - $ref: "#/components/parameters/LookingFor"
+        - $ref: "#/components/parameters/MinAge"
+        - $ref: "#/components/parameters/MaxAge"
+        - $ref: "#/components/parameters/Premium"
+        - $ref: "#/components/parameters/Verified"
+        - $ref: "#/components/parameters/Active"
+        - $ref: "#/components/parameters/Sort"
+      responses:
+        "200":
+          description: Matching profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Profile"
+  /profiles/featured:
+    get:
+      operationId: getFeaturedProfiles
+      tags: [discovery]
+      summary: Get featured profiles for the homepage
+      parameters:
+        - $ref: "#/components/parameters/City"
+      responses:
+        "200":
+          description: Featured profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Profile"
+  /profiles/{slug}:
+    get:
+      operationId: getProfile
+      tags: [discovery]
+      summary: Get a public profile by slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Public profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileDetail"
+        "404":
+          description: Profile not found
+  /profiles/{id}/interest:
+    post:
+      operationId: sendInterest
+      tags: [engagement]
+      summary: Send interest to a profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InterestInput"
+      responses:
+        "201":
+          description: Interest recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EngagementResponse"
+  /profiles/{id}/favorite:
+    post:
+      operationId: toggleFavorite
+      tags: [engagement]
+      summary: Toggle a profile favourite
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Favourite state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EngagementResponse"
+  /cities:
+    get:
+      operationId: listCities
+      tags: [membership]
+      summary: List active cities
+      responses:
+        "200":
+          description: Active cities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/City"
+  /plans:
+    get:
+      operationId: listPlans
+      tags: [membership]
+      summary: List visible membership plans
+      responses:
+        "200":
+          description: Membership plans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Plan"
+  /discovery-summary:
+    get:
+      operationId: getDiscoverySummary
+      tags: [discovery]
+      summary: Get homepage discovery summary
+      responses:
+        "200":
+          description: Summary metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiscoverySummary"
 components:
+  parameters:
+    City:
+      name: city
+      in: query
+      schema:
+        type: string
+    LookingFor:
+      name: lookingFor
+      in: query
+      schema:
+        type: string
+    MinAge:
+      name: minAge
+      in: query
+      schema:
+        type: number
+        minimum: 18
+    MaxAge:
+      name: maxAge
+      in: query
+      schema:
+        type: number
+        maximum: 100
+    Premium:
+      name: premium
+      in: query
+      schema:
+        type: boolean
+    Verified:
+      name: verified
+      in: query
+      schema:
+        type: boolean
+    Active:
+      name: active
+      in: query
+      schema:
+        type: boolean
+    Sort:
+      name: sort
+      in: query
+      schema:
+        type: string
+        enum: [featured, active, newest, age]
+        default: featured
   schemas:
     HealthStatus:
       type: object
       properties:
         status:
           type: string
-      required:
-        - status
-
+      required: [status]
+    Profile:
+      type: object
+      properties:
+        id:
+          type: number
+        slug:
+          type: string
+        displayName:
+          type: string
+        age:
+          type: number
+        city:
+          type: string
+        citySlug:
+          type: string
+        headline:
+          type: string
+        imageUrl:
+          type: string
+        interests:
+          type: array
+          items:
+            type: string
+        lookingFor:
+          type: array
+          items:
+            type: string
+        isVerified:
+          type: boolean
+        isPremium:
+          type: boolean
+        isFeatured:
+          type: boolean
+        isOnline:
+          type: boolean
+        lastActive:
+          type: string
+        favouriteCount:
+          type: number
+      required: [id, slug, displayName, age, city, citySlug, headline, imageUrl, interests, lookingFor, isVerified, isPremium, isFeatured, isOnline, lastActive, favouriteCount]
+    ProfileDetail:
+      allOf:
+        - $ref: "#/components/schemas/Profile"
+        - type: object
+          properties:
+            bio:
+              type: string
+            gallery:
+              type: array
+              items:
+                type: string
+            availability:
+              type: string
+            responseTime:
+              type: string
+          required: [bio, gallery, availability, responseTime]
+    City:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        slug:
+          type: string
+        profileCount:
+          type: number
+      required: [id, name, slug, profileCount]
+    Plan:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        price:
+          type: number
+        duration:
+          type: string
+        description:
+          type: string
+        features:
+          type: array
+          items:
+            type: string
+        popular:
+          type: boolean
+        cta:
+          type: string
+      required: [id, name, price, duration, description, features, popular, cta]
+    InterestInput:
+      type: object
+      properties:
+        note:
+          type: string
+          maxLength: 500
+    EngagementResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        isFavourite:
+          type: boolean
+      required: [success, message]
+    DiscoverySummary:
+      type: object
+      properties:
+        profileCount:
+          type: number
+        cityCount:
+          type: number
+        verifiedCount:
+          type: number
+        activeNowCount:
+          type: number
+      required: [profileCount, cityCount, verifiedCount, activeNowCount]

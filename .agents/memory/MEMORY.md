@@ -1,0 +1,1 @@
+- [Orval and Zod numeric schemas](orval-zod-numeric-schemas.md) — this workspace’s current generated validation stack does not support zod.int(); numeric API fields need compatible schemas.

@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Him For You"
+description = "A premium women-focused discovery platform for finding verified male companions by city, interests, and intent, with profile visibility memberships for men."
+version = "1.0.0"
+id = "artifacts/him-for-you"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21964
+
+[services.development]
+run = "pnpm --filter @workspace/him-for-you run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/him-for-you", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/him-for-you/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21964"
+BASE_PATH = "/"
