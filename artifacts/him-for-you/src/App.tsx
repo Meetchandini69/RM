@@ -9,6 +9,7 @@ import {
   BadgeCheck,
   Bell,
   Bookmark,
+  CalendarDays,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -177,15 +178,19 @@ function Shell({ children }: { children: ReactNode }) {
             <span className="flex h-8 w-8 items-center justify-center rounded-full border border-accent/70 text-accent"><HeartHandshake size={15} /></span>
             <span className="font-editorial text-[23px] tracking-[-.02em] text-foreground">him <span className="text-primary">for</span> you</span>
           </Link>
-          <nav className="hidden items-center gap-9 md:flex" aria-label="Main navigation">
-            <Link href="/men" className={`underlined-link text-xs font-semibold uppercase tracking-[.18em] transition ${isBrowse ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`} data-testid="link-browse">Discover men</Link>
-            <Link href="/premium" className={`underlined-link text-xs font-semibold uppercase tracking-[.18em] transition ${location === '/premium' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`} data-testid="link-premium">Membership</Link>
-            <Link href="/join" className={`underlined-link text-xs font-semibold uppercase tracking-[.18em] transition ${location === '/join' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`} data-testid="link-join">For men</Link>
+          <nav className="hidden items-center gap-7 lg:flex" aria-label="Main navigation">
+            <Link href="/" className={`underlined-link text-[11px] font-semibold uppercase tracking-[.14em] transition ${location === '/' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`} data-testid="link-home">Home</Link>
+            <Link href="/men" className={`underlined-link text-[11px] font-semibold uppercase tracking-[.14em] transition ${isBrowse ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`} data-testid="link-browse">Browse Men</Link>
+            <a href="#how-it-works" className="underlined-link text-[11px] font-semibold uppercase tracking-[.14em] text-muted-foreground transition hover:text-foreground" data-testid="link-how-it-works">How It Works</a>
+            <Link href="/premium" className={`underlined-link text-[11px] font-semibold uppercase tracking-[.14em] transition ${location === '/premium' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`} data-testid="link-premium">Premium</Link>
+            <a href="#popular-cities" className="underlined-link text-[11px] font-semibold uppercase tracking-[.14em] text-muted-foreground transition hover:text-foreground" data-testid="link-cities">Popular Cities</a>
+            <a href="#footer" className="underlined-link text-[11px] font-semibold uppercase tracking-[.14em] text-muted-foreground transition hover:text-foreground" data-testid="link-blog">Blog</a>
           </nav>
           <div className="hidden items-center gap-5 md:flex">
             <button className="text-muted-foreground transition hover:text-accent" aria-label="Notifications" data-testid="button-notifications"><Bell size={17} /></button>
             <span className="h-5 w-px bg-foreground/15" />
-            <Link href="/join" className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.16em] text-foreground transition hover:text-accent" data-testid="link-sign-in"><CircleUserRound size={17} /> Sign in</Link>
+            <Link href="/join" className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[.16em] text-foreground transition hover:text-accent" data-testid="link-sign-in"><CircleUserRound size={16} /> Log in</Link>
+            <Link href="/join" className="rounded-md bg-primary px-4 py-2.5 text-[10px] font-bold uppercase tracking-[.14em] text-foreground transition hover:bg-primary/85" data-testid="link-header-join">Join now</Link>
           </div>
           <button className="flex h-10 w-10 items-center justify-center rounded-full border border-foreground/15 text-foreground md:hidden" onClick={() => setOpen(!open)} aria-label="Open navigation" data-testid="button-mobile-menu">{open ? <X size={18} /> : <Menu size={18} />}</button>
         </div>
@@ -200,22 +205,27 @@ function Shell({ children }: { children: ReactNode }) {
         )}
       </header>
       <main>{children}</main>
-      <footer className="border-t border-foreground/10 bg-[#0d0d0f]">
-        <div className="mx-auto grid max-w-[1320px] gap-10 px-5 py-12 sm:px-8 md:grid-cols-[1.5fr_1fr_1fr] lg:px-12 lg:py-16">
+       <footer id="footer" className="border-t border-foreground/10 bg-[#0d0d0f]">
+         <div className="mx-auto grid max-w-[1320px] gap-10 px-5 py-12 sm:px-8 md:grid-cols-[1.5fr_1fr_1fr_1fr] lg:px-12 lg:py-16">
           <div>
             <div className="flex items-center gap-3"><span className="flex h-7 w-7 items-center justify-center rounded-full border border-accent/70 text-accent"><HeartHandshake size={13} /></span><span className="font-editorial text-xl">him <span className="text-primary">for</span> you</span></div>
-            <p className="mt-5 max-w-xs text-sm leading-6 text-muted-foreground">A more considered way to meet. Private by design, human at heart.</p>
+             <p className="mt-5 max-w-xs text-sm leading-6 text-muted-foreground">A premium dating and companionship platform for women who know what they want.</p>
+             <div className="mt-7 flex gap-2 text-[10px] font-semibold uppercase tracking-[.14em] text-muted-foreground"><span className="rounded-full border border-foreground/15 px-3 py-1.5">Private</span><span className="rounded-full border border-foreground/15 px-3 py-1.5">18+ only</span></div>
           </div>
           <div>
-            <p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Explore</p>
-            <div className="mt-4 grid gap-3 text-sm text-muted-foreground"><Link href="/men" className="hover:text-foreground" data-testid="footer-link-men">Discover men</Link><Link href="/premium" className="hover:text-foreground" data-testid="footer-link-premium">Membership</Link><Link href="/join" className="hover:text-foreground" data-testid="footer-link-join">Join as a man</Link></div>
+             <p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Platform</p>
+             <div className="mt-4 grid gap-3 text-sm text-muted-foreground"><Link href="/men" className="hover:text-foreground" data-testid="footer-link-men">Browse men</Link><a href="#popular-cities" className="hover:text-foreground" data-testid="footer-link-cities">Popular cities</a><Link href="/premium" className="hover:text-foreground" data-testid="footer-link-premium">Premium membership</Link><a href="#how-it-works" className="hover:text-foreground" data-testid="footer-link-how">How it works</a></div>
           </div>
           <div>
-            <p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">The promise</p>
-            <div className="mt-4 grid gap-3 text-sm text-muted-foreground"><span>Verified identities</span><span>Quiet, respectful spaces</span><span>Your privacy, always</span></div>
+             <p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Members</p>
+             <div className="mt-4 grid gap-3 text-sm text-muted-foreground"><Link href="/join" className="hover:text-foreground" data-testid="footer-link-create">Create profile</Link><Link href="/join" className="hover:text-foreground" data-testid="footer-link-login">Login</Link><Link href="/premium" className="hover:text-foreground" data-testid="footer-link-upgrade">Upgrade profile</Link><Link href="/join" className="hover:text-foreground" data-testid="footer-link-manage">Manage profile</Link></div>
+           </div>
+           <div>
+             <p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Information</p>
+             <div className="mt-4 grid gap-3 text-sm text-muted-foreground"><span>Privacy policy</span><span>Terms &amp; conditions</span><span>Safety guidelines</span><span>Contact us</span></div>
           </div>
         </div>
-        <div className="mx-auto flex max-w-[1320px] flex-col gap-2 border-t border-foreground/10 px-5 py-5 text-[10px] uppercase tracking-[.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12"><span>© 2025 Him For You</span><span>Private connections, thoughtfully made.</span></div>
+         <div className="mx-auto flex max-w-[1320px] flex-col gap-2 border-t border-foreground/10 px-5 py-5 text-[10px] uppercase tracking-[.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12"><span>© 2025 Him For You. All rights reserved.</span><span>For consenting adults only · Your privacy. Your choice.</span></div>
       </footer>
     </div>
   );
@@ -223,61 +233,75 @@ function Shell({ children }: { children: ReactNode }) {
 
 function Home() {
   const [chosenCity, setChosenCity] = useState('');
+  const [intent, setIntent] = useState('');
+  const [ageRange, setAgeRange] = useState('21 - 50+');
   const [, setLocation] = useLocation();
   const summary = useGetDiscoverySummary();
   const featured = useGetFeaturedProfiles({}, { query: { queryKey: getGetFeaturedProfilesQueryKey({}) } });
   const cities = useListCities({ query: { queryKey: getListCitiesQueryKey() } });
+  const plans = useListPlans({ query: { queryKey: getListPlansQueryKey() } });
   const featuredProfiles = featured.data ?? [];
   return (
     <div>
-      <section className="surface-grid relative overflow-hidden border-b border-foreground/10">
-        <div className="absolute -right-32 -top-24 h-[500px] w-[500px] rounded-full bg-primary/10 blur-3xl" />
-        <div className="relative mx-auto grid max-w-[1320px] gap-12 px-5 pb-20 pt-16 sm:px-8 sm:pt-24 lg:grid-cols-[1fr_420px] lg:items-end lg:px-12 lg:pb-28 lg:pt-28">
-          <div className="reveal max-w-3xl">
-            <p className="mb-7 flex items-center gap-3 font-mono-label text-[10px] uppercase tracking-[.25em] text-accent"><span className="h-px w-9 bg-accent" />Private discovery, reimagined</p>
-            <h1 className="font-editorial text-[clamp(3.6rem,10vw,8.4rem)] leading-[.88] tracking-[-.065em] text-foreground">Meet the kind<br /><em className="text-primary">of company</em><br />you remember.</h1>
-            <p className="mt-8 max-w-md text-[15px] leading-7 text-muted-foreground sm:text-base">Browse verified men who value intention, discretion, and the spark that cannot be scheduled.</p>
-            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <button className="group flex items-center justify-center gap-3 rounded-full bg-primary px-7 py-3.5 text-xs font-bold uppercase tracking-[.15em] text-foreground transition hover:bg-primary/85" onClick={() => setLocation(chosenCity ? `/men/${chosenCity}` : '/men')} data-testid="button-start-discovery">Start discovering <ArrowUpRight size={16} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></button>
-              <Link href="/premium" className="flex items-center justify-center gap-3 rounded-full border border-foreground/20 px-7 py-3.5 text-xs font-bold uppercase tracking-[.15em] text-foreground transition hover:border-accent hover:text-accent" data-testid="link-home-membership">How membership works <ChevronRight size={15} /></Link>
+      <section className="hero-reference relative min-h-[645px] overflow-hidden border-b border-foreground/10">
+        <img src="/assets/him-for-you-hero.jpg" alt="Couple sharing a private moment" width="1600" height="900" className="absolute inset-0 h-full w-full object-cover object-[68%_center]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#080709_0%,rgba(8,7,9,.96)_28%,rgba(8,7,9,.58)_58%,rgba(8,7,9,.12)_100%)]" />
+        <div className="relative mx-auto flex min-h-[645px] max-w-[1320px] flex-col justify-center px-5 pb-32 pt-20 sm:px-8 lg:px-12">
+          <div className="reveal max-w-[590px]">
+            <p className="mb-4 font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">For women who know what they want</p>
+            <h1 className="max-w-[570px] font-editorial text-[clamp(3rem,6.4vw,6.2rem)] leading-[.92] tracking-[-.055em] text-[#fff8ee]">Find the Right Man <em className="text-accent">For Your Moments</em></h1>
+            <p className="mt-6 max-w-[535px] text-sm leading-6 text-[#f3e8dc]/80 sm:text-[15px]">Meet attractive, interesting and verified men near you. Whether you’re looking for dating, companionship, a dinner partner, travel company or a meaningful private connection, discover profiles that match your preferences.</p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <button className="group flex items-center justify-center gap-3 rounded-md bg-primary px-6 py-3.5 text-[11px] font-bold uppercase tracking-[.12em] text-foreground transition hover:bg-primary/85" onClick={() => setLocation(chosenCity ? `/men/${chosenCity}` : '/men')} data-testid="button-start-discovery">Find Men Near You <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></button>
+              <Link href="/join" className="flex items-center justify-center gap-3 rounded-md border border-[#f3e8dc]/40 bg-black/20 px-6 py-3.5 text-[11px] font-bold uppercase tracking-[.12em] text-[#fff8ee] transition hover:border-accent hover:text-accent" data-testid="link-create-profile">Create Your Profile <ChevronRight size={15} /></Link>
+            </div>
+            <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-[10px] text-[#f3e8dc]/80">
+              <span className="flex items-center gap-1.5"><LockKeyhole size={12} className="text-accent" /> Private &amp; discreet</span>
+              <span className="flex items-center gap-1.5"><ShieldCheck size={12} className="text-accent" /> Verified profiles</span>
+              <span className="flex items-center gap-1.5"><BadgeCheck size={12} className="text-accent" /> Adults only (18+)</span>
             </div>
           </div>
-          <div className="reveal reveal-2 rounded-2xl border border-foreground/15 bg-card/80 p-5 quiet-shadow backdrop-blur sm:p-6">
-            <div className="flex items-center justify-between"><span className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Begin with a place</span><MapPin size={17} className="text-accent" /></div>
-            <p className="mt-5 font-editorial text-2xl">Where are you looking?</p>
-            <label className="mt-5 block text-xs text-muted-foreground" htmlFor="home-city">Your city</label>
-            <div className="relative mt-2">
-              <select id="home-city" className="h-12 w-full appearance-none rounded-xl border border-foreground/15 bg-background px-4 pr-10 text-sm text-foreground outline-none transition focus:border-accent" value={chosenCity} onChange={(event) => setChosenCity(event.target.value)} data-testid="select-home-city">
-                <option value="">All available cities</option>
-                {(cities.data ?? []).map((city) => <option value={city.slug} key={city.id}>{city.name} · {city.profileCount} profiles</option>)}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-4 top-4 text-muted-foreground" size={16} />
+          <div className="search-reference absolute inset-x-5 -bottom-20 z-10 rounded-lg border border-foreground/20 bg-[#171619]/95 p-4 shadow-2xl backdrop-blur-md sm:inset-x-8 sm:p-5 lg:inset-x-12">
+            <div className="mb-4 flex items-end justify-between"><div><h2 className="font-editorial text-2xl text-[#fff8ee]">Find Your Perfect Match</h2><p className="mt-1 text-xs text-muted-foreground">Search men based on your preferences and location.</p></div><Search size={18} className="hidden text-accent sm:block" /></div>
+            <div className="grid gap-3 md:grid-cols-[1.05fr_1.05fr_.8fr_auto]">
+              <label className="grid gap-1.5 text-[10px] font-semibold uppercase tracking-[.12em] text-muted-foreground">Location<select className="h-11 rounded-md border border-foreground/15 bg-[#0f0e10] px-3 text-xs font-normal normal-case tracking-normal text-foreground outline-none focus:border-accent" value={chosenCity} onChange={(event) => setChosenCity(event.target.value)} data-testid="select-home-city"><option value="">Select city</option>{(cities.data ?? []).map((city) => <option value={city.slug} key={city.id}>{city.name}</option>)}</select></label>
+              <label className="grid gap-1.5 text-[10px] font-semibold uppercase tracking-[.12em] text-muted-foreground">I’m looking for<select className="h-11 rounded-md border border-foreground/15 bg-[#0f0e10] px-3 text-xs font-normal normal-case tracking-normal text-foreground outline-none focus:border-accent" value={intent} onChange={(event) => setIntent(event.target.value)} data-testid="select-home-intent"><option value="">Dating &amp; companionship</option><option value="Dating">Dating</option><option value="Companionship">Companionship</option><option value="Dinner & Social Companion">Dinner &amp; social companion</option><option value="Travel Companion">Travel companion</option><option value="Events & Parties">Events &amp; parties</option></select></label>
+              <label className="grid gap-1.5 text-[10px] font-semibold uppercase tracking-[.12em] text-muted-foreground">Age<select className="h-11 rounded-md border border-foreground/15 bg-[#0f0e10] px-3 text-xs font-normal normal-case tracking-normal text-foreground outline-none focus:border-accent" value={ageRange} onChange={(event) => setAgeRange(event.target.value)} data-testid="select-home-age"><option>21 - 50+</option><option>21 - 30</option><option>31 - 40</option><option>41 - 50+</option></select></label>
+              <button className="mt-auto flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-5 text-[10px] font-bold uppercase tracking-[.12em] text-foreground transition hover:bg-primary/85" onClick={() => setLocation(chosenCity ? `/men/${chosenCity}` : '/men')} data-testid="button-browse-men"><Search size={14} /> Browse Men</button>
             </div>
-            <div className="mt-5 flex items-center gap-3 text-xs leading-5 text-muted-foreground"><ShieldCheck size={16} className="shrink-0 text-accent" /> Every profile is reviewed before it appears here.</div>
           </div>
         </div>
       </section>
-      <section className="mx-auto max-w-[1320px] px-5 py-12 sm:px-8 lg:px-12 lg:py-16">
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border hairline bg-foreground/10 sm:grid-cols-4">
-          {[['profiles', summary.data?.profileCount ?? '—', 'thoughtful profiles'], ['cities', summary.data?.cityCount ?? '—', 'cities to explore'], ['verified', summary.data?.verifiedCount ?? '—', 'verified identities'], ['active', summary.data?.activeNowCount ?? '—', 'here right now']].map(([key, value, label]) => <div className="bg-card px-4 py-6 sm:px-6" key={key} data-testid={`stat-${key}`}><p className="font-editorial text-3xl text-foreground">{value}</p><p className="mt-1 text-[10px] uppercase tracking-[.16em] text-muted-foreground">{label}</p></div>)}
+      <section className="bg-background pt-28">
+        <div className="mx-auto max-w-[1320px] px-5 pb-5 sm:px-8 lg:px-12">
+          <div className="mb-6 flex items-end justify-between gap-5"><div><h2 className="font-editorial text-3xl tracking-[-.03em] sm:text-4xl">Featured Men Near You</h2><p className="mt-1 text-xs text-muted-foreground">Discover men who are currently active and ready to connect with women looking for genuine companionship.</p></div><Link href="/men" className="hidden items-center gap-2 text-[10px] font-bold uppercase tracking-[.15em] text-primary sm:flex" data-testid="link-view-all">View all men <ArrowUpRight size={14} /></Link></div>
+          {featured.isLoading ? <ProfileSkeleton count={5} /> : featured.isError ? <ErrorState onRetry={() => featured.refetch()} /> : featuredProfiles.length === 0 ? <div className="rounded-2xl border hairline p-12 text-center text-muted-foreground" data-testid="empty-featured">New profiles are arriving soon.</div> : <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{featuredProfiles.slice(0, 5).map((profile) => <ProfileCard key={profile.id} profile={profile} featured />)}</div>}
+          <Link href="/men" className="mt-6 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[.15em] text-primary sm:hidden" data-testid="mobile-link-view-all">View all men <ArrowUpRight size={14} /></Link>
         </div>
       </section>
-      <section className="mx-auto max-w-[1320px] px-5 pb-20 sm:px-8 lg:px-12 lg:pb-28">
-        <div className="mb-8 flex items-end justify-between gap-5">
-          <div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">A considered beginning</p><h2 className="mt-3 font-editorial text-4xl tracking-[-.04em] sm:text-5xl">Featured, for you.</h2></div>
-          <Link href="/men" className="hidden items-center gap-2 text-xs font-semibold uppercase tracking-[.16em] text-muted-foreground transition hover:text-accent sm:flex" data-testid="link-view-all">View all men <ArrowUpRight size={15} /></Link>
-        </div>
-        {featured.isLoading ? <ProfileSkeleton /> : featured.isError ? <ErrorState onRetry={() => featured.refetch()} /> : featuredProfiles.length === 0 ? <div className="rounded-2xl border hairline p-12 text-center text-muted-foreground" data-testid="empty-featured">New profiles are arriving soon.</div> : <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{featuredProfiles.slice(0, 3).map((profile) => <ProfileCard key={profile.id} profile={profile} featured />)}</div>}
-        <Link href="/men" className="mt-6 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[.16em] text-muted-foreground sm:hidden" data-testid="mobile-link-view-all">View all men <ArrowUpRight size={15} /></Link>
-      </section>
-      <section className="border-y border-foreground/10 bg-card/50">
-        <div className="mx-auto grid max-w-[1320px] gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[.75fr_1fr] lg:items-center lg:px-12 lg:py-28">
-          <div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">The Him For You standard</p><h2 className="mt-4 max-w-lg font-editorial text-5xl leading-[.95] tracking-[-.05em] sm:text-6xl">Because chemistry deserves <em className="text-primary">care.</em></h2></div>
-          <div className="grid gap-7 sm:grid-cols-3">
-            {[{icon: ShieldCheck, title: 'Verified, not vague', text: 'Every man completes a thoughtful identity review.'}, {icon: LockKeyhole, title: 'Private by default', text: 'Your interest stays yours until you choose otherwise.'}, {icon: Heart, title: 'Intentional energy', text: 'Profiles that say more than a polished photo.'}].map(({ icon: Icon, title, text }, index) => <div key={title} className={`reveal reveal-${index + 1}`}><Icon size={19} className="text-accent" /><h3 className="mt-4 font-editorial text-xl">{title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}
-          </div>
+      <section id="how-it-works" className="mt-10 bg-[#f5f0e7] text-[#292323]">
+        <div className="mx-auto max-w-[1320px] px-5 py-12 sm:px-8 lg:px-12 lg:py-14">
+          <div className="text-center"><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[#a12c63]">A better way to meet</p><h2 className="mt-2 font-editorial text-3xl sm:text-4xl">Simple. Private. Your Choice.</h2><p className="mt-2 text-xs text-[#6e625b]">Find and connect with men in just a few simple steps.</p></div>
+          <div className="mt-9 grid gap-7 md:grid-cols-4">{[{icon: Search, title: 'Browse Profiles', text: 'Search men based on your city, age and interests.'}, {icon: Heart, title: 'Find Someone You Like', text: 'Explore profiles, photos and availability.'}, {icon: MessageCircle, title: 'Connect', text: 'Send your interest or contact someone you’re interested in.'}, {icon: CalendarDays, title: 'Meet Your Way', text: 'Plan a date, social outing or private companionship experience.'}].map(({icon: Icon, title, text}, index) => <div className="relative text-center md:border-r md:border-[#cdbfb4] md:last:border-0" key={title} data-testid={`step-how-${index + 1}`}><div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border border-[#cdbfb4] bg-[#fbf8f2] text-[#a12c63]"><Icon size={17} /></div><p className="mt-3 text-[10px] font-bold uppercase tracking-[.16em] text-[#a12c63]">Step 0{index + 1}</p><h3 className="mt-2 font-editorial text-xl">{title}</h3><p className="mx-auto mt-2 max-w-[210px] text-xs leading-5 text-[#6e625b]">{text}</p></div>)}</div>
         </div>
       </section>
+      <section className="bg-[#161416]">
+        <div className="mx-auto grid max-w-[1320px] gap-6 px-5 py-12 sm:px-8 md:grid-cols-[.85fr_1fr_1fr] lg:px-12 lg:py-16">
+          <div className="relative min-h-[300px] overflow-hidden rounded-lg"><img src="/assets/him-for-you-lifestyle.jpg" alt="Woman enjoying an evening out" width="1200" height="900" className="absolute inset-0 h-full w-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-[#161416]/70 to-transparent" /></div>
+          <div className="flex flex-col justify-center px-1 sm:px-4"><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Discover something different</p><h2 className="mt-3 font-editorial text-4xl leading-[.98] text-[#fff8ee] sm:text-5xl">Looking for Someone <em className="text-primary">Different?</em></h2><p className="mt-4 max-w-md text-sm leading-6 text-muted-foreground">Whether you want someone to accompany you to dinner, spend time with, travel with, enjoy a date or simply meet someone new, our platform makes discovering compatible people easier.</p><Link href="/men" className="mt-6 flex w-fit items-center gap-2 rounded-md bg-primary px-5 py-3 text-[10px] font-bold uppercase tracking-[.14em] text-foreground" data-testid="link-start-browsing">Start browsing <ArrowUpRight size={14} /></Link></div>
+          <div className="rounded-lg border border-foreground/10 bg-[#211f20] p-6 sm:p-8"><h3 className="font-editorial text-2xl text-[#fff8ee]">You Decide What You’re Looking For</h3><div className="mt-6 grid gap-3 text-xs text-[#f0e5d9] sm:grid-cols-2">{['Dating', 'Weekend Company', 'Dinner & Social Companion', 'Private Adult Dating', 'Travel Companion', 'Casual Connections', 'Events & Parties', 'Long-Term Dating'].map((item) => <span className="flex items-center gap-2" key={item}><CheckCircle2 size={14} className="shrink-0 text-accent" />{item}</span>)}</div><p className="mt-7 border-t border-foreground/10 pt-5 text-xs italic text-muted-foreground">Your preferences. Your privacy. Your choice.</p></div>
+        </div>
+      </section>
+      <section className="bg-[#f5f0e7] text-[#292323]">
+        <div className="mx-auto max-w-[1320px] px-5 py-12 sm:px-8 lg:px-12 lg:py-14">
+          <div className="text-center"><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[#a12c63]">Choose your visibility</p><h2 className="mt-2 font-editorial text-3xl sm:text-4xl">Get More Profile Views With Premium</h2><p className="mt-2 text-xs text-[#6e625b]">Stand out from other profiles and increase your visibility.</p></div>
+          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">{plans.isLoading ? <div className="h-80 animate-pulse rounded-md bg-[#e9e1d6] xl:col-span-4" /> : (plans.data ?? []).map((plan) => <article className={`relative rounded-md border bg-[#fbf8f2] p-5 ${plan.popular ? 'border-primary shadow-lg' : 'border-[#ddd0c3]'}`} key={plan.id} data-testid={`home-plan-${plan.id}`}>{plan.popular && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-[9px] font-bold uppercase tracking-[.14em] text-white">Most popular</span>}<p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#a12c63]">{plan.name}</p><p className="mt-3 font-editorial text-4xl text-[#292323]">₹{plan.price}</p><p className="mt-1 text-xs text-[#6e625b]">/ {plan.duration}</p><ul className="mt-5 grid min-h-[104px] gap-2 border-t border-[#e4d9ce] pt-4 text-xs text-[#6e625b]">{plan.features.slice(0, 5).map((feature) => <li className="flex items-start gap-2" key={feature}><Check size={13} className="mt-0.5 shrink-0 text-[#a12c63]" />{feature}</li>)}</ul><Link href="/premium" className={`mt-5 flex w-full items-center justify-center rounded-md px-4 py-3 text-[10px] font-bold uppercase tracking-[.12em] ${plan.popular ? 'bg-primary text-white' : 'border border-[#c9b9ab] text-[#6e2a48]'}`} data-testid={`home-plan-cta-${plan.id}`}>{plan.cta}</Link></article>)}</div>
+        </div>
+      </section>
+      <section id="popular-cities" className="bg-[#111012]">
+        <div className="mx-auto max-w-[1320px] px-5 py-10 sm:px-8 lg:px-12"><div className="flex items-end justify-between"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Explore by location</p><h2 className="mt-2 font-editorial text-3xl text-[#fff8ee]">Find Men in Popular Cities</h2><p className="mt-1 text-xs text-muted-foreground">Discover men for dating and companionship in your city.</p></div><Link href="/men" className="hidden text-[10px] font-bold uppercase tracking-[.14em] text-primary sm:block" data-testid="link-view-all-cities">View all cities →</Link></div><div className="mt-6 flex flex-wrap gap-2">{(cities.data ?? []).map((city) => <Link href={`/men/${city.slug}`} className="rounded-md border border-foreground/15 bg-[#1b191b] px-4 py-2.5 text-xs text-[#f0e5d9] transition hover:border-primary hover:text-primary" key={city.id} data-testid={`link-city-${city.slug}`}>{city.name}</Link>)}</div></div>
+      </section>
+      <section className="relative overflow-hidden border-t border-foreground/10"><img src="/assets/him-for-you-hero.jpg" alt="" width="1600" height="900" className="absolute inset-0 h-full w-full object-cover object-[70%_center]" /><div className="absolute inset-0 bg-[#151216]/80" /><div className="relative mx-auto flex max-w-[1320px] flex-col items-start justify-between gap-6 px-5 py-12 sm:flex-row sm:items-center sm:px-8 lg:px-12"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">For men who are ready</p><h2 className="mt-2 font-editorial text-4xl text-[#fff8ee] sm:text-5xl">Are You Ready to Get Discovered?</h2><p className="mt-2 text-sm text-[#f3e8dc]/75">Create your profile and connect with women looking for interesting and compatible men.</p></div><Link href="/join" className="flex shrink-0 items-center gap-2 rounded-md bg-primary px-5 py-3.5 text-[10px] font-bold uppercase tracking-[.14em] text-white" data-testid="link-register-member">Register as a Member <ArrowUpRight size={14} /></Link></div></section>
     </div>
   );
 }
