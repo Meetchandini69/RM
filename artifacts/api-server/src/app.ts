@@ -2,7 +2,9 @@ import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import router from "./routes";
+import registrationRouter from "./routes/registration";
 import { logger } from "./lib/logger";
+import { createHash, timingSafeEqual } from "node:crypto";
 
 const app: Express = express();
 
@@ -26,9 +28,57 @@ app.use(
   }),
 );
 app.use(cors());
+app.use("/api", (req, res, next) => {
+  const secret = process.env.API_PROXY_SECRET;
+  if (req.path === "/healthz" || !secret) return next();
+  const supplied = req.get("x-api-proxy-secret") || "";
+  const hash = (value: string) => createHash("sha256").update(value).digest();
+  if (!timingSafeEqual(hash(secret), hash(supplied))) {
+    res.status(403).json({ message: "Access this API through the website." });
+    return;
+  }
+  next();
+});
+app.use(
+  ["/api/registrations", "/api/registration/profile"],
+  express.json({ limit: "12mb" }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
+app.use("/api", registrationRouter);
+
+app.use(
+  (
+    error: unknown,
+    _req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction,
+  ) => {
+    const status = (error as { status?: number }).status;
+    if (status === 413) {
+      res
+        .status(413)
+        .json({
+          message:
+            "The uploaded photos are too large. Please use smaller images.",
+        });
+      return;
+    }
+    if (status === 400) {
+      res.status(400).json({ message: "Invalid request." });
+      return;
+    }
+    logger.error(
+      "API request failed. Check service and database availability.",
+    );
+    res
+      .status(500)
+      .json({
+        message: "The service is temporarily unavailable. Please try again.",
+      });
+  },
+);
 
 export default app;

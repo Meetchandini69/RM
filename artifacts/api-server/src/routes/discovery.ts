@@ -1,4 +1,6 @@
 import { Router, type IRouter } from "express";
+import { sendTelegramInterest } from "../lib/telegram";
+import { getRegisteredPublicProfiles } from "./registration";
 import {
   GetDiscoverySummaryResponse,
   GetFeaturedProfilesQueryParams,
@@ -199,7 +201,12 @@ const plans = [
     price: 0,
     duration: "forever",
     description: "A thoughtful start to being discovered.",
-    features: ["Basic profile", "3 profile photos", "City listing", "Standard visibility"],
+    features: [
+      "Basic profile",
+      "3 profile photos",
+      "City listing",
+      "Standard visibility",
+    ],
     popular: false,
     cta: "Create free profile",
   },
@@ -209,7 +216,12 @@ const plans = [
     price: 299,
     duration: "per week",
     description: "A quick boost when you want to be seen.",
-    features: ["Featured listing", "Higher search ranking", "More profile photos", "Premium badge"],
+    features: [
+      "Featured listing",
+      "Higher search ranking",
+      "More profile photos",
+      "Premium badge",
+    ],
     popular: false,
     cta: "Go premium",
   },
@@ -219,7 +231,13 @@ const plans = [
     price: 799,
     duration: "per month",
     description: "The most visibility for a more intentional presence.",
-    features: ["Homepage visibility", "Top search placement", "Unlimited photos", "Premium badge", "Increased profile exposure"],
+    features: [
+      "Homepage visibility",
+      "Top search placement",
+      "Unlimited photos",
+      "Premium badge",
+      "Increased profile exposure",
+    ],
     popular: true,
     cta: "Get monthly premium",
   },
@@ -229,7 +247,12 @@ const plans = [
     price: 149,
     duration: "3 days",
     description: "Put your profile in front of more of the right people.",
-    features: ["Highlighted profile", "Homepage visibility", "Higher search placement", "Quick visibility boost"],
+    features: [
+      "Highlighted profile",
+      "Homepage visibility",
+      "Higher search placement",
+      "Quick visibility boost",
+    ],
     popular: false,
     cta: "Feature my profile",
   },
@@ -254,73 +277,185 @@ const toProfile = (profile: ProfileRecord) => ({
   favouriteCount: profile.favouriteCount,
 });
 
+const allProfiles = async (): Promise<ProfileRecord[]> => [
+  ...profiles,
+  ...(await getRegisteredPublicProfiles()),
+];
 const router: IRouter = Router();
 
-router.get("/profiles", (req, res) => {
+router.get("/profiles", async (req, res) => {
   const query = ListProfilesQueryParams.parse(req.query);
-  let result = [...profiles];
-  if (query.city) result = result.filter((profile) => profile.citySlug === query.city || profile.city.toLowerCase() === query.city?.toLowerCase());
-  if (query.lookingFor) result = result.filter((profile) => profile.lookingFor.includes(query.lookingFor!));
-  if (query.minAge !== undefined) result = result.filter((profile) => profile.age >= query.minAge!);
-  if (query.maxAge !== undefined) result = result.filter((profile) => profile.age <= query.maxAge!);
+  let result = await allProfiles();
+  if (query.city)
+    result = result.filter(
+      (profile) =>
+        profile.citySlug === query.city ||
+        profile.city.toLowerCase() === query.city?.toLowerCase(),
+    );
+  if (query.lookingFor)
+    result = result.filter((profile) =>
+      profile.lookingFor.includes(query.lookingFor!),
+    );
+  if (query.minAge !== undefined)
+    result = result.filter((profile) => profile.age >= query.minAge!);
+  if (query.maxAge !== undefined)
+    result = result.filter((profile) => profile.age <= query.maxAge!);
   if (query.premium) result = result.filter((profile) => profile.isPremium);
   if (query.verified) result = result.filter((profile) => profile.isVerified);
   if (query.active) result = result.filter((profile) => profile.isOnline);
-  if (query.sort === "active") result.sort((a, b) => Number(b.isOnline) - Number(a.isOnline));
+  if (query.sort === "active")
+    result.sort((a, b) => Number(b.isOnline) - Number(a.isOnline));
   if (query.sort === "age") result.sort((a, b) => a.age - b.age);
   if (query.sort === "newest") result.sort((a, b) => b.id - a.id);
-  if (query.sort === "featured") result.sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured));
+  if (query.sort === "featured")
+    result.sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured));
   res.json(ListProfilesResponse.parse(result.map(toProfile)));
 });
 
-router.get("/profiles/featured", (req, res) => {
+router.get("/profiles/featured", async (req, res) => {
   const query = GetFeaturedProfilesQueryParams.parse(req.query);
-  const result = profiles.filter((profile) => profile.isFeatured && (!query.city || profile.citySlug === query.city));
+  const result = (await allProfiles()).filter(
+    (profile) =>
+      profile.isFeatured && (!query.city || profile.citySlug === query.city),
+  );
   res.json(GetFeaturedProfilesResponse.parse(result.map(toProfile)));
 });
 
-router.get("/profiles/:slug", (req, res) => {
+router.get("/profiles/:slug", async (req, res) => {
   const { slug } = GetProfileParams.parse(req.params);
-  const profile = profiles.find((item) => item.slug === slug);
+  const profile = (await allProfiles()).find((item) => item.slug === slug);
   if (!profile) {
     res.status(404).json({ error: "Profile not found" });
     return;
   }
-  res.json(GetProfileResponse.parse({ ...toProfile(profile), bio: profile.bio, gallery: profile.gallery, availability: profile.availability, responseTime: profile.responseTime }));
+  res.json(
+    GetProfileResponse.parse({
+      ...toProfile(profile),
+      bio: profile.bio,
+      gallery: profile.gallery,
+      availability: profile.availability,
+      responseTime: profile.responseTime,
+    }),
+  );
 });
 
-router.post("/profiles/:id/interest", (req, res) => {
-  SendInterestParams.parse(req.params);
-  SendInterestBody.parse(req.body ?? {});
-  res.status(201).json(SendInterestResponse.parse({ success: true, message: "Your interest has been sent." }));
+router.post("/profiles/:id/interest", async (req, res) => {
+  const params = SendInterestParams.safeParse(req.params);
+  const body = SendInterestBody.safeParse(req.body ?? {});
+  if (!params.success || !body.success) {
+    res
+      .status(400)
+      .json({
+        success: false,
+        message:
+          "Enter a valid contact method and contact details. Notes must be 500 characters or fewer.",
+      });
+    return;
+  }
+  const profile = (await allProfiles()).find(
+    (item) => item.id === params.data.id,
+  );
+  if (!profile) {
+    res.status(404).json({ success: false, message: "Profile not found." });
+    return;
+  }
+  const { contactType, note } = body.data;
+  const contact =
+    contactType === "telegram"
+      ? body.data.contact.trim().replace(/^@/, "")
+      : body.data.contact.trim().replace(/[\s()-]/g, "");
+  const valid =
+    contactType === "telegram"
+      ? /^[a-zA-Z][a-zA-Z0-9_]{4,31}$/.test(contact)
+      : /^\+[1-9]\d{7,14}$/.test(contact);
+  if (!valid) {
+    res
+      .status(400)
+      .json({
+        success: false,
+        message:
+          "Enter a valid Telegram username or WhatsApp number with country code.",
+      });
+    return;
+  }
+  try {
+    await sendTelegramInterest({
+      profileName: profile.displayName,
+      profileSlug: profile.slug,
+      contactType,
+      contact: contactType === "telegram" ? `@${contact}` : contact,
+      note: note?.trim(),
+    });
+    res
+      .status(201)
+      .json(
+        SendInterestResponse.parse({
+          success: true,
+          message: "Your introduction has been sent.",
+        }),
+      );
+  } catch {
+    // Do not log provider errors: request URLs contain the bot token.
+    res
+      .status(503)
+      .json({
+        success: false,
+        message:
+          "Your introduction could not be delivered. Please try again later.",
+      });
+  }
 });
 
-router.post("/profiles/:id/favorite", (req, res) => {
+router.post("/profiles/:id/favorite", async (req, res) => {
   const { id } = ToggleFavoriteParams.parse(req.params);
-  const profile = profiles.find((item) => item.id === id);
+  const profile = (await allProfiles()).find((item) => item.id === id);
   if (!profile) {
     res.status(404).json({ error: "Profile not found" });
     return;
   }
   profile.favouriteCount += 1;
-  res.json(ToggleFavoriteResponse.parse({ success: true, message: "Profile saved to your favourites.", isFavourite: true }));
+  res.json(
+    ToggleFavoriteResponse.parse({
+      success: true,
+      message: "Profile saved to your favourites.",
+      isFavourite: true,
+    }),
+  );
 });
 
-router.get("/cities", (_req, res) => {
-  res.json(ListCitiesResponse.parse(cities));
+router.get("/cities", async (_req, res) => {
+  const result = cities.map((city) => ({ ...city }));
+  for (const profile of await getRegisteredPublicProfiles()) {
+    const city = result.find((item) => item.slug === profile.citySlug);
+    if (city) city.profileCount++;
+    else
+      result.push({
+        id: profile.id,
+        name: profile.city,
+        slug: profile.citySlug,
+        profileCount: 1,
+      });
+  }
+  res.json(ListCitiesResponse.parse(result));
 });
 
-router.get("/plans", (_req, res) => {
+router.get("/plans", async (_req, res) => {
   res.json(ListPlansResponse.parse(plans));
 });
 
-router.get("/discovery-summary", (_req, res) => {
-  res.json(GetDiscoverySummaryResponse.parse({
-    profileCount: profiles.length,
-    cityCount: cities.filter((city) => city.profileCount > 0).length,
-    verifiedCount: profiles.filter((profile) => profile.isVerified).length,
-    activeNowCount: profiles.filter((profile) => profile.isOnline).length,
-  }));
+router.get("/discovery-summary", async (_req, res) => {
+  const currentProfiles = await allProfiles();
+  res.json(
+    GetDiscoverySummaryResponse.parse({
+      profileCount: currentProfiles.length,
+      cityCount: new Set(currentProfiles.map((profile) => profile.citySlug))
+        .size,
+      verifiedCount: currentProfiles.filter((profile) => profile.isVerified)
+        .length,
+      activeNowCount: currentProfiles.filter((profile) => profile.isOnline)
+        .length,
+    }),
+  );
 });
 
 export default router;

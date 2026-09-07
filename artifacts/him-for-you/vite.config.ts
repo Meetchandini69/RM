@@ -1,11 +1,12 @@
 import path from 'path';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 
 import runtimeErrorOverlay from '@replit/vite-plugin-runtime-error-modal';
 
-const rawPort = process.env.PORT;
+const localEnv = loadEnv(process.env.NODE_ENV || 'development', import.meta.dirname, '');
+const rawPort = process.env.PORT || localEnv.PORT || '5000';
 
 if (!rawPort) {
   throw new Error(
@@ -19,7 +20,7 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-const basePath = process.env.BASE_PATH;
+const basePath = process.env.BASE_PATH || localEnv.BASE_PATH || '/';
 
 if (!basePath) {
   throw new Error(
@@ -71,6 +72,15 @@ export default defineConfig({
     allowedHosts: true,
     fs: {
       strict: true,
+    },
+    proxy: {
+      '/api': {
+        target: process.env.API_TARGET || localEnv.API_TARGET || 'http://127.0.0.1:5001',
+        changeOrigin: true,
+        headers: (process.env.API_PROXY_SECRET || localEnv.API_PROXY_SECRET) ? {
+          'x-api-proxy-secret': process.env.API_PROXY_SECRET || localEnv.API_PROXY_SECRET,
+        } : undefined,
+      },
     },
   },
   preview: {

@@ -4,6 +4,7 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
+import Registration, { MemberArea, RegistrationAdmin, RegistrationPolicy } from '@/pages/registration';
 import {
   ArrowUpRight,
   BadgeCheck,
@@ -72,6 +73,7 @@ const localPhotos: Record<string, string> = {
 };
 
 function photoFor(profile: Pick<Profile, 'imageUrl' | 'slug' | 'displayName'>) {
+  if (profile.slug.startsWith('member-')) return profile.imageUrl;
   const key = `${profile.slug}-${profile.displayName}`.toLowerCase();
   const localKey = Object.keys(localPhotos).find((name) => key.includes(name));
   return (localKey && localPhotos[localKey]) || profile.imageUrl;
@@ -189,7 +191,7 @@ function Shell({ children }: { children: ReactNode }) {
           <div className="hidden items-center gap-5 md:flex">
             <button className="text-muted-foreground transition hover:text-accent" aria-label="Notifications" data-testid="button-notifications"><Bell size={17} /></button>
             <span className="h-5 w-px bg-foreground/15" />
-            <Link href="/join" className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[.16em] text-foreground transition hover:text-accent" data-testid="link-sign-in"><CircleUserRound size={16} /> Log in</Link>
+            <Link href="/dashboard" className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[.16em] text-foreground transition hover:text-accent" data-testid="link-sign-in"><CircleUserRound size={16} /> Log in</Link>
             <Link href="/join" className="rounded-md bg-primary px-4 py-2.5 text-[10px] font-bold uppercase tracking-[.14em] text-foreground transition hover:bg-primary/85" data-testid="link-header-join">Join now</Link>
           </div>
           <button className="flex h-10 w-10 items-center justify-center rounded-full border border-foreground/15 text-foreground md:hidden" onClick={() => setOpen(!open)} aria-label="Open navigation" data-testid="button-mobile-menu">{open ? <X size={18} /> : <Menu size={18} />}</button>
@@ -354,6 +356,9 @@ function EmptyBrowse({ clear }: { clear: () => void }) {
 function ProfileDetailPage() {
   const { slug = '' } = useParams<{ slug: string }>();
   const [note, setNote] = useState('');
+  const [contactType, setContactType] = useState<'telegram' | 'whatsapp'>('telegram');
+  const [contact, setContact] = useState('');
+  const [contactError, setContactError] = useState('');
   const [sent, setSent] = useState(false);
   const [saved, setSaved] = useState(false);
   const queryClient = useQueryClient();
@@ -363,7 +368,15 @@ function ProfileDetailPage() {
   const data = profile.data as ProfileDetail | undefined;
   const submitInterest = () => {
     if (!data) return;
-    interest.mutate({ id: data.id, data: { note: note.trim() || undefined } }, { onSuccess: () => { setSent(true); queryClient.invalidateQueries({ queryKey: getGetProfileQueryKey(slug) }); } });
+    if (interest.isPending) return;
+    const normalized = contactType === 'telegram' ? contact.trim().replace(/^@/, '') : contact.trim().replace(/[\s()-]/g, '');
+    const valid = contactType === 'telegram' ? /^[a-zA-Z][a-zA-Z0-9_]{4,31}$/.test(normalized) : /^\+[1-9]\d{7,14}$/.test(normalized);
+    if (!valid) {
+      setContactError(contactType === 'telegram' ? 'Enter your Telegram username (5?32 letters, numbers or underscores, starting with a letter).' : 'Enter your WhatsApp number with country code, for example +919876543210.');
+      return;
+    }
+    setContactError('');
+    interest.mutate({ id: data.id, data: { note: note.trim() || undefined, contactType, contact: normalized } }, { onSuccess: () => { setSent(true); queryClient.invalidateQueries({ queryKey: getGetProfileQueryKey(slug) }); } });
   };
   const toggleFavorite = () => {
     if (!data) return;
@@ -393,7 +406,7 @@ function ProfileDetailPage() {
           <div className="grid gap-5 border-b hairline py-6 sm:grid-cols-2"><div><p className="flex items-center gap-2 text-[10px] uppercase tracking-[.16em] text-accent"><Clock3 size={13} /> Response time</p><p className="mt-2 text-sm text-foreground">{data.responseTime}</p></div><div><p className="flex items-center gap-2 text-[10px] uppercase tracking-[.16em] text-accent"><Compass size={13} /> Availability</p><p className="mt-2 text-sm text-foreground">{data.availability}</p></div></div>
           <div className="mt-7 flex flex-wrap gap-2">{[...(data.interests ?? []), ...(data.lookingFor ?? [])].slice(0, 8).map((tag) => <span className="rounded-full border border-foreground/15 px-3 py-1.5 text-xs text-muted-foreground" key={tag}>{tag}</span>)}</div>
           <div className="mt-9 rounded-2xl border border-primary/25 bg-primary/8 p-5 sm:p-6">
-            {sent ? <div className="flex items-start gap-4" data-testid="status-interest-success"><CheckCircle2 className="mt-0.5 text-accent" size={22} /><div><h2 className="font-editorial text-2xl">A thoughtful first step.</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Your interest has been sent privately. We will let you know if it is returned.</p></div></div> : <><p className="font-mono-label text-[10px] uppercase tracking-[.18em] text-accent">Make an introduction</p><h2 className="mt-3 font-editorial text-2xl">Say hello, if it feels right.</h2><textarea value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} placeholder="A note is optional. A little context goes a long way." className="mt-4 min-h-[92px] w-full resize-none rounded-xl border border-foreground/15 bg-background/60 p-4 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground focus:border-accent" data-testid="textarea-interest-note" />{interest.isError && <p className="mt-3 text-xs text-primary" data-testid="status-interest-error">That introduction could not be sent. Please try once more.</p>}<div className="mt-3 flex items-center justify-between gap-3"><span className="text-[11px] text-muted-foreground">{note.length}/500</span><button className="flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-xs font-bold uppercase tracking-[.14em] text-foreground transition hover:bg-primary/85 disabled:opacity-50" onClick={submitInterest} disabled={interest.isPending} data-testid="button-send-interest">{interest.isPending ? 'Sending…' : 'Send interest'} <Send size={14} /></button></div></>}
+            {sent ? <div className="flex items-start gap-4" data-testid="status-interest-success"><CheckCircle2 className="mt-0.5 text-accent" size={22} /><div><h2 className="font-editorial text-2xl">A thoughtful first step.</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Your introduction has been sent. We can contact you using the details you provided.</p></div></div> : <><p className="font-mono-label text-[10px] uppercase tracking-[.18em] text-accent">Make an introduction</p><h2 className="mt-3 font-editorial text-2xl">Say hello, if it feels right.</h2><div className="mt-4"><label htmlFor="interest-contact-type" className="block text-xs text-muted-foreground">How can we contact you?</label><select id="interest-contact-type" value={contactType} onChange={(event) => { setContactType(event.target.value as 'telegram' | 'whatsapp'); setContact(''); setContactError(''); }} className="mt-2 w-full rounded-xl border border-foreground/15 bg-background p-3 text-sm text-foreground"><option value="telegram">Telegram</option><option value="whatsapp">WhatsApp</option></select><label htmlFor="interest-contact" className="mt-4 block text-xs text-muted-foreground">{contactType === 'telegram' ? 'Telegram username' : 'WhatsApp number with country code'} <span aria-hidden="true">*</span></label><input id="interest-contact" type={contactType === 'whatsapp' ? 'tel' : 'text'} autoComplete={contactType === 'whatsapp' ? 'tel' : 'off'} required maxLength={64} value={contact} onChange={(event) => { setContact(event.target.value); setContactError(''); }} placeholder={contactType === 'telegram' ? '@your_username' : '+919876543210'} aria-invalid={!!contactError} aria-describedby="interest-contact-help interest-contact-error" className="mt-2 w-full rounded-xl border border-foreground/15 bg-background/60 p-3 text-sm text-foreground outline-none focus:border-accent" data-testid="input-interest-contact" /><p id="interest-contact-help" className="mt-2 text-xs leading-5 text-muted-foreground">Your message and contact details will be shared privately with our team so we can respond.</p><p id="interest-contact-error" role="alert" className="mt-2 text-xs text-primary">{contactError}</p></div><label htmlFor="interest-note" className="mt-4 block text-xs text-muted-foreground">Message (optional)</label><textarea id="interest-note" value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} placeholder="A note is optional. A little context goes a long way." className="mt-4 min-h-[92px] w-full resize-none rounded-xl border border-foreground/15 bg-background/60 p-4 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground focus:border-accent" data-testid="textarea-interest-note" />{interest.isError && <p className="mt-3 text-xs text-primary" data-testid="status-interest-error">That introduction could not be sent. Please try once more.</p>}<div className="mt-3 flex items-center justify-between gap-3"><span className="text-[11px] text-muted-foreground">{note.length}/500</span><button className="flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-xs font-bold uppercase tracking-[.14em] text-foreground transition hover:bg-primary/85 disabled:opacity-50" onClick={submitInterest} disabled={interest.isPending} data-testid="button-send-interest">{interest.isPending ? 'Sending…' : 'Send interest'} <Send size={14} /></button></div></>}
           </div>
         </div>
       </div>
@@ -422,28 +435,6 @@ function PlanCard({ plan, index, selected, onSelect }: { plan: Plan; index: numb
   return <article className={`relative rounded-2xl border p-6 transition sm:p-7 ${plan.popular ? 'border-primary bg-primary/10 quiet-shadow' : 'hairline bg-card/70'} ${selected ? 'ring-1 ring-accent' : ''}`} data-testid={`card-plan-${plan.id}`}><div className="flex items-start justify-between"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">0{index + 1}</p><h2 className="mt-5 font-editorial text-3xl">{plan.name}</h2></div>{plan.popular && <span className="rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em]">Most chosen</span>}</div><p className="mt-4 min-h-12 text-sm leading-6 text-muted-foreground">{plan.description}</p><div className="mt-7 flex items-baseline gap-2"><span className="font-editorial text-5xl">₹{plan.price}</span><span className="text-xs text-muted-foreground">/ {plan.duration}</span></div><div className="my-7 h-px bg-foreground/10" /><ul className="grid gap-3">{plan.features.map((feature) => <li className="flex items-start gap-3 text-sm text-muted-foreground" key={feature}><Check size={15} className="mt-0.5 shrink-0 text-accent" />{feature}</li>)}</ul><Link href="/join" className={`mt-8 flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-xs font-bold uppercase tracking-[.15em] transition ${plan.popular ? 'bg-primary text-foreground hover:bg-primary/85' : 'border border-foreground/20 text-foreground hover:border-accent hover:text-accent'}`} onClick={onSelect} data-testid={`button-plan-${plan.id}`}>{selected ? 'Selected' : plan.cta} <ArrowUpRight size={15} /></Link></article>;
 }
 
-function Join() {
-  const [step, setStep] = useState(1);
-  const [name, setName] = useState('');
-  const [city, setCity] = useState('');
-  const [intention, setIntention] = useState('');
-  const cities = useListCities({ query: { queryKey: getListCitiesQueryKey() } });
-  const [, setLocation] = useLocation();
-  const next = () => { if (step < 2) setStep(step + 1); else setLocation('/premium'); };
-  return (
-    <div className="surface-grid min-h-[calc(100dvh-72px)]">
-      <div className="mx-auto grid max-w-[1320px] gap-12 px-5 py-14 sm:px-8 lg:grid-cols-[.8fr_1fr] lg:items-center lg:gap-24 lg:px-12 lg:py-24">
-        <div className="reveal"><p className="flex items-center gap-3 font-mono-label text-[10px] uppercase tracking-[.22em] text-accent"><span className="h-px w-8 bg-accent" />A different kind of membership</p><h1 className="mt-5 font-editorial text-6xl leading-[.9] tracking-[-.06em] sm:text-8xl">Show up<br />as <em className="text-primary">yourself.</em></h1><p className="mt-7 max-w-md text-sm leading-7 text-muted-foreground">Him For You is for men who understand that attention is earned. Tell us a little about yourself, then we will show you the way in.</p><div className="mt-10 grid gap-4 text-sm text-muted-foreground"><div className="flex items-center gap-3"><CheckCircle2 size={17} className="text-accent" /> Be seen for more than a photo</div><div className="flex items-center gap-3"><CheckCircle2 size={17} className="text-accent" /> Meet women who value intention</div><div className="flex items-center gap-3"><CheckCircle2 size={17} className="text-accent" /> Move at a pace that feels right</div></div></div>
-        <div className="reveal reveal-2 rounded-2xl border hairline bg-card p-6 quiet-shadow sm:p-9">
-          <div className="flex items-center justify-between border-b hairline pb-5"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Private entry</p><h2 className="mt-3 font-editorial text-3xl">Start with the basics.</h2></div><span className="font-mono-label text-xs text-muted-foreground">0{step} / 02</span></div>
-          {step === 1 ? <div className="mt-7 grid gap-5"><label className="grid gap-2 text-xs uppercase tracking-[.14em] text-muted-foreground" htmlFor="join-name">Your name<input id="join-name" value={name} onChange={(event) => setName(event.target.value)} placeholder="What should we call you?" className="mt-1 h-12 rounded-xl border border-foreground/15 bg-background px-4 text-sm normal-case tracking-normal text-foreground outline-none placeholder:text-muted-foreground focus:border-accent" data-testid="input-join-name" /></label><label className="grid gap-2 text-xs uppercase tracking-[.14em] text-muted-foreground" htmlFor="join-city">Where are you based?<select id="join-city" value={city} onChange={(event) => setCity(event.target.value)} className="mt-1 h-12 rounded-xl border border-foreground/15 bg-background px-4 text-sm normal-case tracking-normal text-foreground outline-none focus:border-accent" data-testid="select-join-city"><option value="">Choose a city</option>{(cities.data ?? []).map((item) => <option value={item.slug} key={item.id}>{item.name}</option>)}</select></label><button className="mt-2 flex h-12 items-center justify-center gap-2 rounded-full bg-primary text-xs font-bold uppercase tracking-[.15em] text-foreground transition hover:bg-primary/85 disabled:opacity-45" onClick={next} disabled={!name.trim() || !city} data-testid="button-join-next">Continue <ArrowUpRight size={15} /></button></div> : <div className="mt-7 grid gap-5"><p className="text-sm leading-6 text-muted-foreground">What brings you here, {name || 'friend'}?</p>{['A meaningful relationship', 'Good company, no pressure', 'Curious to see what unfolds'].map((option) => <button key={option} className={`flex items-center justify-between rounded-xl border p-4 text-left text-sm transition ${intention === option ? 'border-accent bg-accent/10 text-foreground' : 'border-foreground/15 text-muted-foreground hover:border-accent/60'}`} onClick={() => setIntention(option)} data-testid={`button-intention-${option.slice(0, 5).toLowerCase()}`}>{option}<span className={`h-4 w-4 rounded-full border ${intention === option ? 'border-accent bg-accent' : 'border-foreground/30'}`} /></button>)}<button className="mt-2 flex h-12 items-center justify-center gap-2 rounded-full bg-primary text-xs font-bold uppercase tracking-[.15em] text-foreground transition hover:bg-primary/85 disabled:opacity-45" onClick={next} disabled={!intention} data-testid="button-join-membership">See membership <ArrowUpRight size={15} /></button><button className="text-xs text-muted-foreground hover:text-accent" onClick={() => setStep(1)} data-testid="button-join-back">Back</button></div>}
-          <p className="mt-7 flex items-center justify-center gap-2 text-[11px] leading-5 text-muted-foreground"><LockKeyhole size={13} className="text-accent" /> Your details stay private.</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function CityBrowseRoute() {
   const { city } = useParams<{ city: string }>();
   return <Shell><Browse forcedCity={city} /></Shell>;
@@ -466,7 +457,7 @@ function PageMeta() {
     }
     if (location === '/join') {
       return {
-        title: 'Join Him For You | Be discovered with intention',
+        title: 'Register | Rent a Man',
         description: 'Create a considered profile for women looking for meaningful company and connection.',
       };
     }
@@ -509,7 +500,14 @@ function Router() {
         <Route path="/men/:city" component={CityBrowseRoute} />
         <Route path="/profile/:slug"><Shell><ProfileDetailPage /></Shell></Route>
         <Route path="/premium"><Shell><Premium /></Shell></Route>
-        <Route path="/join"><Shell><Join /></Shell></Route>
+        <Route path="/join"><Shell><Registration /></Shell></Route>
+        <Route path="/my-profile"><Shell><MemberArea profile /></Shell></Route>
+        <Route path="/complete-profile"><Shell><MemberArea complete /></Shell></Route>
+        <Route path="/dashboard"><Shell><MemberArea /></Shell></Route>
+        <Route path="/admin"><Shell><RegistrationAdmin /></Shell></Route>
+        <Route path="/admin/registration"><Shell><RegistrationAdmin /></Shell></Route>
+        <Route path="/terms"><Shell><RegistrationPolicy /></Shell></Route>
+        <Route path="/privacy"><Shell><RegistrationPolicy privacy /></Shell></Route>
         <Route component={NotFound} />
       </Switch>
     </RoutedErrorBoundary>

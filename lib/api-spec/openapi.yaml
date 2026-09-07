@@ -17,6 +17,318 @@ tags:
   - name: membership
     description: Membership and city metadata
 paths:
+  /registration/admin/registrations:
+    {
+      "get":
+        {
+          "operationId": "listAdminRegistrations",
+          "tags": ["registration"],
+          "responses":
+            {
+              "200":
+                {
+                  "description": "Success",
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            {
+                              "type": "array",
+                              "items":
+                                {
+                                  "$ref": "#/components/schemas/RegistrationRecord",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    }
+  /registration/admin/registrations/{id}/review:
+    {
+      "post":
+        {
+          "operationId": "reviewRegistration",
+          "tags": ["registration"],
+          "parameters":
+            [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": { "type": "string" },
+              },
+            ],
+          "requestBody":
+            {
+              "required": true,
+              "content":
+                {
+                  "application/json":
+                    {
+                      "schema":
+                        { "$ref": "#/components/schemas/RegistrationReview" },
+                    },
+                },
+            },
+          "responses":
+            {
+              "200":
+                {
+                  "description": "Success",
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            {
+                              "$ref": "#/components/schemas/RegistrationRecord",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    }
+  /registration/profile:
+    {
+      "put":
+        {
+          "operationId": "updateMyRegistration",
+          "tags": ["registration"],
+          "requestBody":
+            {
+              "required": true,
+              "content":
+                {
+                  "application/json":
+                    {
+                      "schema":
+                        { "$ref": "#/components/schemas/RegistrationRecord" },
+                    },
+                },
+            },
+          "responses":
+            {
+              "200":
+                {
+                  "description": "Updated private profile",
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            {
+                              "$ref": "#/components/schemas/RegistrationRecord",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    }
+  /registration/admin/login:
+    {
+      "post":
+        {
+          "operationId": "loginRegistrationAdmin",
+          "tags": ["registration"],
+          "requestBody":
+            {
+              "required": true,
+              "content":
+                {
+                  "application/json":
+                    {
+                      "schema":
+                        {
+                          "$ref": "#/components/schemas/RegistrationAdminLogin",
+                        },
+                    },
+                },
+            },
+          "responses":
+            {
+              "200":
+                {
+                  "description": "Saved",
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            {
+                              "$ref": "#/components/schemas/RegistrationSettings",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    }
+  /registration/admin/settings:
+    {
+      "put":
+        {
+          "operationId": "updateRegistrationSettings",
+          "tags": ["registration"],
+          "requestBody":
+            {
+              "required": true,
+              "content":
+                {
+                  "application/json":
+                    {
+                      "schema":
+                        { "$ref": "#/components/schemas/RegistrationSettings" },
+                    },
+                },
+            },
+          "responses":
+            {
+              "200":
+                {
+                  "description": "Saved",
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            {
+                              "$ref": "#/components/schemas/RegistrationSettings",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    }
+  /registration/settings:
+    {
+      "get":
+        {
+          "operationId": "getRegistrationSettings",
+          "tags": ["registration"],
+          "responses":
+            {
+              "200":
+                {
+                  "description": "Success",
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            {
+                              "$ref": "#/components/schemas/RegistrationSettings",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    }
+  /registrations:
+    {
+      "post":
+        {
+          "operationId": "registerProfile",
+          "tags": ["registration"],
+          "responses":
+            {
+              "200":
+                {
+                  "description": "Success",
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            {
+                              "$ref": "#/components/schemas/RegistrationRecord",
+                            },
+                        },
+                    },
+                },
+            },
+          "requestBody":
+            {
+              "required": true,
+              "content":
+                {
+                  "application/json":
+                    {
+                      "schema":
+                        { "$ref": "#/components/schemas/RegistrationInput" },
+                    },
+                },
+            },
+        },
+    }
+  /registration/me:
+    {
+      "get":
+        {
+          "operationId": "getMyRegistration",
+          "tags": ["registration"],
+          "responses":
+            {
+              "200":
+                {
+                  "description": "Success",
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            {
+                              "$ref": "#/components/schemas/RegistrationRecord",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    }
+  /registration/login:
+    {
+      "post":
+        {
+          "operationId": "loginRegistration",
+          "tags": ["registration"],
+          "responses":
+            {
+              "200":
+                {
+                  "description": "Success",
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            {
+                              "$ref": "#/components/schemas/RegistrationRecord",
+                            },
+                        },
+                    },
+                },
+            },
+          "requestBody":
+            {
+              "required": true,
+              "content":
+                {
+                  "application/json":
+                    {
+                      "schema":
+                        { "$ref": "#/components/schemas/RegistrationLogin" },
+                    },
+                },
+            },
+        },
+    }
   /healthz:
     get:
       operationId: healthCheck
@@ -262,7 +574,25 @@ components:
           type: string
         favouriteCount:
           type: number
-      required: [id, slug, displayName, age, city, citySlug, headline, imageUrl, interests, lookingFor, isVerified, isPremium, isFeatured, isOnline, lastActive, favouriteCount]
+      required:
+        [
+          id,
+          slug,
+          displayName,
+          age,
+          city,
+          citySlug,
+          headline,
+          imageUrl,
+          interests,
+          lookingFor,
+          isVerified,
+          isPremium,
+          isFeatured,
+          isOnline,
+          lastActive,
+          favouriteCount,
+        ]
     ProfileDetail:
       allOf:
         - $ref: "#/components/schemas/Profile"
@@ -315,7 +645,15 @@ components:
       required: [id, name, price, duration, description, features, popular, cta]
     InterestInput:
       type: object
+      required: [contactType, contact]
       properties:
+        contactType:
+          type: string
+          enum: [telegram, whatsapp]
+        contact:
+          type: string
+          minLength: 1
+          maxLength: 64
         note:
           type: string
           maxLength: 500
@@ -341,3 +679,299 @@ components:
         activeNowCount:
           type: number
       required: [profileCount, cityCount, verifiedCount, activeNowCount]
+
+    RegistrationPhoto:
+      {
+        "type": "object",
+        "properties":
+          {
+            "dataUrl":
+              { "type": "string", "minLength": 1, "maxLength": 1500000 },
+            "category":
+              {
+                "type": "string",
+                "enum": ["profile", "additional", "gallery"],
+              },
+          },
+        "required": ["dataUrl", "category"],
+      }
+    RegistrationInput:
+      {
+        "type": "object",
+        "properties":
+          {
+            "displayName":
+              { "type": "string", "minLength": 1, "maxLength": 80 },
+            "dateOfBirth":
+              { "type": "string", "minLength": 1, "maxLength": 10 },
+            "email": { "type": "string", "minLength": 1, "maxLength": 254 },
+            "mobile": { "type": "string", "minLength": 1, "maxLength": 25 },
+            "password": { "type": "string", "minLength": 8, "maxLength": 128 },
+            "confirmPassword":
+              { "type": "string", "minLength": 1, "maxLength": 128 },
+            "headline": { "type": "string", "minLength": 0, "maxLength": 120 },
+            "about": { "type": "string", "minLength": 0, "maxLength": 2000 },
+            "country": { "type": "string", "minLength": 0, "maxLength": 80 },
+            "state": { "type": "string", "minLength": 0, "maxLength": 80 },
+            "city": { "type": "string", "minLength": 0, "maxLength": 80 },
+            "area": { "type": "string", "minLength": 0, "maxLength": 100 },
+            "age": { "type": "number", "minimum": 18, "maximum": 100 },
+            "pinCode": { "type": "string", "minLength": 0, "maxLength": 12 },
+            "interests":
+              {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 20,
+                "uniqueItems": true,
+                "items": { "type": "string", "minLength": 1, "maxLength": 80 },
+              },
+            "languages":
+              {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 20,
+                "uniqueItems": true,
+                "items": { "type": "string", "minLength": 1, "maxLength": 80 },
+              },
+            "preferences":
+              {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 20,
+                "uniqueItems": true,
+                "items": { "type": "string", "minLength": 1, "maxLength": 80 },
+              },
+            "availability":
+              {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 20,
+                "uniqueItems": true,
+                "items": { "type": "string", "minLength": 1, "maxLength": 80 },
+              },
+            "minAge": { "type": "number", "minimum": 18, "maximum": 100 },
+            "maxAge": { "type": "number", "minimum": 18, "maximum": 100 },
+            "status":
+              { "type": "string", "enum": ["available", "unavailable"] },
+            "listing":
+              {
+                "type": "string",
+                "enum": ["free", "weekly", "monthly", "quarterly"],
+              },
+            "partnerOptIn": { "type": "boolean" },
+            "accurate": { "type": "boolean" },
+            "terms": { "type": "boolean" },
+            "adult": { "type": "boolean" },
+            "photos":
+              {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 8,
+                "items": { "$ref": "#/components/schemas/RegistrationPhoto" },
+              },
+            "mainPhoto": { "type": "number", "minimum": 0, "maximum": 7 },
+          },
+        "required":
+          [
+            "displayName",
+            "dateOfBirth",
+            "email",
+            "mobile",
+            "password",
+            "confirmPassword",
+            "headline",
+            "about",
+            "country",
+            "state",
+            "city",
+            "area",
+            "age",
+            "pinCode",
+            "interests",
+            "languages",
+            "preferences",
+            "availability",
+            "minAge",
+            "maxAge",
+            "status",
+            "listing",
+            "partnerOptIn",
+            "accurate",
+            "terms",
+            "adult",
+            "photos",
+            "mainPhoto",
+          ],
+      }
+    RegistrationRecord:
+      {
+        "type": "object",
+        "properties":
+          {
+            "displayName":
+              { "type": "string", "minLength": 1, "maxLength": 80 },
+            "dateOfBirth":
+              { "type": "string", "minLength": 1, "maxLength": 10 },
+            "email": { "type": "string", "minLength": 1, "maxLength": 254 },
+            "mobile": { "type": "string", "minLength": 1, "maxLength": 25 },
+            "headline": { "type": "string", "minLength": 0, "maxLength": 120 },
+            "about": { "type": "string", "minLength": 0, "maxLength": 2000 },
+            "country": { "type": "string", "minLength": 0, "maxLength": 80 },
+            "state": { "type": "string", "minLength": 0, "maxLength": 80 },
+            "city": { "type": "string", "minLength": 0, "maxLength": 80 },
+            "area": { "type": "string", "minLength": 0, "maxLength": 100 },
+            "age": { "type": "number", "minimum": 18, "maximum": 100 },
+            "pinCode": { "type": "string", "minLength": 0, "maxLength": 12 },
+            "interests":
+              {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 20,
+                "uniqueItems": true,
+                "items": { "type": "string", "minLength": 1, "maxLength": 80 },
+              },
+            "languages":
+              {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 20,
+                "uniqueItems": true,
+                "items": { "type": "string", "minLength": 1, "maxLength": 80 },
+              },
+            "preferences":
+              {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 20,
+                "uniqueItems": true,
+                "items": { "type": "string", "minLength": 1, "maxLength": 80 },
+              },
+            "availability":
+              {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 20,
+                "uniqueItems": true,
+                "items": { "type": "string", "minLength": 1, "maxLength": 80 },
+              },
+            "minAge": { "type": "number", "minimum": 18, "maximum": 100 },
+            "maxAge": { "type": "number", "minimum": 18, "maximum": 100 },
+            "status":
+              { "type": "string", "enum": ["available", "unavailable"] },
+            "listing":
+              {
+                "type": "string",
+                "enum": ["free", "weekly", "monthly", "quarterly"],
+              },
+            "partnerOptIn": { "type": "boolean" },
+            "accurate": { "type": "boolean" },
+            "terms": { "type": "boolean" },
+            "adult": { "type": "boolean" },
+            "photos":
+              {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 8,
+                "items": { "$ref": "#/components/schemas/RegistrationPhoto" },
+              },
+            "mainPhoto": { "type": "number", "minimum": 0, "maximum": 7 },
+            "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+            "submittedAt":
+              { "type": "string", "minLength": 1, "maxLength": 120 },
+            "reviewStatus":
+              { "type": "string", "minLength": 1, "maxLength": 120 },
+            "listingPrice": { "type": "number", "minimum": 0 },
+            "isComplete": { "type": "boolean" },
+            "isPublished": { "type": "boolean" },
+            "missingSteps": { "type": "array", "items": { "type": "string" } },
+            "notificationStatus": { "type": "string" },
+            "publicSlug": { "type": "string" },
+          },
+        "required":
+          [
+            "displayName",
+            "dateOfBirth",
+            "email",
+            "mobile",
+            "headline",
+            "about",
+            "country",
+            "state",
+            "city",
+            "area",
+            "age",
+            "pinCode",
+            "interests",
+            "languages",
+            "preferences",
+            "availability",
+            "minAge",
+            "maxAge",
+            "status",
+            "listing",
+            "partnerOptIn",
+            "accurate",
+            "terms",
+            "adult",
+            "photos",
+            "mainPhoto",
+            "id",
+            "submittedAt",
+            "reviewStatus",
+            "listingPrice",
+          ],
+      }
+
+    RegistrationSettings:
+      {
+        "type": "object",
+        "properties":
+          {
+            "plans":
+              {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/RegistrationPlan" },
+              },
+            "termsUrl": { "type": "string" },
+            "privacyUrl": { "type": "string" },
+          },
+        "required": ["plans", "termsUrl", "privacyUrl"],
+      }
+    RegistrationPlan:
+      {
+        "type": "object",
+        "properties":
+          {
+            "id":
+              { "type": "string", "enum": ["weekly", "monthly", "quarterly"] },
+            "price": { "type": "number", "minimum": 0 },
+            "enabled": { "type": "boolean" },
+          },
+        "required": ["id", "price", "enabled"],
+      }
+    RegistrationLogin:
+      {
+        "type": "object",
+        "properties":
+          {
+            "email": { "type": "string", "minLength": 1, "maxLength": 254 },
+            "password": { "type": "string", "minLength": 1, "maxLength": 128 },
+          },
+        "required": ["email", "password"],
+      }
+    RegistrationAdminLogin:
+      {
+        "type": "object",
+        "required": ["password"],
+        "properties":
+          {
+            "password": { "type": "string", "minLength": 1, "maxLength": 256 },
+          },
+      }
+    RegistrationReview:
+      {
+        "type": "object",
+        "required": ["action"],
+        "properties":
+          { "action": { "type": "string", "enum": ["approve", "reject"] } },
+      }

@@ -8,6 +8,7 @@
     "./schema": "./src/schema/index.ts"
   },
   "scripts": {
+    "migrate:sqlite": "node --env-file-if-exists=../../.env --env-file-if-exists=../../artifacts/api-server/.env --experimental-strip-types migrate-sqlite.mjs",
     "push": "drizzle-kit push --config ./drizzle.config.ts",
     "push-force": "drizzle-kit push --force --config ./drizzle.config.ts"
   },

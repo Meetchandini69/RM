@@ -53,7 +53,21 @@ export interface Plan {
   cta: string;
 }
 
+export type InterestInputContactType = typeof InterestInputContactType[keyof typeof InterestInputContactType];
+
+
+export const InterestInputContactType = {
+  telegram: 'telegram',
+  whatsapp: 'whatsapp',
+} as const;
+
 export interface InterestInput {
+  contactType: InterestInputContactType;
+  /**
+     * @minLength 1
+     * @maxLength 64
+     */
+  contact: string;
   /** @maxLength 500 */
   note?: string;
 }
@@ -69,6 +83,381 @@ export interface DiscoverySummary {
   cityCount: number;
   verifiedCount: number;
   activeNowCount: number;
+}
+
+export type RegistrationPhotoCategory = typeof RegistrationPhotoCategory[keyof typeof RegistrationPhotoCategory];
+
+
+export const RegistrationPhotoCategory = {
+  profile: 'profile',
+  additional: 'additional',
+  gallery: 'gallery',
+} as const;
+
+export interface RegistrationPhoto {
+  /**
+     * @minLength 1
+     * @maxLength 1500000
+     */
+  dataUrl: string;
+  category: RegistrationPhotoCategory;
+}
+
+export type RegistrationInputStatus = typeof RegistrationInputStatus[keyof typeof RegistrationInputStatus];
+
+
+export const RegistrationInputStatus = {
+  available: 'available',
+  unavailable: 'unavailable',
+} as const;
+
+export type RegistrationInputListing = typeof RegistrationInputListing[keyof typeof RegistrationInputListing];
+
+
+export const RegistrationInputListing = {
+  free: 'free',
+  weekly: 'weekly',
+  monthly: 'monthly',
+  quarterly: 'quarterly',
+} as const;
+
+export interface RegistrationInput {
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  displayName: string;
+  /**
+     * @minLength 1
+     * @maxLength 10
+     */
+  dateOfBirth: string;
+  /**
+     * @minLength 1
+     * @maxLength 254
+     */
+  email: string;
+  /**
+     * @minLength 1
+     * @maxLength 25
+     */
+  mobile: string;
+  /**
+     * @minLength 8
+     * @maxLength 128
+     */
+  password: string;
+  /**
+     * @minLength 1
+     * @maxLength 128
+     */
+  confirmPassword: string;
+  /**
+     * @minLength 0
+     * @maxLength 120
+     */
+  headline: string;
+  /**
+     * @minLength 0
+     * @maxLength 2000
+     */
+  about: string;
+  /**
+     * @minLength 0
+     * @maxLength 80
+     */
+  country: string;
+  /**
+     * @minLength 0
+     * @maxLength 80
+     */
+  state: string;
+  /**
+     * @minLength 0
+     * @maxLength 80
+     */
+  city: string;
+  /**
+     * @minLength 0
+     * @maxLength 100
+     */
+  area: string;
+  /**
+     * @minimum 18
+     * @maximum 100
+     */
+  age: number;
+  /**
+     * @minLength 0
+     * @maxLength 12
+     */
+  pinCode: string;
+  /**
+     * @minItems 0
+     * @maxItems 20
+     * @items.minLength 1
+     * @items.maxLength 80
+     */
+  interests: string[];
+  /**
+     * @minItems 0
+     * @maxItems 20
+     * @items.minLength 1
+     * @items.maxLength 80
+     */
+  languages: string[];
+  /**
+     * @minItems 0
+     * @maxItems 20
+     * @items.minLength 1
+     * @items.maxLength 80
+     */
+  preferences: string[];
+  /**
+     * @minItems 0
+     * @maxItems 20
+     * @items.minLength 1
+     * @items.maxLength 80
+     */
+  availability: string[];
+  /**
+     * @minimum 18
+     * @maximum 100
+     */
+  minAge: number;
+  /**
+     * @minimum 18
+     * @maximum 100
+     */
+  maxAge: number;
+  status: RegistrationInputStatus;
+  listing: RegistrationInputListing;
+  partnerOptIn: boolean;
+  accurate: boolean;
+  terms: boolean;
+  adult: boolean;
+  /**
+     * @minItems 0
+     * @maxItems 8
+     */
+  photos: RegistrationPhoto[];
+  /**
+     * @minimum 0
+     * @maximum 7
+     */
+  mainPhoto: number;
+}
+
+export type RegistrationRecordStatus = typeof RegistrationRecordStatus[keyof typeof RegistrationRecordStatus];
+
+
+export const RegistrationRecordStatus = {
+  available: 'available',
+  unavailable: 'unavailable',
+} as const;
+
+export type RegistrationRecordListing = typeof RegistrationRecordListing[keyof typeof RegistrationRecordListing];
+
+
+export const RegistrationRecordListing = {
+  free: 'free',
+  weekly: 'weekly',
+  monthly: 'monthly',
+  quarterly: 'quarterly',
+} as const;
+
+export interface RegistrationRecord {
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  displayName: string;
+  /**
+     * @minLength 1
+     * @maxLength 10
+     */
+  dateOfBirth: string;
+  /**
+     * @minLength 1
+     * @maxLength 254
+     */
+  email: string;
+  /**
+     * @minLength 1
+     * @maxLength 25
+     */
+  mobile: string;
+  /**
+     * @minLength 0
+     * @maxLength 120
+     */
+  headline: string;
+  /**
+     * @minLength 0
+     * @maxLength 2000
+     */
+  about: string;
+  /**
+     * @minLength 0
+     * @maxLength 80
+     */
+  country: string;
+  /**
+     * @minLength 0
+     * @maxLength 80
+     */
+  state: string;
+  /**
+     * @minLength 0
+     * @maxLength 80
+     */
+  city: string;
+  /**
+     * @minLength 0
+     * @maxLength 100
+     */
+  area: string;
+  /**
+     * @minimum 18
+     * @maximum 100
+     */
+  age: number;
+  /**
+     * @minLength 0
+     * @maxLength 12
+     */
+  pinCode: string;
+  /**
+     * @minItems 0
+     * @maxItems 20
+     * @items.minLength 1
+     * @items.maxLength 80
+     */
+  interests: string[];
+  /**
+     * @minItems 0
+     * @maxItems 20
+     * @items.minLength 1
+     * @items.maxLength 80
+     */
+  languages: string[];
+  /**
+     * @minItems 0
+     * @maxItems 20
+     * @items.minLength 1
+     * @items.maxLength 80
+     */
+  preferences: string[];
+  /**
+     * @minItems 0
+     * @maxItems 20
+     * @items.minLength 1
+     * @items.maxLength 80
+     */
+  availability: string[];
+  /**
+     * @minimum 18
+     * @maximum 100
+     */
+  minAge: number;
+  /**
+     * @minimum 18
+     * @maximum 100
+     */
+  maxAge: number;
+  status: RegistrationRecordStatus;
+  listing: RegistrationRecordListing;
+  partnerOptIn: boolean;
+  accurate: boolean;
+  terms: boolean;
+  adult: boolean;
+  /**
+     * @minItems 0
+     * @maxItems 8
+     */
+  photos: RegistrationPhoto[];
+  /**
+     * @minimum 0
+     * @maximum 7
+     */
+  mainPhoto: number;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  id: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  submittedAt: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  reviewStatus: string;
+  /** @minimum 0 */
+  listingPrice: number;
+  isComplete?: boolean;
+  isPublished?: boolean;
+  missingSteps?: string[];
+  notificationStatus?: string;
+  publicSlug?: string;
+}
+
+export type RegistrationPlanId = typeof RegistrationPlanId[keyof typeof RegistrationPlanId];
+
+
+export const RegistrationPlanId = {
+  weekly: 'weekly',
+  monthly: 'monthly',
+  quarterly: 'quarterly',
+} as const;
+
+export interface RegistrationPlan {
+  id: RegistrationPlanId;
+  /** @minimum 0 */
+  price: number;
+  enabled: boolean;
+}
+
+export interface RegistrationSettings {
+  plans: RegistrationPlan[];
+  termsUrl: string;
+  privacyUrl: string;
+}
+
+export interface RegistrationLogin {
+  /**
+     * @minLength 1
+     * @maxLength 254
+     */
+  email: string;
+  /**
+     * @minLength 1
+     * @maxLength 128
+     */
+  password: string;
+}
+
+export interface RegistrationAdminLogin {
+  /**
+     * @minLength 1
+     * @maxLength 256
+     */
+  password: string;
+}
+
+export type RegistrationReviewAction = typeof RegistrationReviewAction[keyof typeof RegistrationReviewAction];
+
+
+export const RegistrationReviewAction = {
+  approve: 'approve',
+  reject: 'reject',
+} as const;
+
+export interface RegistrationReview {
+  action: RegistrationReviewAction;
 }
 
 export type CityParameter = string;

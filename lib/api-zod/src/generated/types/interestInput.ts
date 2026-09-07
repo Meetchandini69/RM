@@ -5,8 +5,15 @@
  * Him For You discovery and membership API
  * OpenAPI spec version: 0.1.0
  */
+import type { InterestInputContactType } from './interestInputContactType';
 
 export interface InterestInput {
+  contactType: InterestInputContactType;
+  /**
+     * @minLength 1
+     * @maxLength 64
+     */
+  contact: string;
   /** @maxLength 500 */
   note?: string;
 }

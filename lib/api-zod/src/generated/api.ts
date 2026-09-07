@@ -8,6 +8,1025 @@
 import * as zod from 'zod';
 
 
+export const listAdminRegistrationsResponseDisplayNameMax = 80;
+
+export const listAdminRegistrationsResponseDateOfBirthMax = 10;
+
+export const listAdminRegistrationsResponseEmailMax = 254;
+
+export const listAdminRegistrationsResponseMobileMax = 25;
+
+export const listAdminRegistrationsResponseHeadlineMin = 0;
+export const listAdminRegistrationsResponseHeadlineMax = 120;
+
+export const listAdminRegistrationsResponseAboutMin = 0;
+export const listAdminRegistrationsResponseAboutMax = 2000;
+
+export const listAdminRegistrationsResponseCountryMin = 0;
+export const listAdminRegistrationsResponseCountryMax = 80;
+
+export const listAdminRegistrationsResponseStateMin = 0;
+export const listAdminRegistrationsResponseStateMax = 80;
+
+export const listAdminRegistrationsResponseCityMin = 0;
+export const listAdminRegistrationsResponseCityMax = 80;
+
+export const listAdminRegistrationsResponseAreaMin = 0;
+export const listAdminRegistrationsResponseAreaMax = 100;
+
+export const listAdminRegistrationsResponseAgeMin = 18;
+export const listAdminRegistrationsResponseAgeMax = 100;
+
+export const listAdminRegistrationsResponsePinCodeMin = 0;
+export const listAdminRegistrationsResponsePinCodeMax = 12;
+
+export const listAdminRegistrationsResponseInterestsItemMax = 80;
+
+export const listAdminRegistrationsResponseInterestsMin = 0;
+export const listAdminRegistrationsResponseInterestsMax = 20;
+
+export const listAdminRegistrationsResponseLanguagesItemMax = 80;
+
+export const listAdminRegistrationsResponseLanguagesMin = 0;
+export const listAdminRegistrationsResponseLanguagesMax = 20;
+
+export const listAdminRegistrationsResponsePreferencesItemMax = 80;
+
+export const listAdminRegistrationsResponsePreferencesMin = 0;
+export const listAdminRegistrationsResponsePreferencesMax = 20;
+
+export const listAdminRegistrationsResponseAvailabilityItemMax = 80;
+
+export const listAdminRegistrationsResponseAvailabilityMin = 0;
+export const listAdminRegistrationsResponseAvailabilityMax = 20;
+
+export const listAdminRegistrationsResponseMinAgeMin = 18;
+export const listAdminRegistrationsResponseMinAgeMax = 100;
+
+export const listAdminRegistrationsResponseMaxAgeMin = 18;
+export const listAdminRegistrationsResponseMaxAgeMax = 100;
+
+export const listAdminRegistrationsResponsePhotosItemDataUrlMax = 1500000;
+
+export const listAdminRegistrationsResponsePhotosMin = 0;
+export const listAdminRegistrationsResponsePhotosMax = 8;
+
+export const listAdminRegistrationsResponseMainPhotoMin = 0;
+export const listAdminRegistrationsResponseMainPhotoMax = 7;
+
+export const listAdminRegistrationsResponseIdMax = 120;
+
+export const listAdminRegistrationsResponseSubmittedAtMax = 120;
+
+export const listAdminRegistrationsResponseReviewStatusMax = 120;
+
+export const listAdminRegistrationsResponseListingPriceMin = 0;
+
+
+
+export const ListAdminRegistrationsResponseItem = zod.object({
+  "displayName": zod.string().min(1).max(listAdminRegistrationsResponseDisplayNameMax),
+  "dateOfBirth": zod.string().min(1).max(listAdminRegistrationsResponseDateOfBirthMax),
+  "email": zod.string().min(1).max(listAdminRegistrationsResponseEmailMax),
+  "mobile": zod.string().min(1).max(listAdminRegistrationsResponseMobileMax),
+  "headline": zod.string().min(listAdminRegistrationsResponseHeadlineMin).max(listAdminRegistrationsResponseHeadlineMax),
+  "about": zod.string().min(listAdminRegistrationsResponseAboutMin).max(listAdminRegistrationsResponseAboutMax),
+  "country": zod.string().min(listAdminRegistrationsResponseCountryMin).max(listAdminRegistrationsResponseCountryMax),
+  "state": zod.string().min(listAdminRegistrationsResponseStateMin).max(listAdminRegistrationsResponseStateMax),
+  "city": zod.string().min(listAdminRegistrationsResponseCityMin).max(listAdminRegistrationsResponseCityMax),
+  "area": zod.string().min(listAdminRegistrationsResponseAreaMin).max(listAdminRegistrationsResponseAreaMax),
+  "age": zod.number().min(listAdminRegistrationsResponseAgeMin).max(listAdminRegistrationsResponseAgeMax),
+  "pinCode": zod.string().min(listAdminRegistrationsResponsePinCodeMin).max(listAdminRegistrationsResponsePinCodeMax),
+  "interests": zod.array(zod.string().min(1).max(listAdminRegistrationsResponseInterestsItemMax)).min(listAdminRegistrationsResponseInterestsMin).max(listAdminRegistrationsResponseInterestsMax),
+  "languages": zod.array(zod.string().min(1).max(listAdminRegistrationsResponseLanguagesItemMax)).min(listAdminRegistrationsResponseLanguagesMin).max(listAdminRegistrationsResponseLanguagesMax),
+  "preferences": zod.array(zod.string().min(1).max(listAdminRegistrationsResponsePreferencesItemMax)).min(listAdminRegistrationsResponsePreferencesMin).max(listAdminRegistrationsResponsePreferencesMax),
+  "availability": zod.array(zod.string().min(1).max(listAdminRegistrationsResponseAvailabilityItemMax)).min(listAdminRegistrationsResponseAvailabilityMin).max(listAdminRegistrationsResponseAvailabilityMax),
+  "minAge": zod.number().min(listAdminRegistrationsResponseMinAgeMin).max(listAdminRegistrationsResponseMinAgeMax),
+  "maxAge": zod.number().min(listAdminRegistrationsResponseMaxAgeMin).max(listAdminRegistrationsResponseMaxAgeMax),
+  "status": zod.enum(['available', 'unavailable']),
+  "listing": zod.enum(['free', 'weekly', 'monthly', 'quarterly']),
+  "partnerOptIn": zod.boolean(),
+  "accurate": zod.boolean(),
+  "terms": zod.boolean(),
+  "adult": zod.boolean(),
+  "photos": zod.array(zod.object({
+  "dataUrl": zod.string().min(1).max(listAdminRegistrationsResponsePhotosItemDataUrlMax),
+  "category": zod.enum(['profile', 'additional', 'gallery'])
+})).min(listAdminRegistrationsResponsePhotosMin).max(listAdminRegistrationsResponsePhotosMax),
+  "mainPhoto": zod.number().min(listAdminRegistrationsResponseMainPhotoMin).max(listAdminRegistrationsResponseMainPhotoMax),
+  "id": zod.string().min(1).max(listAdminRegistrationsResponseIdMax),
+  "submittedAt": zod.string().min(1).max(listAdminRegistrationsResponseSubmittedAtMax),
+  "reviewStatus": zod.string().min(1).max(listAdminRegistrationsResponseReviewStatusMax),
+  "listingPrice": zod.number().min(listAdminRegistrationsResponseListingPriceMin),
+  "isComplete": zod.boolean().optional(),
+  "isPublished": zod.boolean().optional(),
+  "missingSteps": zod.array(zod.string()).optional(),
+  "notificationStatus": zod.string().optional(),
+  "publicSlug": zod.string().optional()
+})
+export const ListAdminRegistrationsResponse = zod.array(ListAdminRegistrationsResponseItem)
+
+
+export const ReviewRegistrationParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ReviewRegistrationBody = zod.object({
+  "action": zod.enum(['approve', 'reject'])
+})
+
+export const reviewRegistrationResponseDisplayNameMax = 80;
+
+export const reviewRegistrationResponseDateOfBirthMax = 10;
+
+export const reviewRegistrationResponseEmailMax = 254;
+
+export const reviewRegistrationResponseMobileMax = 25;
+
+export const reviewRegistrationResponseHeadlineMin = 0;
+export const reviewRegistrationResponseHeadlineMax = 120;
+
+export const reviewRegistrationResponseAboutMin = 0;
+export const reviewRegistrationResponseAboutMax = 2000;
+
+export const reviewRegistrationResponseCountryMin = 0;
+export const reviewRegistrationResponseCountryMax = 80;
+
+export const reviewRegistrationResponseStateMin = 0;
+export const reviewRegistrationResponseStateMax = 80;
+
+export const reviewRegistrationResponseCityMin = 0;
+export const reviewRegistrationResponseCityMax = 80;
+
+export const reviewRegistrationResponseAreaMin = 0;
+export const reviewRegistrationResponseAreaMax = 100;
+
+export const reviewRegistrationResponseAgeMin = 18;
+export const reviewRegistrationResponseAgeMax = 100;
+
+export const reviewRegistrationResponsePinCodeMin = 0;
+export const reviewRegistrationResponsePinCodeMax = 12;
+
+export const reviewRegistrationResponseInterestsItemMax = 80;
+
+export const reviewRegistrationResponseInterestsMin = 0;
+export const reviewRegistrationResponseInterestsMax = 20;
+
+export const reviewRegistrationResponseLanguagesItemMax = 80;
+
+export const reviewRegistrationResponseLanguagesMin = 0;
+export const reviewRegistrationResponseLanguagesMax = 20;
+
+export const reviewRegistrationResponsePreferencesItemMax = 80;
+
+export const reviewRegistrationResponsePreferencesMin = 0;
+export const reviewRegistrationResponsePreferencesMax = 20;
+
+export const reviewRegistrationResponseAvailabilityItemMax = 80;
+
+export const reviewRegistrationResponseAvailabilityMin = 0;
+export const reviewRegistrationResponseAvailabilityMax = 20;
+
+export const reviewRegistrationResponseMinAgeMin = 18;
+export const reviewRegistrationResponseMinAgeMax = 100;
+
+export const reviewRegistrationResponseMaxAgeMin = 18;
+export const reviewRegistrationResponseMaxAgeMax = 100;
+
+export const reviewRegistrationResponsePhotosItemDataUrlMax = 1500000;
+
+export const reviewRegistrationResponsePhotosMin = 0;
+export const reviewRegistrationResponsePhotosMax = 8;
+
+export const reviewRegistrationResponseMainPhotoMin = 0;
+export const reviewRegistrationResponseMainPhotoMax = 7;
+
+export const reviewRegistrationResponseIdMax = 120;
+
+export const reviewRegistrationResponseSubmittedAtMax = 120;
+
+export const reviewRegistrationResponseReviewStatusMax = 120;
+
+export const reviewRegistrationResponseListingPriceMin = 0;
+
+
+
+export const ReviewRegistrationResponse = zod.object({
+  "displayName": zod.string().min(1).max(reviewRegistrationResponseDisplayNameMax),
+  "dateOfBirth": zod.string().min(1).max(reviewRegistrationResponseDateOfBirthMax),
+  "email": zod.string().min(1).max(reviewRegistrationResponseEmailMax),
+  "mobile": zod.string().min(1).max(reviewRegistrationResponseMobileMax),
+  "headline": zod.string().min(reviewRegistrationResponseHeadlineMin).max(reviewRegistrationResponseHeadlineMax),
+  "about": zod.string().min(reviewRegistrationResponseAboutMin).max(reviewRegistrationResponseAboutMax),
+  "country": zod.string().min(reviewRegistrationResponseCountryMin).max(reviewRegistrationResponseCountryMax),
+  "state": zod.string().min(reviewRegistrationResponseStateMin).max(reviewRegistrationResponseStateMax),
+  "city": zod.string().min(reviewRegistrationResponseCityMin).max(reviewRegistrationResponseCityMax),
+  "area": zod.string().min(reviewRegistrationResponseAreaMin).max(reviewRegistrationResponseAreaMax),
+  "age": zod.number().min(reviewRegistrationResponseAgeMin).max(reviewRegistrationResponseAgeMax),
+  "pinCode": zod.string().min(reviewRegistrationResponsePinCodeMin).max(reviewRegistrationResponsePinCodeMax),
+  "interests": zod.array(zod.string().min(1).max(reviewRegistrationResponseInterestsItemMax)).min(reviewRegistrationResponseInterestsMin).max(reviewRegistrationResponseInterestsMax),
+  "languages": zod.array(zod.string().min(1).max(reviewRegistrationResponseLanguagesItemMax)).min(reviewRegistrationResponseLanguagesMin).max(reviewRegistrationResponseLanguagesMax),
+  "preferences": zod.array(zod.string().min(1).max(reviewRegistrationResponsePreferencesItemMax)).min(reviewRegistrationResponsePreferencesMin).max(reviewRegistrationResponsePreferencesMax),
+  "availability": zod.array(zod.string().min(1).max(reviewRegistrationResponseAvailabilityItemMax)).min(reviewRegistrationResponseAvailabilityMin).max(reviewRegistrationResponseAvailabilityMax),
+  "minAge": zod.number().min(reviewRegistrationResponseMinAgeMin).max(reviewRegistrationResponseMinAgeMax),
+  "maxAge": zod.number().min(reviewRegistrationResponseMaxAgeMin).max(reviewRegistrationResponseMaxAgeMax),
+  "status": zod.enum(['available', 'unavailable']),
+  "listing": zod.enum(['free', 'weekly', 'monthly', 'quarterly']),
+  "partnerOptIn": zod.boolean(),
+  "accurate": zod.boolean(),
+  "terms": zod.boolean(),
+  "adult": zod.boolean(),
+  "photos": zod.array(zod.object({
+  "dataUrl": zod.string().min(1).max(reviewRegistrationResponsePhotosItemDataUrlMax),
+  "category": zod.enum(['profile', 'additional', 'gallery'])
+})).min(reviewRegistrationResponsePhotosMin).max(reviewRegistrationResponsePhotosMax),
+  "mainPhoto": zod.number().min(reviewRegistrationResponseMainPhotoMin).max(reviewRegistrationResponseMainPhotoMax),
+  "id": zod.string().min(1).max(reviewRegistrationResponseIdMax),
+  "submittedAt": zod.string().min(1).max(reviewRegistrationResponseSubmittedAtMax),
+  "reviewStatus": zod.string().min(1).max(reviewRegistrationResponseReviewStatusMax),
+  "listingPrice": zod.number().min(reviewRegistrationResponseListingPriceMin),
+  "isComplete": zod.boolean().optional(),
+  "isPublished": zod.boolean().optional(),
+  "missingSteps": zod.array(zod.string()).optional(),
+  "notificationStatus": zod.string().optional(),
+  "publicSlug": zod.string().optional()
+})
+
+
+export const updateMyRegistrationBodyDisplayNameMax = 80;
+
+export const updateMyRegistrationBodyDateOfBirthMax = 10;
+
+export const updateMyRegistrationBodyEmailMax = 254;
+
+export const updateMyRegistrationBodyMobileMax = 25;
+
+export const updateMyRegistrationBodyHeadlineMin = 0;
+export const updateMyRegistrationBodyHeadlineMax = 120;
+
+export const updateMyRegistrationBodyAboutMin = 0;
+export const updateMyRegistrationBodyAboutMax = 2000;
+
+export const updateMyRegistrationBodyCountryMin = 0;
+export const updateMyRegistrationBodyCountryMax = 80;
+
+export const updateMyRegistrationBodyStateMin = 0;
+export const updateMyRegistrationBodyStateMax = 80;
+
+export const updateMyRegistrationBodyCityMin = 0;
+export const updateMyRegistrationBodyCityMax = 80;
+
+export const updateMyRegistrationBodyAreaMin = 0;
+export const updateMyRegistrationBodyAreaMax = 100;
+
+export const updateMyRegistrationBodyAgeMin = 18;
+export const updateMyRegistrationBodyAgeMax = 100;
+
+export const updateMyRegistrationBodyPinCodeMin = 0;
+export const updateMyRegistrationBodyPinCodeMax = 12;
+
+export const updateMyRegistrationBodyInterestsItemMax = 80;
+
+export const updateMyRegistrationBodyInterestsMin = 0;
+export const updateMyRegistrationBodyInterestsMax = 20;
+
+export const updateMyRegistrationBodyLanguagesItemMax = 80;
+
+export const updateMyRegistrationBodyLanguagesMin = 0;
+export const updateMyRegistrationBodyLanguagesMax = 20;
+
+export const updateMyRegistrationBodyPreferencesItemMax = 80;
+
+export const updateMyRegistrationBodyPreferencesMin = 0;
+export const updateMyRegistrationBodyPreferencesMax = 20;
+
+export const updateMyRegistrationBodyAvailabilityItemMax = 80;
+
+export const updateMyRegistrationBodyAvailabilityMin = 0;
+export const updateMyRegistrationBodyAvailabilityMax = 20;
+
+export const updateMyRegistrationBodyMinAgeMin = 18;
+export const updateMyRegistrationBodyMinAgeMax = 100;
+
+export const updateMyRegistrationBodyMaxAgeMin = 18;
+export const updateMyRegistrationBodyMaxAgeMax = 100;
+
+export const updateMyRegistrationBodyPhotosItemDataUrlMax = 1500000;
+
+export const updateMyRegistrationBodyPhotosMin = 0;
+export const updateMyRegistrationBodyPhotosMax = 8;
+
+export const updateMyRegistrationBodyMainPhotoMin = 0;
+export const updateMyRegistrationBodyMainPhotoMax = 7;
+
+export const updateMyRegistrationBodyIdMax = 120;
+
+export const updateMyRegistrationBodySubmittedAtMax = 120;
+
+export const updateMyRegistrationBodyReviewStatusMax = 120;
+
+export const updateMyRegistrationBodyListingPriceMin = 0;
+
+
+
+export const UpdateMyRegistrationBody = zod.object({
+  "displayName": zod.string().min(1).max(updateMyRegistrationBodyDisplayNameMax),
+  "dateOfBirth": zod.string().min(1).max(updateMyRegistrationBodyDateOfBirthMax),
+  "email": zod.string().min(1).max(updateMyRegistrationBodyEmailMax),
+  "mobile": zod.string().min(1).max(updateMyRegistrationBodyMobileMax),
+  "headline": zod.string().min(updateMyRegistrationBodyHeadlineMin).max(updateMyRegistrationBodyHeadlineMax),
+  "about": zod.string().min(updateMyRegistrationBodyAboutMin).max(updateMyRegistrationBodyAboutMax),
+  "country": zod.string().min(updateMyRegistrationBodyCountryMin).max(updateMyRegistrationBodyCountryMax),
+  "state": zod.string().min(updateMyRegistrationBodyStateMin).max(updateMyRegistrationBodyStateMax),
+  "city": zod.string().min(updateMyRegistrationBodyCityMin).max(updateMyRegistrationBodyCityMax),
+  "area": zod.string().min(updateMyRegistrationBodyAreaMin).max(updateMyRegistrationBodyAreaMax),
+  "age": zod.number().min(updateMyRegistrationBodyAgeMin).max(updateMyRegistrationBodyAgeMax),
+  "pinCode": zod.string().min(updateMyRegistrationBodyPinCodeMin).max(updateMyRegistrationBodyPinCodeMax),
+  "interests": zod.array(zod.string().min(1).max(updateMyRegistrationBodyInterestsItemMax)).min(updateMyRegistrationBodyInterestsMin).max(updateMyRegistrationBodyInterestsMax),
+  "languages": zod.array(zod.string().min(1).max(updateMyRegistrationBodyLanguagesItemMax)).min(updateMyRegistrationBodyLanguagesMin).max(updateMyRegistrationBodyLanguagesMax),
+  "preferences": zod.array(zod.string().min(1).max(updateMyRegistrationBodyPreferencesItemMax)).min(updateMyRegistrationBodyPreferencesMin).max(updateMyRegistrationBodyPreferencesMax),
+  "availability": zod.array(zod.string().min(1).max(updateMyRegistrationBodyAvailabilityItemMax)).min(updateMyRegistrationBodyAvailabilityMin).max(updateMyRegistrationBodyAvailabilityMax),
+  "minAge": zod.number().min(updateMyRegistrationBodyMinAgeMin).max(updateMyRegistrationBodyMinAgeMax),
+  "maxAge": zod.number().min(updateMyRegistrationBodyMaxAgeMin).max(updateMyRegistrationBodyMaxAgeMax),
+  "status": zod.enum(['available', 'unavailable']),
+  "listing": zod.enum(['free', 'weekly', 'monthly', 'quarterly']),
+  "partnerOptIn": zod.boolean(),
+  "accurate": zod.boolean(),
+  "terms": zod.boolean(),
+  "adult": zod.boolean(),
+  "photos": zod.array(zod.object({
+  "dataUrl": zod.string().min(1).max(updateMyRegistrationBodyPhotosItemDataUrlMax),
+  "category": zod.enum(['profile', 'additional', 'gallery'])
+})).min(updateMyRegistrationBodyPhotosMin).max(updateMyRegistrationBodyPhotosMax),
+  "mainPhoto": zod.number().min(updateMyRegistrationBodyMainPhotoMin).max(updateMyRegistrationBodyMainPhotoMax),
+  "id": zod.string().min(1).max(updateMyRegistrationBodyIdMax),
+  "submittedAt": zod.string().min(1).max(updateMyRegistrationBodySubmittedAtMax),
+  "reviewStatus": zod.string().min(1).max(updateMyRegistrationBodyReviewStatusMax),
+  "listingPrice": zod.number().min(updateMyRegistrationBodyListingPriceMin),
+  "isComplete": zod.boolean().optional(),
+  "isPublished": zod.boolean().optional(),
+  "missingSteps": zod.array(zod.string()).optional(),
+  "notificationStatus": zod.string().optional(),
+  "publicSlug": zod.string().optional()
+})
+
+export const updateMyRegistrationResponseDisplayNameMax = 80;
+
+export const updateMyRegistrationResponseDateOfBirthMax = 10;
+
+export const updateMyRegistrationResponseEmailMax = 254;
+
+export const updateMyRegistrationResponseMobileMax = 25;
+
+export const updateMyRegistrationResponseHeadlineMin = 0;
+export const updateMyRegistrationResponseHeadlineMax = 120;
+
+export const updateMyRegistrationResponseAboutMin = 0;
+export const updateMyRegistrationResponseAboutMax = 2000;
+
+export const updateMyRegistrationResponseCountryMin = 0;
+export const updateMyRegistrationResponseCountryMax = 80;
+
+export const updateMyRegistrationResponseStateMin = 0;
+export const updateMyRegistrationResponseStateMax = 80;
+
+export const updateMyRegistrationResponseCityMin = 0;
+export const updateMyRegistrationResponseCityMax = 80;
+
+export const updateMyRegistrationResponseAreaMin = 0;
+export const updateMyRegistrationResponseAreaMax = 100;
+
+export const updateMyRegistrationResponseAgeMin = 18;
+export const updateMyRegistrationResponseAgeMax = 100;
+
+export const updateMyRegistrationResponsePinCodeMin = 0;
+export const updateMyRegistrationResponsePinCodeMax = 12;
+
+export const updateMyRegistrationResponseInterestsItemMax = 80;
+
+export const updateMyRegistrationResponseInterestsMin = 0;
+export const updateMyRegistrationResponseInterestsMax = 20;
+
+export const updateMyRegistrationResponseLanguagesItemMax = 80;
+
+export const updateMyRegistrationResponseLanguagesMin = 0;
+export const updateMyRegistrationResponseLanguagesMax = 20;
+
+export const updateMyRegistrationResponsePreferencesItemMax = 80;
+
+export const updateMyRegistrationResponsePreferencesMin = 0;
+export const updateMyRegistrationResponsePreferencesMax = 20;
+
+export const updateMyRegistrationResponseAvailabilityItemMax = 80;
+
+export const updateMyRegistrationResponseAvailabilityMin = 0;
+export const updateMyRegistrationResponseAvailabilityMax = 20;
+
+export const updateMyRegistrationResponseMinAgeMin = 18;
+export const updateMyRegistrationResponseMinAgeMax = 100;
+
+export const updateMyRegistrationResponseMaxAgeMin = 18;
+export const updateMyRegistrationResponseMaxAgeMax = 100;
+
+export const updateMyRegistrationResponsePhotosItemDataUrlMax = 1500000;
+
+export const updateMyRegistrationResponsePhotosMin = 0;
+export const updateMyRegistrationResponsePhotosMax = 8;
+
+export const updateMyRegistrationResponseMainPhotoMin = 0;
+export const updateMyRegistrationResponseMainPhotoMax = 7;
+
+export const updateMyRegistrationResponseIdMax = 120;
+
+export const updateMyRegistrationResponseSubmittedAtMax = 120;
+
+export const updateMyRegistrationResponseReviewStatusMax = 120;
+
+export const updateMyRegistrationResponseListingPriceMin = 0;
+
+
+
+export const UpdateMyRegistrationResponse = zod.object({
+  "displayName": zod.string().min(1).max(updateMyRegistrationResponseDisplayNameMax),
+  "dateOfBirth": zod.string().min(1).max(updateMyRegistrationResponseDateOfBirthMax),
+  "email": zod.string().min(1).max(updateMyRegistrationResponseEmailMax),
+  "mobile": zod.string().min(1).max(updateMyRegistrationResponseMobileMax),
+  "headline": zod.string().min(updateMyRegistrationResponseHeadlineMin).max(updateMyRegistrationResponseHeadlineMax),
+  "about": zod.string().min(updateMyRegistrationResponseAboutMin).max(updateMyRegistrationResponseAboutMax),
+  "country": zod.string().min(updateMyRegistrationResponseCountryMin).max(updateMyRegistrationResponseCountryMax),
+  "state": zod.string().min(updateMyRegistrationResponseStateMin).max(updateMyRegistrationResponseStateMax),
+  "city": zod.string().min(updateMyRegistrationResponseCityMin).max(updateMyRegistrationResponseCityMax),
+  "area": zod.string().min(updateMyRegistrationResponseAreaMin).max(updateMyRegistrationResponseAreaMax),
+  "age": zod.number().min(updateMyRegistrationResponseAgeMin).max(updateMyRegistrationResponseAgeMax),
+  "pinCode": zod.string().min(updateMyRegistrationResponsePinCodeMin).max(updateMyRegistrationResponsePinCodeMax),
+  "interests": zod.array(zod.string().min(1).max(updateMyRegistrationResponseInterestsItemMax)).min(updateMyRegistrationResponseInterestsMin).max(updateMyRegistrationResponseInterestsMax),
+  "languages": zod.array(zod.string().min(1).max(updateMyRegistrationResponseLanguagesItemMax)).min(updateMyRegistrationResponseLanguagesMin).max(updateMyRegistrationResponseLanguagesMax),
+  "preferences": zod.array(zod.string().min(1).max(updateMyRegistrationResponsePreferencesItemMax)).min(updateMyRegistrationResponsePreferencesMin).max(updateMyRegistrationResponsePreferencesMax),
+  "availability": zod.array(zod.string().min(1).max(updateMyRegistrationResponseAvailabilityItemMax)).min(updateMyRegistrationResponseAvailabilityMin).max(updateMyRegistrationResponseAvailabilityMax),
+  "minAge": zod.number().min(updateMyRegistrationResponseMinAgeMin).max(updateMyRegistrationResponseMinAgeMax),
+  "maxAge": zod.number().min(updateMyRegistrationResponseMaxAgeMin).max(updateMyRegistrationResponseMaxAgeMax),
+  "status": zod.enum(['available', 'unavailable']),
+  "listing": zod.enum(['free', 'weekly', 'monthly', 'quarterly']),
+  "partnerOptIn": zod.boolean(),
+  "accurate": zod.boolean(),
+  "terms": zod.boolean(),
+  "adult": zod.boolean(),
+  "photos": zod.array(zod.object({
+  "dataUrl": zod.string().min(1).max(updateMyRegistrationResponsePhotosItemDataUrlMax),
+  "category": zod.enum(['profile', 'additional', 'gallery'])
+})).min(updateMyRegistrationResponsePhotosMin).max(updateMyRegistrationResponsePhotosMax),
+  "mainPhoto": zod.number().min(updateMyRegistrationResponseMainPhotoMin).max(updateMyRegistrationResponseMainPhotoMax),
+  "id": zod.string().min(1).max(updateMyRegistrationResponseIdMax),
+  "submittedAt": zod.string().min(1).max(updateMyRegistrationResponseSubmittedAtMax),
+  "reviewStatus": zod.string().min(1).max(updateMyRegistrationResponseReviewStatusMax),
+  "listingPrice": zod.number().min(updateMyRegistrationResponseListingPriceMin),
+  "isComplete": zod.boolean().optional(),
+  "isPublished": zod.boolean().optional(),
+  "missingSteps": zod.array(zod.string()).optional(),
+  "notificationStatus": zod.string().optional(),
+  "publicSlug": zod.string().optional()
+})
+
+
+export const loginRegistrationAdminBodyPasswordMax = 256;
+
+
+
+export const LoginRegistrationAdminBody = zod.object({
+  "password": zod.string().min(1).max(loginRegistrationAdminBodyPasswordMax)
+})
+
+export const loginRegistrationAdminResponsePlansItemPriceMin = 0;
+
+
+
+export const LoginRegistrationAdminResponse = zod.object({
+  "plans": zod.array(zod.object({
+  "id": zod.enum(['weekly', 'monthly', 'quarterly']),
+  "price": zod.number().min(loginRegistrationAdminResponsePlansItemPriceMin),
+  "enabled": zod.boolean()
+})),
+  "termsUrl": zod.string(),
+  "privacyUrl": zod.string()
+})
+
+
+export const updateRegistrationSettingsBodyPlansItemPriceMin = 0;
+
+
+
+export const UpdateRegistrationSettingsBody = zod.object({
+  "plans": zod.array(zod.object({
+  "id": zod.enum(['weekly', 'monthly', 'quarterly']),
+  "price": zod.number().min(updateRegistrationSettingsBodyPlansItemPriceMin),
+  "enabled": zod.boolean()
+})),
+  "termsUrl": zod.string(),
+  "privacyUrl": zod.string()
+})
+
+export const updateRegistrationSettingsResponsePlansItemPriceMin = 0;
+
+
+
+export const UpdateRegistrationSettingsResponse = zod.object({
+  "plans": zod.array(zod.object({
+  "id": zod.enum(['weekly', 'monthly', 'quarterly']),
+  "price": zod.number().min(updateRegistrationSettingsResponsePlansItemPriceMin),
+  "enabled": zod.boolean()
+})),
+  "termsUrl": zod.string(),
+  "privacyUrl": zod.string()
+})
+
+
+export const getRegistrationSettingsResponsePlansItemPriceMin = 0;
+
+
+
+export const GetRegistrationSettingsResponse = zod.object({
+  "plans": zod.array(zod.object({
+  "id": zod.enum(['weekly', 'monthly', 'quarterly']),
+  "price": zod.number().min(getRegistrationSettingsResponsePlansItemPriceMin),
+  "enabled": zod.boolean()
+})),
+  "termsUrl": zod.string(),
+  "privacyUrl": zod.string()
+})
+
+
+export const registerProfileBodyDisplayNameMax = 80;
+
+export const registerProfileBodyDateOfBirthMax = 10;
+
+export const registerProfileBodyEmailMax = 254;
+
+export const registerProfileBodyMobileMax = 25;
+
+export const registerProfileBodyPasswordMin = 8;
+export const registerProfileBodyPasswordMax = 128;
+
+export const registerProfileBodyConfirmPasswordMax = 128;
+
+export const registerProfileBodyHeadlineMin = 0;
+export const registerProfileBodyHeadlineMax = 120;
+
+export const registerProfileBodyAboutMin = 0;
+export const registerProfileBodyAboutMax = 2000;
+
+export const registerProfileBodyCountryMin = 0;
+export const registerProfileBodyCountryMax = 80;
+
+export const registerProfileBodyStateMin = 0;
+export const registerProfileBodyStateMax = 80;
+
+export const registerProfileBodyCityMin = 0;
+export const registerProfileBodyCityMax = 80;
+
+export const registerProfileBodyAreaMin = 0;
+export const registerProfileBodyAreaMax = 100;
+
+export const registerProfileBodyAgeMin = 18;
+export const registerProfileBodyAgeMax = 100;
+
+export const registerProfileBodyPinCodeMin = 0;
+export const registerProfileBodyPinCodeMax = 12;
+
+export const registerProfileBodyInterestsItemMax = 80;
+
+export const registerProfileBodyInterestsMin = 0;
+export const registerProfileBodyInterestsMax = 20;
+
+export const registerProfileBodyLanguagesItemMax = 80;
+
+export const registerProfileBodyLanguagesMin = 0;
+export const registerProfileBodyLanguagesMax = 20;
+
+export const registerProfileBodyPreferencesItemMax = 80;
+
+export const registerProfileBodyPreferencesMin = 0;
+export const registerProfileBodyPreferencesMax = 20;
+
+export const registerProfileBodyAvailabilityItemMax = 80;
+
+export const registerProfileBodyAvailabilityMin = 0;
+export const registerProfileBodyAvailabilityMax = 20;
+
+export const registerProfileBodyMinAgeMin = 18;
+export const registerProfileBodyMinAgeMax = 100;
+
+export const registerProfileBodyMaxAgeMin = 18;
+export const registerProfileBodyMaxAgeMax = 100;
+
+export const registerProfileBodyPhotosItemDataUrlMax = 1500000;
+
+export const registerProfileBodyPhotosMin = 0;
+export const registerProfileBodyPhotosMax = 8;
+
+export const registerProfileBodyMainPhotoMin = 0;
+export const registerProfileBodyMainPhotoMax = 7;
+
+
+
+export const RegisterProfileBody = zod.object({
+  "displayName": zod.string().min(1).max(registerProfileBodyDisplayNameMax),
+  "dateOfBirth": zod.string().min(1).max(registerProfileBodyDateOfBirthMax),
+  "email": zod.string().min(1).max(registerProfileBodyEmailMax),
+  "mobile": zod.string().min(1).max(registerProfileBodyMobileMax),
+  "password": zod.string().min(registerProfileBodyPasswordMin).max(registerProfileBodyPasswordMax),
+  "confirmPassword": zod.string().min(1).max(registerProfileBodyConfirmPasswordMax),
+  "headline": zod.string().min(registerProfileBodyHeadlineMin).max(registerProfileBodyHeadlineMax),
+  "about": zod.string().min(registerProfileBodyAboutMin).max(registerProfileBodyAboutMax),
+  "country": zod.string().min(registerProfileBodyCountryMin).max(registerProfileBodyCountryMax),
+  "state": zod.string().min(registerProfileBodyStateMin).max(registerProfileBodyStateMax),
+  "city": zod.string().min(registerProfileBodyCityMin).max(registerProfileBodyCityMax),
+  "area": zod.string().min(registerProfileBodyAreaMin).max(registerProfileBodyAreaMax),
+  "age": zod.number().min(registerProfileBodyAgeMin).max(registerProfileBodyAgeMax),
+  "pinCode": zod.string().min(registerProfileBodyPinCodeMin).max(registerProfileBodyPinCodeMax),
+  "interests": zod.array(zod.string().min(1).max(registerProfileBodyInterestsItemMax)).min(registerProfileBodyInterestsMin).max(registerProfileBodyInterestsMax),
+  "languages": zod.array(zod.string().min(1).max(registerProfileBodyLanguagesItemMax)).min(registerProfileBodyLanguagesMin).max(registerProfileBodyLanguagesMax),
+  "preferences": zod.array(zod.string().min(1).max(registerProfileBodyPreferencesItemMax)).min(registerProfileBodyPreferencesMin).max(registerProfileBodyPreferencesMax),
+  "availability": zod.array(zod.string().min(1).max(registerProfileBodyAvailabilityItemMax)).min(registerProfileBodyAvailabilityMin).max(registerProfileBodyAvailabilityMax),
+  "minAge": zod.number().min(registerProfileBodyMinAgeMin).max(registerProfileBodyMinAgeMax),
+  "maxAge": zod.number().min(registerProfileBodyMaxAgeMin).max(registerProfileBodyMaxAgeMax),
+  "status": zod.enum(['available', 'unavailable']),
+  "listing": zod.enum(['free', 'weekly', 'monthly', 'quarterly']),
+  "partnerOptIn": zod.boolean(),
+  "accurate": zod.boolean(),
+  "terms": zod.boolean(),
+  "adult": zod.boolean(),
+  "photos": zod.array(zod.object({
+  "dataUrl": zod.string().min(1).max(registerProfileBodyPhotosItemDataUrlMax),
+  "category": zod.enum(['profile', 'additional', 'gallery'])
+})).min(registerProfileBodyPhotosMin).max(registerProfileBodyPhotosMax),
+  "mainPhoto": zod.number().min(registerProfileBodyMainPhotoMin).max(registerProfileBodyMainPhotoMax)
+})
+
+export const registerProfileResponseDisplayNameMax = 80;
+
+export const registerProfileResponseDateOfBirthMax = 10;
+
+export const registerProfileResponseEmailMax = 254;
+
+export const registerProfileResponseMobileMax = 25;
+
+export const registerProfileResponseHeadlineMin = 0;
+export const registerProfileResponseHeadlineMax = 120;
+
+export const registerProfileResponseAboutMin = 0;
+export const registerProfileResponseAboutMax = 2000;
+
+export const registerProfileResponseCountryMin = 0;
+export const registerProfileResponseCountryMax = 80;
+
+export const registerProfileResponseStateMin = 0;
+export const registerProfileResponseStateMax = 80;
+
+export const registerProfileResponseCityMin = 0;
+export const registerProfileResponseCityMax = 80;
+
+export const registerProfileResponseAreaMin = 0;
+export const registerProfileResponseAreaMax = 100;
+
+export const registerProfileResponseAgeMin = 18;
+export const registerProfileResponseAgeMax = 100;
+
+export const registerProfileResponsePinCodeMin = 0;
+export const registerProfileResponsePinCodeMax = 12;
+
+export const registerProfileResponseInterestsItemMax = 80;
+
+export const registerProfileResponseInterestsMin = 0;
+export const registerProfileResponseInterestsMax = 20;
+
+export const registerProfileResponseLanguagesItemMax = 80;
+
+export const registerProfileResponseLanguagesMin = 0;
+export const registerProfileResponseLanguagesMax = 20;
+
+export const registerProfileResponsePreferencesItemMax = 80;
+
+export const registerProfileResponsePreferencesMin = 0;
+export const registerProfileResponsePreferencesMax = 20;
+
+export const registerProfileResponseAvailabilityItemMax = 80;
+
+export const registerProfileResponseAvailabilityMin = 0;
+export const registerProfileResponseAvailabilityMax = 20;
+
+export const registerProfileResponseMinAgeMin = 18;
+export const registerProfileResponseMinAgeMax = 100;
+
+export const registerProfileResponseMaxAgeMin = 18;
+export const registerProfileResponseMaxAgeMax = 100;
+
+export const registerProfileResponsePhotosItemDataUrlMax = 1500000;
+
+export const registerProfileResponsePhotosMin = 0;
+export const registerProfileResponsePhotosMax = 8;
+
+export const registerProfileResponseMainPhotoMin = 0;
+export const registerProfileResponseMainPhotoMax = 7;
+
+export const registerProfileResponseIdMax = 120;
+
+export const registerProfileResponseSubmittedAtMax = 120;
+
+export const registerProfileResponseReviewStatusMax = 120;
+
+export const registerProfileResponseListingPriceMin = 0;
+
+
+
+export const RegisterProfileResponse = zod.object({
+  "displayName": zod.string().min(1).max(registerProfileResponseDisplayNameMax),
+  "dateOfBirth": zod.string().min(1).max(registerProfileResponseDateOfBirthMax),
+  "email": zod.string().min(1).max(registerProfileResponseEmailMax),
+  "mobile": zod.string().min(1).max(registerProfileResponseMobileMax),
+  "headline": zod.string().min(registerProfileResponseHeadlineMin).max(registerProfileResponseHeadlineMax),
+  "about": zod.string().min(registerProfileResponseAboutMin).max(registerProfileResponseAboutMax),
+  "country": zod.string().min(registerProfileResponseCountryMin).max(registerProfileResponseCountryMax),
+  "state": zod.string().min(registerProfileResponseStateMin).max(registerProfileResponseStateMax),
+  "city": zod.string().min(registerProfileResponseCityMin).max(registerProfileResponseCityMax),
+  "area": zod.string().min(registerProfileResponseAreaMin).max(registerProfileResponseAreaMax),
+  "age": zod.number().min(registerProfileResponseAgeMin).max(registerProfileResponseAgeMax),
+  "pinCode": zod.string().min(registerProfileResponsePinCodeMin).max(registerProfileResponsePinCodeMax),
+  "interests": zod.array(zod.string().min(1).max(registerProfileResponseInterestsItemMax)).min(registerProfileResponseInterestsMin).max(registerProfileResponseInterestsMax),
+  "languages": zod.array(zod.string().min(1).max(registerProfileResponseLanguagesItemMax)).min(registerProfileResponseLanguagesMin).max(registerProfileResponseLanguagesMax),
+  "preferences": zod.array(zod.string().min(1).max(registerProfileResponsePreferencesItemMax)).min(registerProfileResponsePreferencesMin).max(registerProfileResponsePreferencesMax),
+  "availability": zod.array(zod.string().min(1).max(registerProfileResponseAvailabilityItemMax)).min(registerProfileResponseAvailabilityMin).max(registerProfileResponseAvailabilityMax),
+  "minAge": zod.number().min(registerProfileResponseMinAgeMin).max(registerProfileResponseMinAgeMax),
+  "maxAge": zod.number().min(registerProfileResponseMaxAgeMin).max(registerProfileResponseMaxAgeMax),
+  "status": zod.enum(['available', 'unavailable']),
+  "listing": zod.enum(['free', 'weekly', 'monthly', 'quarterly']),
+  "partnerOptIn": zod.boolean(),
+  "accurate": zod.boolean(),
+  "terms": zod.boolean(),
+  "adult": zod.boolean(),
+  "photos": zod.array(zod.object({
+  "dataUrl": zod.string().min(1).max(registerProfileResponsePhotosItemDataUrlMax),
+  "category": zod.enum(['profile', 'additional', 'gallery'])
+})).min(registerProfileResponsePhotosMin).max(registerProfileResponsePhotosMax),
+  "mainPhoto": zod.number().min(registerProfileResponseMainPhotoMin).max(registerProfileResponseMainPhotoMax),
+  "id": zod.string().min(1).max(registerProfileResponseIdMax),
+  "submittedAt": zod.string().min(1).max(registerProfileResponseSubmittedAtMax),
+  "reviewStatus": zod.string().min(1).max(registerProfileResponseReviewStatusMax),
+  "listingPrice": zod.number().min(registerProfileResponseListingPriceMin),
+  "isComplete": zod.boolean().optional(),
+  "isPublished": zod.boolean().optional(),
+  "missingSteps": zod.array(zod.string()).optional(),
+  "notificationStatus": zod.string().optional(),
+  "publicSlug": zod.string().optional()
+})
+
+
+export const getMyRegistrationResponseDisplayNameMax = 80;
+
+export const getMyRegistrationResponseDateOfBirthMax = 10;
+
+export const getMyRegistrationResponseEmailMax = 254;
+
+export const getMyRegistrationResponseMobileMax = 25;
+
+export const getMyRegistrationResponseHeadlineMin = 0;
+export const getMyRegistrationResponseHeadlineMax = 120;
+
+export const getMyRegistrationResponseAboutMin = 0;
+export const getMyRegistrationResponseAboutMax = 2000;
+
+export const getMyRegistrationResponseCountryMin = 0;
+export const getMyRegistrationResponseCountryMax = 80;
+
+export const getMyRegistrationResponseStateMin = 0;
+export const getMyRegistrationResponseStateMax = 80;
+
+export const getMyRegistrationResponseCityMin = 0;
+export const getMyRegistrationResponseCityMax = 80;
+
+export const getMyRegistrationResponseAreaMin = 0;
+export const getMyRegistrationResponseAreaMax = 100;
+
+export const getMyRegistrationResponseAgeMin = 18;
+export const getMyRegistrationResponseAgeMax = 100;
+
+export const getMyRegistrationResponsePinCodeMin = 0;
+export const getMyRegistrationResponsePinCodeMax = 12;
+
+export const getMyRegistrationResponseInterestsItemMax = 80;
+
+export const getMyRegistrationResponseInterestsMin = 0;
+export const getMyRegistrationResponseInterestsMax = 20;
+
+export const getMyRegistrationResponseLanguagesItemMax = 80;
+
+export const getMyRegistrationResponseLanguagesMin = 0;
+export const getMyRegistrationResponseLanguagesMax = 20;
+
+export const getMyRegistrationResponsePreferencesItemMax = 80;
+
+export const getMyRegistrationResponsePreferencesMin = 0;
+export const getMyRegistrationResponsePreferencesMax = 20;
+
+export const getMyRegistrationResponseAvailabilityItemMax = 80;
+
+export const getMyRegistrationResponseAvailabilityMin = 0;
+export const getMyRegistrationResponseAvailabilityMax = 20;
+
+export const getMyRegistrationResponseMinAgeMin = 18;
+export const getMyRegistrationResponseMinAgeMax = 100;
+
+export const getMyRegistrationResponseMaxAgeMin = 18;
+export const getMyRegistrationResponseMaxAgeMax = 100;
+
+export const getMyRegistrationResponsePhotosItemDataUrlMax = 1500000;
+
+export const getMyRegistrationResponsePhotosMin = 0;
+export const getMyRegistrationResponsePhotosMax = 8;
+
+export const getMyRegistrationResponseMainPhotoMin = 0;
+export const getMyRegistrationResponseMainPhotoMax = 7;
+
+export const getMyRegistrationResponseIdMax = 120;
+
+export const getMyRegistrationResponseSubmittedAtMax = 120;
+
+export const getMyRegistrationResponseReviewStatusMax = 120;
+
+export const getMyRegistrationResponseListingPriceMin = 0;
+
+
+
+export const GetMyRegistrationResponse = zod.object({
+  "displayName": zod.string().min(1).max(getMyRegistrationResponseDisplayNameMax),
+  "dateOfBirth": zod.string().min(1).max(getMyRegistrationResponseDateOfBirthMax),
+  "email": zod.string().min(1).max(getMyRegistrationResponseEmailMax),
+  "mobile": zod.string().min(1).max(getMyRegistrationResponseMobileMax),
+  "headline": zod.string().min(getMyRegistrationResponseHeadlineMin).max(getMyRegistrationResponseHeadlineMax),
+  "about": zod.string().min(getMyRegistrationResponseAboutMin).max(getMyRegistrationResponseAboutMax),
+  "country": zod.string().min(getMyRegistrationResponseCountryMin).max(getMyRegistrationResponseCountryMax),
+  "state": zod.string().min(getMyRegistrationResponseStateMin).max(getMyRegistrationResponseStateMax),
+  "city": zod.string().min(getMyRegistrationResponseCityMin).max(getMyRegistrationResponseCityMax),
+  "area": zod.string().min(getMyRegistrationResponseAreaMin).max(getMyRegistrationResponseAreaMax),
+  "age": zod.number().min(getMyRegistrationResponseAgeMin).max(getMyRegistrationResponseAgeMax),
+  "pinCode": zod.string().min(getMyRegistrationResponsePinCodeMin).max(getMyRegistrationResponsePinCodeMax),
+  "interests": zod.array(zod.string().min(1).max(getMyRegistrationResponseInterestsItemMax)).min(getMyRegistrationResponseInterestsMin).max(getMyRegistrationResponseInterestsMax),
+  "languages": zod.array(zod.string().min(1).max(getMyRegistrationResponseLanguagesItemMax)).min(getMyRegistrationResponseLanguagesMin).max(getMyRegistrationResponseLanguagesMax),
+  "preferences": zod.array(zod.string().min(1).max(getMyRegistrationResponsePreferencesItemMax)).min(getMyRegistrationResponsePreferencesMin).max(getMyRegistrationResponsePreferencesMax),
+  "availability": zod.array(zod.string().min(1).max(getMyRegistrationResponseAvailabilityItemMax)).min(getMyRegistrationResponseAvailabilityMin).max(getMyRegistrationResponseAvailabilityMax),
+  "minAge": zod.number().min(getMyRegistrationResponseMinAgeMin).max(getMyRegistrationResponseMinAgeMax),
+  "maxAge": zod.number().min(getMyRegistrationResponseMaxAgeMin).max(getMyRegistrationResponseMaxAgeMax),
+  "status": zod.enum(['available', 'unavailable']),
+  "listing": zod.enum(['free', 'weekly', 'monthly', 'quarterly']),
+  "partnerOptIn": zod.boolean(),
+  "accurate": zod.boolean(),
+  "terms": zod.boolean(),
+  "adult": zod.boolean(),
+  "photos": zod.array(zod.object({
+  "dataUrl": zod.string().min(1).max(getMyRegistrationResponsePhotosItemDataUrlMax),
+  "category": zod.enum(['profile', 'additional', 'gallery'])
+})).min(getMyRegistrationResponsePhotosMin).max(getMyRegistrationResponsePhotosMax),
+  "mainPhoto": zod.number().min(getMyRegistrationResponseMainPhotoMin).max(getMyRegistrationResponseMainPhotoMax),
+  "id": zod.string().min(1).max(getMyRegistrationResponseIdMax),
+  "submittedAt": zod.string().min(1).max(getMyRegistrationResponseSubmittedAtMax),
+  "reviewStatus": zod.string().min(1).max(getMyRegistrationResponseReviewStatusMax),
+  "listingPrice": zod.number().min(getMyRegistrationResponseListingPriceMin),
+  "isComplete": zod.boolean().optional(),
+  "isPublished": zod.boolean().optional(),
+  "missingSteps": zod.array(zod.string()).optional(),
+  "notificationStatus": zod.string().optional(),
+  "publicSlug": zod.string().optional()
+})
+
+
+export const loginRegistrationBodyEmailMax = 254;
+
+export const loginRegistrationBodyPasswordMax = 128;
+
+
+
+export const LoginRegistrationBody = zod.object({
+  "email": zod.string().min(1).max(loginRegistrationBodyEmailMax),
+  "password": zod.string().min(1).max(loginRegistrationBodyPasswordMax)
+})
+
+export const loginRegistrationResponseDisplayNameMax = 80;
+
+export const loginRegistrationResponseDateOfBirthMax = 10;
+
+export const loginRegistrationResponseEmailMax = 254;
+
+export const loginRegistrationResponseMobileMax = 25;
+
+export const loginRegistrationResponseHeadlineMin = 0;
+export const loginRegistrationResponseHeadlineMax = 120;
+
+export const loginRegistrationResponseAboutMin = 0;
+export const loginRegistrationResponseAboutMax = 2000;
+
+export const loginRegistrationResponseCountryMin = 0;
+export const loginRegistrationResponseCountryMax = 80;
+
+export const loginRegistrationResponseStateMin = 0;
+export const loginRegistrationResponseStateMax = 80;
+
+export const loginRegistrationResponseCityMin = 0;
+export const loginRegistrationResponseCityMax = 80;
+
+export const loginRegistrationResponseAreaMin = 0;
+export const loginRegistrationResponseAreaMax = 100;
+
+export const loginRegistrationResponseAgeMin = 18;
+export const loginRegistrationResponseAgeMax = 100;
+
+export const loginRegistrationResponsePinCodeMin = 0;
+export const loginRegistrationResponsePinCodeMax = 12;
+
+export const loginRegistrationResponseInterestsItemMax = 80;
+
+export const loginRegistrationResponseInterestsMin = 0;
+export const loginRegistrationResponseInterestsMax = 20;
+
+export const loginRegistrationResponseLanguagesItemMax = 80;
+
+export const loginRegistrationResponseLanguagesMin = 0;
+export const loginRegistrationResponseLanguagesMax = 20;
+
+export const loginRegistrationResponsePreferencesItemMax = 80;
+
+export const loginRegistrationResponsePreferencesMin = 0;
+export const loginRegistrationResponsePreferencesMax = 20;
+
+export const loginRegistrationResponseAvailabilityItemMax = 80;
+
+export const loginRegistrationResponseAvailabilityMin = 0;
+export const loginRegistrationResponseAvailabilityMax = 20;
+
+export const loginRegistrationResponseMinAgeMin = 18;
+export const loginRegistrationResponseMinAgeMax = 100;
+
+export const loginRegistrationResponseMaxAgeMin = 18;
+export const loginRegistrationResponseMaxAgeMax = 100;
+
+export const loginRegistrationResponsePhotosItemDataUrlMax = 1500000;
+
+export const loginRegistrationResponsePhotosMin = 0;
+export const loginRegistrationResponsePhotosMax = 8;
+
+export const loginRegistrationResponseMainPhotoMin = 0;
+export const loginRegistrationResponseMainPhotoMax = 7;
+
+export const loginRegistrationResponseIdMax = 120;
+
+export const loginRegistrationResponseSubmittedAtMax = 120;
+
+export const loginRegistrationResponseReviewStatusMax = 120;
+
+export const loginRegistrationResponseListingPriceMin = 0;
+
+
+
+export const LoginRegistrationResponse = zod.object({
+  "displayName": zod.string().min(1).max(loginRegistrationResponseDisplayNameMax),
+  "dateOfBirth": zod.string().min(1).max(loginRegistrationResponseDateOfBirthMax),
+  "email": zod.string().min(1).max(loginRegistrationResponseEmailMax),
+  "mobile": zod.string().min(1).max(loginRegistrationResponseMobileMax),
+  "headline": zod.string().min(loginRegistrationResponseHeadlineMin).max(loginRegistrationResponseHeadlineMax),
+  "about": zod.string().min(loginRegistrationResponseAboutMin).max(loginRegistrationResponseAboutMax),
+  "country": zod.string().min(loginRegistrationResponseCountryMin).max(loginRegistrationResponseCountryMax),
+  "state": zod.string().min(loginRegistrationResponseStateMin).max(loginRegistrationResponseStateMax),
+  "city": zod.string().min(loginRegistrationResponseCityMin).max(loginRegistrationResponseCityMax),
+  "area": zod.string().min(loginRegistrationResponseAreaMin).max(loginRegistrationResponseAreaMax),
+  "age": zod.number().min(loginRegistrationResponseAgeMin).max(loginRegistrationResponseAgeMax),
+  "pinCode": zod.string().min(loginRegistrationResponsePinCodeMin).max(loginRegistrationResponsePinCodeMax),
+  "interests": zod.array(zod.string().min(1).max(loginRegistrationResponseInterestsItemMax)).min(loginRegistrationResponseInterestsMin).max(loginRegistrationResponseInterestsMax),
+  "languages": zod.array(zod.string().min(1).max(loginRegistrationResponseLanguagesItemMax)).min(loginRegistrationResponseLanguagesMin).max(loginRegistrationResponseLanguagesMax),
+  "preferences": zod.array(zod.string().min(1).max(loginRegistrationResponsePreferencesItemMax)).min(loginRegistrationResponsePreferencesMin).max(loginRegistrationResponsePreferencesMax),
+  "availability": zod.array(zod.string().min(1).max(loginRegistrationResponseAvailabilityItemMax)).min(loginRegistrationResponseAvailabilityMin).max(loginRegistrationResponseAvailabilityMax),
+  "minAge": zod.number().min(loginRegistrationResponseMinAgeMin).max(loginRegistrationResponseMinAgeMax),
+  "maxAge": zod.number().min(loginRegistrationResponseMaxAgeMin).max(loginRegistrationResponseMaxAgeMax),
+  "status": zod.enum(['available', 'unavailable']),
+  "listing": zod.enum(['free', 'weekly', 'monthly', 'quarterly']),
+  "partnerOptIn": zod.boolean(),
+  "accurate": zod.boolean(),
+  "terms": zod.boolean(),
+  "adult": zod.boolean(),
+  "photos": zod.array(zod.object({
+  "dataUrl": zod.string().min(1).max(loginRegistrationResponsePhotosItemDataUrlMax),
+  "category": zod.enum(['profile', 'additional', 'gallery'])
+})).min(loginRegistrationResponsePhotosMin).max(loginRegistrationResponsePhotosMax),
+  "mainPhoto": zod.number().min(loginRegistrationResponseMainPhotoMin).max(loginRegistrationResponseMainPhotoMax),
+  "id": zod.string().min(1).max(loginRegistrationResponseIdMax),
+  "submittedAt": zod.string().min(1).max(loginRegistrationResponseSubmittedAtMax),
+  "reviewStatus": zod.string().min(1).max(loginRegistrationResponseReviewStatusMax),
+  "listingPrice": zod.number().min(loginRegistrationResponseListingPriceMin),
+  "isComplete": zod.boolean().optional(),
+  "isPublished": zod.boolean().optional(),
+  "missingSteps": zod.array(zod.string()).optional(),
+  "notificationStatus": zod.string().optional(),
+  "publicSlug": zod.string().optional()
+})
+
+
 /**
  * @summary Health check
  */
@@ -124,11 +1143,15 @@ export const SendInterestParams = zod.object({
   "id": zod.coerce.number()
 })
 
+export const sendInterestBodyContactMax = 64;
+
 export const sendInterestBodyNoteMax = 500;
 
 
 
 export const SendInterestBody = zod.object({
+  "contactType": zod.enum(['telegram', 'whatsapp']),
+  "contact": zod.string().min(1).max(sendInterestBodyContactMax),
   "note": zod.string().max(sendInterestBodyNoteMax).optional()
 })
 
