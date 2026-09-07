@@ -178,7 +178,7 @@ function Shell({ children }: { children: ReactNode }) {
         <div className="mx-auto flex h-[72px] max-w-[1320px] items-center justify-between px-5 sm:px-8 lg:px-12">
           <Link href="/" className="group flex items-center gap-3 focus-ring" onClick={() => setOpen(false)} data-testid="link-logo">
             <span className="flex h-8 w-8 items-center justify-center rounded-full border border-accent/70 text-accent"><HeartHandshake size={15} /></span>
-            <span className="font-editorial text-[23px] tracking-[-.02em] text-foreground">him <span className="text-primary">for</span> you</span>
+            <span className="font-editorial text-[23px] tracking-[-.02em] text-foreground">men <span className="text-primary">for</span> you</span>
           </Link>
           <nav className="hidden items-center gap-7 lg:flex" aria-label="Main navigation">
             <Link href="/" className={`underlined-link text-[11px] font-semibold uppercase tracking-[.14em] transition ${location === '/' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`} data-testid="link-home">Home</Link>
@@ -210,7 +210,7 @@ function Shell({ children }: { children: ReactNode }) {
        <footer id="footer" className="border-t border-foreground/10 bg-[#0d0d0f]">
          <div className="mx-auto grid max-w-[1320px] gap-10 px-5 py-12 sm:px-8 md:grid-cols-[1.5fr_1fr_1fr_1fr] lg:px-12 lg:py-16">
           <div>
-            <div className="flex items-center gap-3"><span className="flex h-7 w-7 items-center justify-center rounded-full border border-accent/70 text-accent"><HeartHandshake size={13} /></span><span className="font-editorial text-xl">him <span className="text-primary">for</span> you</span></div>
+            <div className="flex items-center gap-3"><span className="flex h-7 w-7 items-center justify-center rounded-full border border-accent/70 text-accent"><HeartHandshake size={13} /></span><span className="font-editorial text-xl">men <span className="text-primary">for</span> you</span></div>
              <p className="mt-5 max-w-xs text-sm leading-6 text-muted-foreground">A premium dating and companionship platform for women who know what they want.</p>
              <div className="mt-7 flex gap-2 text-[10px] font-semibold uppercase tracking-[.14em] text-muted-foreground"><span className="rounded-full border border-foreground/15 px-3 py-1.5">Private</span><span className="rounded-full border border-foreground/15 px-3 py-1.5">18+ only</span></div>
           </div>
@@ -227,7 +227,7 @@ function Shell({ children }: { children: ReactNode }) {
              <div className="mt-4 grid gap-3 text-sm text-muted-foreground"><span>Privacy policy</span><span>Terms &amp; conditions</span><span>Safety guidelines</span><span>Contact us</span></div>
           </div>
         </div>
-         <div className="mx-auto flex max-w-[1320px] flex-col gap-2 border-t border-foreground/10 px-5 py-5 text-[10px] uppercase tracking-[.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12"><span>© 2025 Him For You. All rights reserved.</span><span>For consenting adults only · Your privacy. Your choice.</span></div>
+         <div className="mx-auto flex max-w-[1320px] flex-col gap-2 border-t border-foreground/10 px-5 py-5 text-[10px] uppercase tracking-[.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12"><span>© 2025 Men For You. All rights reserved.</span><span>For consenting adults only · Your privacy. Your choice.</span></div>
       </footer>
     </div>
   );
@@ -245,10 +245,10 @@ function Home() {
   const featuredProfiles = featured.data ?? [];
   return (
     <div>
-      <section className="hero-reference relative min-h-[645px] overflow-hidden border-b border-foreground/10">
+      <section className="hero-reference relative min-h-[645px] border-b border-foreground/10">
         <img src="/assets/him-for-you-hero.jpg" alt="Couple sharing a private moment" width="1600" height="900" className="absolute inset-0 h-full w-full object-cover object-[68%_center]" />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,#080709_0%,rgba(8,7,9,.96)_28%,rgba(8,7,9,.58)_58%,rgba(8,7,9,.12)_100%)]" />
-        <div className="relative mx-auto flex min-h-[645px] max-w-[1320px] flex-col justify-center px-5 pb-32 pt-20 sm:px-8 lg:px-12">
+        <div className="relative mx-auto flex min-h-[645px] max-w-[1320px] flex-col justify-center px-5 pt-20 sm:px-8 lg:px-12">
           <div className="reveal max-w-[590px]">
             <p className="mb-4 font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">For women who know what they want</p>
             <h1 className="max-w-[570px] font-editorial text-[clamp(3rem,6.4vw,6.2rem)] leading-[.92] tracking-[-.055em] text-[#fff8ee]">Find the Right Man <em className="text-accent">For Your Moments</em></h1>
@@ -263,7 +263,7 @@ function Home() {
               <span className="flex items-center gap-1.5"><BadgeCheck size={12} className="text-accent" /> Adults only (18+)</span>
             </div>
           </div>
-          <div className="search-reference absolute inset-x-5 -bottom-20 z-10 rounded-lg border border-foreground/20 bg-[#171619]/95 p-4 shadow-2xl backdrop-blur-md sm:inset-x-8 sm:p-5 lg:inset-x-12">
+          <div className="search-reference relative z-10 -mb-20 mt-8 shrink-0 rounded-lg border border-foreground/20 bg-[#171619]/95 p-4 shadow-2xl backdrop-blur-md sm:p-5">
             <div className="mb-4 flex items-end justify-between"><div><h2 className="font-editorial text-2xl text-[#fff8ee]">Find Your Perfect Match</h2><p className="mt-1 text-xs text-muted-foreground">Search men based on your preferences and location.</p></div><Search size={18} className="hidden text-accent sm:block" /></div>
             <div className="grid gap-3 md:grid-cols-[1.05fr_1.05fr_.8fr_auto]">
               <label className="grid gap-1.5 text-[10px] font-semibold uppercase tracking-[.12em] text-muted-foreground">Location<select className="h-11 rounded-md border border-foreground/15 bg-[#0f0e10] px-3 text-xs font-normal normal-case tracking-normal text-foreground outline-none focus:border-accent" value={chosenCity} onChange={(event) => setChosenCity(event.target.value)} data-testid="select-home-city"><option value="">Select city</option>{(cities.data ?? []).map((city) => <option value={city.slug} key={city.id}>{city.name}</option>)}</select></label>
@@ -274,11 +274,51 @@ function Home() {
           </div>
         </div>
       </section>
-      <section className="bg-background pt-28">
+      <section id="private-massage" className="bg-background px-5 pb-10 pt-28 sm:px-8 lg:px-12" aria-labelledby="massage-heading">
+        <div className="relative mx-auto grid max-w-[1224px] overflow-hidden rounded-2xl border border-accent/50 bg-gradient-to-br from-[#49203b] via-[#251b27] to-[#171619] shadow-[0_20px_70px_rgba(218,71,151,0.16)] md:grid-cols-[1.4fr_.6fr]">
+          <div className="relative z-10 p-7 sm:p-10 lg:p-12">
+            <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[.18em] text-accent"><Sparkles size={14} /> A moment just for you</p>
+            <h2 id="massage-heading" className="font-editorial text-4xl leading-tight text-[#fff8ee] sm:text-5xl">Private Massage for Women<br /><em className="text-accent">By Men.</em></h2>
+            <p className="mt-5 max-w-xl text-sm leading-7 text-[#f3e8dc]/80">Make time to unwind with a private massage experience. Connect with men and discuss your preferences, comfort and availability before arranging a session.</p>
+            <div className="mt-6 flex flex-wrap gap-3 text-xs text-[#fff8ee]">
+              <span className="rounded-full border border-white/15 px-3 py-2">Your comfort comes first</span>
+              <span className="rounded-full border border-white/15 px-3 py-2">At your pace</span>
+              <span className="rounded-full border border-white/15 px-3 py-2">For adults 18+</span>
+            </div>
+            <Link href="/men" className="mt-8 inline-flex items-center justify-center gap-3 rounded-md bg-primary px-6 py-4 text-xs font-bold uppercase tracking-[.12em] text-white transition hover:bg-primary/85" data-testid="link-massage-explore">Explore Men Near You <ArrowUpRight size={16} /></Link>
+          </div>
+          <div className="relative min-h-[260px] overflow-hidden border-t border-accent/20 md:border-l md:border-t-0">
+            <img src="/assets/arjun-profile.jpg" alt="Blurred portrait of a man" className="h-full min-h-[260px] w-full scale-110 object-cover blur-md md:absolute md:inset-0" loading="lazy" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#171619] via-[#251b27]/30 to-transparent" />
+            <div className="absolute inset-x-6 bottom-7 text-center"><Sparkles className="mx-auto mb-3 text-accent" size={28} /><p className="font-editorial text-2xl text-[#fff8ee]">Relax. Unwind. Reconnect.</p><p className="mt-2 text-xs text-[#f3e8dc]/75">A little time for yourself.</p></div>
+          </div>
+        </div>
+      </section>
+      <section className="bg-background">
         <div className="mx-auto max-w-[1320px] px-5 pb-5 sm:px-8 lg:px-12">
           <div className="mb-6 flex items-end justify-between gap-5"><div><h2 className="font-editorial text-3xl tracking-[-.03em] sm:text-4xl">Featured Men Near You</h2><p className="mt-1 text-xs text-muted-foreground">Discover men who are currently active and ready to connect with women looking for genuine companionship.</p></div><Link href="/men" className="hidden items-center gap-2 text-[10px] font-bold uppercase tracking-[.15em] text-primary sm:flex" data-testid="link-view-all">View all men <ArrowUpRight size={14} /></Link></div>
           {featured.isLoading ? <ProfileSkeleton count={5} /> : featured.isError ? <ErrorState onRetry={() => featured.refetch()} /> : featuredProfiles.length === 0 ? <div className="rounded-2xl border hairline p-12 text-center text-muted-foreground" data-testid="empty-featured">New profiles are arriving soon.</div> : <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{featuredProfiles.slice(0, 5).map((profile) => <ProfileCard key={profile.id} profile={profile} featured />)}</div>}
           <Link href="/men" className="mt-6 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[.15em] text-primary sm:hidden" data-testid="mobile-link-view-all">View all men <ArrowUpRight size={14} /></Link>
+        </div>
+      </section>
+      <section className="relative mx-auto max-w-[1320px] px-5 py-14 sm:px-8 lg:px-12" aria-labelledby="colorful-moments-heading">
+        <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/15 via-card to-accent/10 p-6 sm:p-10">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">A little spark. A beautiful memory.</p>
+            <h2 id="colorful-moments-heading" className="mt-4 font-editorial text-4xl leading-tight sm:text-5xl">Make every moment<br /><em className="text-primary">a little more colorful.</em></h2>
+            <p className="mt-5 text-sm leading-7 text-muted-foreground">You deserve laughter that comes easily, company that feels right, and moments that stay with you. Meet handsome men for a coffee, a special evening, or a new adventure. Let your next beautiful memory begin with a hello.</p>
+          </div>
+          <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { icon: Heart, title: 'Coffee & Dating', text: 'A warm conversation, a shared smile, and the possibility of something lovely.' },
+              { icon: Gem, title: 'Dinner & Evenings Out', text: 'Dress up, discover somewhere special, and enjoy charming company across the table.' },
+              { icon: Compass, title: 'Travel Companionship', text: 'Explore new places and turn a change of scenery into a shared memory.' },
+              { icon: CalendarDays, title: 'Events & Celebrations', text: 'Find company for a social evening, a celebration, or an occasion worth remembering.' },
+              { icon: Sparkles, title: 'Private Massage', text: 'Take a pause for yourself. Discuss a relaxing session, your preferences, and your comfort.' },
+              { icon: MessageCircle, title: 'Everyday Companionship', text: 'An unhurried walk, a weekend plan, or someone to share the little joys with.' },
+            ].map(({ icon: Icon, title, text }) => <article key={title} className="rounded-xl border border-foreground/10 bg-background/60 p-5"><Icon size={22} className="text-accent" /><h3 className="mt-4 font-editorial text-2xl">{title}</h3><p className="mt-3 text-sm leading-6 text-muted-foreground">{text}</p></article>)}
+          </div>
+          <div className="mt-8 text-center"><Link href="/men" className="inline-flex items-center justify-center gap-3 rounded-md bg-primary px-6 py-4 text-xs font-bold uppercase tracking-[.12em] text-white transition hover:bg-primary/85" data-testid="link-colorful-moments">Find Your Kind of Company <ArrowUpRight size={16} /></Link><p className="mt-4 text-xs leading-5 text-muted-foreground">For adults 18+. Experiences depend on individual availability and mutual agreement.</p></div>
         </div>
       </section>
       <section id="how-it-works" className="mt-10 bg-[#f5f0e7] text-[#292323]">
@@ -390,7 +430,7 @@ function ProfileDetailPage() {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,.9fr)] lg:gap-16">
         <div className="relative overflow-hidden rounded-2xl border hairline bg-card">
           <div className="aspect-[4/5] max-h-[700px] bg-muted">
-            {photoFor(data) ? <img src={photoFor(data)} alt={`${data.displayName} portrait`} className="h-full w-full object-cover" data-testid="img-profile-detail" /> : <div className="flex h-full items-center justify-center font-editorial text-8xl text-accent">{initials(data.displayName)}</div>}
+            {photoFor(data) ? <img src={photoFor(data)} alt={`${data.displayName} portrait`} className="public-men-photo h-full w-full object-cover" data-testid="img-profile-detail" /> : <div className="flex h-full items-center justify-center font-editorial text-8xl text-accent">{initials(data.displayName)}</div>}
           </div>
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-background/90 via-background/20 to-transparent p-6 pt-28">
             <div><p className="font-mono-label text-[10px] uppercase tracking-[.18em] text-accent">{data.isPremium ? 'Private member' : 'Verified member'}</p><p className="mt-2 flex items-center gap-2 text-sm text-foreground"><span className={`h-2 w-2 rounded-full ${data.isOnline ? 'bg-[#b9d7a7]' : 'bg-muted-foreground'}`} />{data.isOnline ? 'Available for conversation' : `Last active ${data.lastActive}`}</p></div>
@@ -405,12 +445,18 @@ function ProfileDetailPage() {
           <div className="mt-8 border-y hairline py-6"><p className="text-sm leading-7 text-muted-foreground" data-testid="text-profile-bio">{data.bio}</p></div>
           <div className="grid gap-5 border-b hairline py-6 sm:grid-cols-2"><div><p className="flex items-center gap-2 text-[10px] uppercase tracking-[.16em] text-accent"><Clock3 size={13} /> Response time</p><p className="mt-2 text-sm text-foreground">{data.responseTime}</p></div><div><p className="flex items-center gap-2 text-[10px] uppercase tracking-[.16em] text-accent"><Compass size={13} /> Availability</p><p className="mt-2 text-sm text-foreground">{data.availability}</p></div></div>
           <div className="mt-7 flex flex-wrap gap-2">{[...(data.interests ?? []), ...(data.lookingFor ?? [])].slice(0, 8).map((tag) => <span className="rounded-full border border-foreground/15 px-3 py-1.5 text-xs text-muted-foreground" key={tag}>{tag}</span>)}</div>
-          <div className="mt-9 rounded-2xl border border-primary/25 bg-primary/8 p-5 sm:p-6">
-            {sent ? <div className="flex items-start gap-4" data-testid="status-interest-success"><CheckCircle2 className="mt-0.5 text-accent" size={22} /><div><h2 className="font-editorial text-2xl">A thoughtful first step.</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Your introduction has been sent. We can contact you using the details you provided.</p></div></div> : <><p className="font-mono-label text-[10px] uppercase tracking-[.18em] text-accent">Make an introduction</p><h2 className="mt-3 font-editorial text-2xl">Say hello, if it feels right.</h2><div className="mt-4"><label htmlFor="interest-contact-type" className="block text-xs text-muted-foreground">How can we contact you?</label><select id="interest-contact-type" value={contactType} onChange={(event) => { setContactType(event.target.value as 'telegram' | 'whatsapp'); setContact(''); setContactError(''); }} className="mt-2 w-full rounded-xl border border-foreground/15 bg-background p-3 text-sm text-foreground"><option value="telegram">Telegram</option><option value="whatsapp">WhatsApp</option></select><label htmlFor="interest-contact" className="mt-4 block text-xs text-muted-foreground">{contactType === 'telegram' ? 'Telegram username' : 'WhatsApp number with country code'} <span aria-hidden="true">*</span></label><input id="interest-contact" type={contactType === 'whatsapp' ? 'tel' : 'text'} autoComplete={contactType === 'whatsapp' ? 'tel' : 'off'} required maxLength={64} value={contact} onChange={(event) => { setContact(event.target.value); setContactError(''); }} placeholder={contactType === 'telegram' ? '@your_username' : '+919876543210'} aria-invalid={!!contactError} aria-describedby="interest-contact-help interest-contact-error" className="mt-2 w-full rounded-xl border border-foreground/15 bg-background/60 p-3 text-sm text-foreground outline-none focus:border-accent" data-testid="input-interest-contact" /><p id="interest-contact-help" className="mt-2 text-xs leading-5 text-muted-foreground">Your message and contact details will be shared privately with our team so we can respond.</p><p id="interest-contact-error" role="alert" className="mt-2 text-xs text-primary">{contactError}</p></div><label htmlFor="interest-note" className="mt-4 block text-xs text-muted-foreground">Message (optional)</label><textarea id="interest-note" value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} placeholder="A note is optional. A little context goes a long way." className="mt-4 min-h-[92px] w-full resize-none rounded-xl border border-foreground/15 bg-background/60 p-4 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground focus:border-accent" data-testid="textarea-interest-note" />{interest.isError && <p className="mt-3 text-xs text-primary" data-testid="status-interest-error">That introduction could not be sent. Please try once more.</p>}<div className="mt-3 flex items-center justify-between gap-3"><span className="text-[11px] text-muted-foreground">{note.length}/500</span><button className="flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-xs font-bold uppercase tracking-[.14em] text-foreground transition hover:bg-primary/85 disabled:opacity-50" onClick={submitInterest} disabled={interest.isPending} data-testid="button-send-interest">{interest.isPending ? 'Sending…' : 'Send interest'} <Send size={14} /></button></div></>}
+          <div className="mt-7 rounded-xl border border-accent/35 bg-accent/10 p-5" data-testid="profile-photo-interest-info">
+            <p className="flex items-center gap-2 text-sm font-semibold text-accent"><LockKeyhole size={17} /> Want to see his photo and connect?</p>
+            <p className="mt-3 text-sm leading-6 text-foreground/85">Send your interest below and leave your Telegram or WhatsApp details. Our team can follow up with his photo and help you take the next step toward a connection, subject to his availability and consent.</p>
+            <p className="mt-2 text-xs leading-5 text-muted-foreground">Photos stay blurred here. Photo sharing and introductions are arranged privately after your request.</p>
+            <a href="#profile-interest" className="mt-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.12em] text-accent">Send your interest <Send size={14} /></a>
+          </div>
+          <div id="profile-interest" className="mt-6 scroll-mt-24 rounded-2xl border border-primary/25 bg-primary/8 p-5 sm:p-6">
+            {sent ? <div className="flex items-start gap-4" data-testid="status-interest-success"><CheckCircle2 className="mt-0.5 text-accent" size={22} /><div><h2 className="font-editorial text-2xl">A thoughtful first step.</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Your interest has been sent. Our team can follow up on your chosen contact method about photo sharing and an introduction, subject to availability and consent.</p></div></div> : <><p className="font-mono-label text-[10px] uppercase tracking-[.18em] text-accent">Make an introduction</p><h2 className="mt-3 font-editorial text-2xl">Send your interest. Get to know him.</h2><div className="mt-4"><label htmlFor="interest-contact-type" className="block text-xs text-muted-foreground">How can we contact you?</label><select id="interest-contact-type" value={contactType} onChange={(event) => { setContactType(event.target.value as 'telegram' | 'whatsapp'); setContact(''); setContactError(''); }} className="mt-2 w-full rounded-xl border border-foreground/15 bg-background p-3 text-sm text-foreground"><option value="telegram">Telegram</option><option value="whatsapp">WhatsApp</option></select><label htmlFor="interest-contact" className="mt-4 block text-xs text-muted-foreground">{contactType === 'telegram' ? 'Telegram username' : 'WhatsApp number with country code'} <span aria-hidden="true">*</span></label><input id="interest-contact" type={contactType === 'whatsapp' ? 'tel' : 'text'} autoComplete={contactType === 'whatsapp' ? 'tel' : 'off'} required maxLength={64} value={contact} onChange={(event) => { setContact(event.target.value); setContactError(''); }} placeholder={contactType === 'telegram' ? '@your_username' : '+919876543210'} aria-invalid={!!contactError} aria-describedby="interest-contact-help interest-contact-error" className="mt-2 w-full rounded-xl border border-foreground/15 bg-background/60 p-3 text-sm text-foreground outline-none focus:border-accent" data-testid="input-interest-contact" /><p id="interest-contact-help" className="mt-2 text-xs leading-5 text-muted-foreground">Your message and contact details will be shared privately with our team so we can respond.</p><p id="interest-contact-error" role="alert" className="mt-2 text-xs text-primary">{contactError}</p></div><label htmlFor="interest-note" className="mt-4 block text-xs text-muted-foreground">Message (optional)</label><textarea id="interest-note" value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} placeholder="A note is optional. A little context goes a long way." className="mt-4 min-h-[92px] w-full resize-none rounded-xl border border-foreground/15 bg-background/60 p-4 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground focus:border-accent" data-testid="textarea-interest-note" />{interest.isError && <p className="mt-3 text-xs text-primary" data-testid="status-interest-error">That introduction could not be sent. Please try once more.</p>}<div className="mt-3 flex items-center justify-between gap-3"><span className="text-[11px] text-muted-foreground">{note.length}/500</span><button className="flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-xs font-bold uppercase tracking-[.14em] text-foreground transition hover:bg-primary/85 disabled:opacity-50" onClick={submitInterest} disabled={interest.isPending} data-testid="button-send-interest">{interest.isPending ? 'Sending…' : 'Send interest'} <Send size={14} /></button></div></>}
           </div>
         </div>
       </div>
-      {data.gallery?.length > 0 && <div className="mt-16 border-t border-foreground/10 pt-10"><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">A little more of his world</p><div className="scroll-row mt-5 flex gap-4 overflow-auto">{data.gallery.map((image, index) => <img src={image} alt={`${data.displayName} gallery ${index + 1}`} className="h-56 w-44 shrink-0 rounded-xl object-cover sm:h-72 sm:w-56" key={image} data-testid={`img-gallery-${index}`} />)}</div></div>}
+      {data.gallery?.length > 0 && <div className="mt-16 border-t border-foreground/10 pt-10"><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">A little more of his world</p><div className="scroll-row mt-5 flex gap-4 overflow-auto">{data.gallery.map((image, index) => <img src={image} alt={`${data.displayName} gallery ${index + 1}`} className="public-men-photo h-56 w-44 shrink-0 rounded-xl object-cover sm:h-72 sm:w-56" key={image} data-testid={`img-gallery-${index}`} />)}</div></div>}
     </div>
   );
 }
@@ -445,13 +491,13 @@ function PageMeta() {
   const meta = useMemo(() => {
     if (location.startsWith('/profile/')) {
       return {
-        title: 'Meet someone worth remembering | Him For You',
-        description: 'Explore a verified Him For You profile and connect with intention, privacy, and ease.',
+        title: 'Meet someone worth remembering | Men For You',
+        description: 'Explore a verified Men For You profile and connect with intention, privacy, and ease.',
       };
     }
     if (location === '/premium') {
       return {
-        title: 'Membership for more visibility | Him For You',
+        title: 'Membership for more visibility | Men For You',
         description: 'Thoughtful membership plans for men who want to be discovered by the right people.',
       };
     }
@@ -463,12 +509,12 @@ function PageMeta() {
     }
     if (location.startsWith('/men')) {
       return {
-        title: 'Browse verified men near you | Him For You',
+        title: 'Browse verified men near you | Men For You',
         description: 'Discover verified men by city, intention, and availability on a private discovery platform.',
       };
     }
     return {
-      title: 'Him For You | Meet the kind of company you remember',
+      title: 'Men For You | Meet the kind of company you remember',
       description: 'Discover verified men for dating, companionship, travel, dinners, and meaningful private connections.',
     };
   }, [location]);

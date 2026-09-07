@@ -98,8 +98,9 @@
 @keyframes pulse-soft { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
 .pulse-soft { animation: pulse-soft 1.8s ease-in-out infinite; }
 
-.profile-image { transition: transform .7s cubic-bezier(.2,.8,.2,1), filter .4s ease; }
-.profile-card:hover .profile-image { transform: scale(1.045); filter: saturate(1.12); }
+.profile-image, .public-men-photo { filter: blur(10px); }
+.profile-image { transform: scale(1.08); transition: transform .7s cubic-bezier(.2,.8,.2,1); }
+.profile-card:hover .profile-image { transform: scale(1.12); }
 .profile-card { transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease; }
 .profile-card:hover { transform: translateY(-5px); border-color: hsl(var(--accent) / .42); box-shadow: var(--shadow-lg); }
 .underlined-link { position: relative; }

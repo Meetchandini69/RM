@@ -25,6 +25,8 @@ Connect this GitHub repository to a new Railway service. Keep the service root a
 The root `Dockerfile` configures the build and start command. In Railway service settings, set **Healthcheck Path** to `/api/healthz`, **Healthcheck Timeout** to `120`, **Restart Policy** to On Failure, and **Replicas** to `1`. Do not add a separate build/start override or a volume. Railway supplies `PORT`; do not hardcode a local port.
 
 Add these Railway variables:
+ 
+If deployment says **The executable `pnpm` could not be found**, the build has succeeded but Railway is overriding the Docker startup command. Open **Settings → Deploy → Custom Start Command** and clear the override to use the Dockerfile default. Alternatively, set it explicitly to `node --enable-source-maps dist/index.mjs`. Save/apply the setting and redeploy. The runtime image contains Node and the compiled API; pnpm is only installed in the build stage.
 
 | Variable | Value |
 | --- | --- |
