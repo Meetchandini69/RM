@@ -1,3 +1,4 @@
+import { injectSeo, seoFilePath } from "../../scripts/seo-render.mjs";
 import path from 'path';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -28,9 +29,46 @@ if (!basePath) {
   );
 }
 
+const seoTarget = process.env.API_TARGET || localEnv.API_TARGET || 'http://127.0.0.1:5001';
+const seoSecret = process.env.API_PROXY_SECRET || localEnv.API_PROXY_SECRET || '';
+async function fetchSeo(path: string) {
+  return fetch(new URL(path, seoTarget), { headers: { 'x-api-proxy-secret': seoSecret }, signal: AbortSignal.timeout(10000) });
+}
+
 export default defineConfig({
   base: basePath,
   plugins: [
+    {
+      name: 'admin-seo',
+      configureServer(server) {
+        server.middlewares.use(async (req, res, next) => {
+          const pathname = new URL(req.url || '/', 'http://localhost').pathname;
+          const endpoint = seoFilePath(pathname);
+          if (!endpoint || !['GET', 'HEAD'].includes(req.method || 'GET')) return next();
+          try {
+            const upstream = await fetchSeo(endpoint);
+            res.statusCode = upstream.status;
+            for (const header of ['content-type', 'content-security-policy', 'x-content-type-options']) {
+              const value = upstream.headers.get(header); if (value) res.setHeader(header, value);
+            }
+            res.setHeader('Cache-Control', 'no-store');
+            res.end(req.method === 'HEAD' ? undefined : await upstream.text());
+          } catch { res.statusCode = 503; res.end('SEO service unavailable.'); }
+        });
+      },
+      transformIndexHtml: {
+        order: 'post',
+        async handler(html, context) {
+          if (!context.server) return html;
+          const pathname = new URL(context.originalUrl || context.path, 'http://localhost').pathname;
+          try {
+            const response = await fetchSeo('/api/seo/page?path=' + encodeURIComponent(pathname));
+            if (!response.ok) return html;
+            return injectSeo(html, await response.json(), `http://localhost:${port}`);
+          } catch { return html; }
+        },
+      },
+    },
     react(),
     tailwindcss(),
     runtimeErrorOverlay(),

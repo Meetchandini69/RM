@@ -1,3 +1,4 @@
+import seoRouter from "./routes/seo";
 import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
@@ -52,6 +53,7 @@ app.use("/api", viewerRouter);
 app.use("/api", router);
 app.use("/api", registrationRouter);
 app.use("/api", accountsRouter);
+app.use("/api", seoRouter);
 app.use("/api", (_req, res) => {
   res.status(404).json({ message: "This API endpoint is unavailable. Please update and restart the API server." });
 });

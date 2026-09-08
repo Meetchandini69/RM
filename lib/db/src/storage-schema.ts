@@ -43,4 +43,7 @@ UPDATE registration_settings
 SET value = value || '{"plans":[{"id":"quarterly","price":499,"enabled":true},{"id":"yearly","price":999,"enabled":true}],"pricingVersion":"quarterly-yearly-v1"}'::jsonb
 WHERE id = 1 AND NOT EXISTS (SELECT 1 FROM jsonb_array_elements(value->'plans') AS plan WHERE plan->>'id' = 'yearly');
 CREATE TABLE IF NOT EXISTS discovery_settings (id INTEGER PRIMARY KEY, value JSONB NOT NULL);
+CREATE TABLE IF NOT EXISTS seo_settings (id INTEGER PRIMARY KEY, site_url TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS seo_pages (path TEXT PRIMARY KEY, title TEXT NOT NULL, description TEXT NOT NULL, canonical TEXT NOT NULL DEFAULT '', noindex BOOLEAN NOT NULL DEFAULT false);
+CREATE TABLE IF NOT EXISTS seo_verification_files (filename TEXT PRIMARY KEY, content TEXT NOT NULL, uploaded_at TIMESTAMPTZ NOT NULL DEFAULT now());
 `;

@@ -1,3 +1,4 @@
+import { SeoAdmin } from "./seo";
 import { DiscoveryOptionsAdmin } from "./discovery-options";
 import { BoostPanel, InterestHistory } from "./account-panels";
 import { ViewerQueue } from "./viewer-access";
@@ -1448,7 +1449,7 @@ export function RegistrationAdmin() {
   const [checking, setChecking] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
   const [sessionError, setSessionError] = useState("");
-  const [tab, setTab] = useState<"registrations" | "settings" | "discovery">("registrations");
+  const [tab, setTab] = useState<"registrations" | "settings" | "discovery" | "seo">("registrations");
   const login = useLoginRegistrationAdmin();
   const update = useUpdateRegistrationSettings();
   const [password, setPassword] = useState("");
@@ -1512,6 +1513,7 @@ export function RegistrationAdmin() {
             Pricing & Policies
           </button>
           <button className={tab === "discovery" ? primary : secondary} onClick={() => setTab("discovery")}>Search options</button>
+          <button className={tab === "seo" ? primary : secondary} onClick={() => setTab("seo")}>SEO & Sitemaps</button>
           <button type="button" className={`${secondary} sm:ml-auto`} disabled={loggingOut} onClick={logout}>
             {loggingOut ? "Logging out…" : "Log out"}
           </button>
@@ -1553,7 +1555,7 @@ export function RegistrationAdmin() {
             {login.isPending ? "Signing in…" : "Sign in"}
           </button>
         </form>
-      ) : tab === "discovery" ? <DiscoveryOptionsAdmin /> : tab === "registrations" ? (
+      ) : tab === "seo" ? <SeoAdmin /> : tab === "discovery" ? <DiscoveryOptionsAdmin /> : tab === "registrations" ? (
         <><ViewerQueue /><AdminRegistrationQueue /><BoostPanel admin /></>
       ) : (
         <form

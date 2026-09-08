@@ -1,3 +1,4 @@
+import { PageMeta } from "@/pages/seo";
 import { useDiscoveryOptions } from "@/pages/discovery-options";
 import { AccountMenu, WomenPanel } from "@/pages/account-panels";
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
@@ -227,7 +228,7 @@ function Shell({ children }: { children: ReactNode }) {
            </div>
            <div>
              <p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Information</p>
-             <div className="mt-4 grid gap-3 text-sm text-muted-foreground"><span>Privacy policy</span><span>Terms &amp; conditions</span><span>Safety guidelines</span><span>Contact us</span></div>
+             <div className="mt-4 grid gap-3 text-sm text-muted-foreground"><Link href="/privacy">Privacy policy</Link><Link href="/terms">Terms &amp; conditions</Link><a href="/sitemap.html">Sitemap</a><span>Safety guidelines</span><span>Contact us</span></div>
           </div>
         </div>
          <div className="mx-auto flex max-w-[1320px] flex-col gap-2 border-t border-foreground/10 px-5 py-5 text-[10px] uppercase tracking-[.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12"><span>© 2025 Men For You. All rights reserved.</span><span>For consenting adults only · Your privacy. Your choice.</span></div>
@@ -492,54 +493,6 @@ function PlanCard({ plan, index, selected, onSelect }: { plan: Plan; index: numb
 function CityBrowseRoute() {
   const { city } = useParams<{ city: string }>();
   return <Shell><Browse forcedCity={city} /></Shell>;
-}
-
-function PageMeta() {
-  const [location] = useLocation();
-  const meta = useMemo(() => {
-    if (location.startsWith('/profile/')) {
-      return {
-        title: 'Meet someone worth remembering | Men For You',
-        description: 'Explore a verified Men For You profile and connect with intention, privacy, and ease.',
-      };
-    }
-    if (location === '/premium') {
-      return {
-        title: 'Membership for more visibility | Men For You',
-        description: 'Thoughtful membership plans for men who want to be discovered by the right people.',
-      };
-    }
-    if (location === '/join') {
-      return {
-        title: 'Register | Rent a Man',
-        description: 'Create a considered profile for women looking for meaningful company and connection.',
-      };
-    }
-    if (location.startsWith('/men')) {
-      return {
-        title: 'Browse verified men near you | Men For You',
-        description: 'Discover verified men by city, intention, and availability on a private discovery platform.',
-      };
-    }
-    return {
-      title: 'Men For You | Meet the kind of company you remember',
-      description: 'Discover verified men for dating, companionship, travel, dinners, and meaningful private connections.',
-    };
-  }, [location]);
-
-  useEffect(() => {
-    document.title = meta.title;
-    const description = document.querySelector('meta[name="description"]');
-    description?.setAttribute('content', meta.description);
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    ogTitle?.setAttribute('content', meta.title);
-    const ogDescription = document.querySelector('meta[property="og:description"]');
-    ogDescription?.setAttribute('content', meta.description);
-    const canonical = document.querySelector('link[rel="canonical"]');
-    canonical?.setAttribute('href', `${window.location.origin}${location}`);
-  }, [location, meta]);
-
-  return null;
 }
 
 function Router() {

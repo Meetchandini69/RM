@@ -70,7 +70,7 @@ Add these **Production** Pages environment variables/secrets:
 
 Redeploy after setting the variables so the Function receives them. `PORT` and `BASE_PATH` are not required for the frontend build; the Vite config has local defaults.
 
-The root `functions/api/[[path]].js` forwards `/api/*` to Railway, including cookies and image uploads. It keeps logins on the Pages origin, so no third-party-cookie settings or frontend API URL changes are needed. `_routes.json` limits Function execution to API requests; Cloudflare's normal SPA fallback serves routes such as `/join` and `/dashboard`.
+The root `functions/api/[[path]].js` forwards `/api/*` to Railway, including cookies and image uploads. It keeps logins on the Pages origin, so no third-party-cookie settings or frontend API URL changes are needed. `_routes.json` runs Functions for pages and API requests while excluding static assets. The root middleware injects saved SEO metadata into HTML, and serves root sitemaps and verification files through the API. Cloudflare's SPA fallback still supplies the React shell.
 
 Leave Preview API variables unset, or use a separate Railway service and Neon test branch. Connecting preview builds to the production API lets those builds modify production data.
 
@@ -151,3 +151,15 @@ Provider references: [Pages Functions routing](https://developers.cloudflare.com
 Current plans: Free INR 0, Quarterly INR 499 (3 months), Yearly INR 999 (1 year). Admin settings control both paid prices. Startup migrates the previous pricing settings once; historical activated boosts retain their existing expiry.
 
 Admin ? Search options controls the ordered Location and I?m looking for lists on homepage and Browse Men. Enter one option per line and save. Settings persist in `discovery_settings`; existing profile values are retained. Search options refresh within 30 seconds on open public pages and on returning to the tab.
+
+
+## SEO administration and webmaster verification
+
+1. Open **Admin ? SEO & Sitemaps**. Save your canonical public website origin, e.g. `https://yourdomain.com`.
+2. Search the page list and edit the meta title, description and canonical URL. Leave canonical blank to derive it from the website origin. Static pages, configured cities and currently published profiles are listed automatically. Private/admin pages are always noindex and excluded from sitemaps.
+3. Upload the original Google Search Console HTML file, `BingSiteAuth.xml`, or Yandex verification HTML file (up to 32 KB). Its contents are saved in PostgreSQL and served at `https://yourdomain.com/<original-filename>` without a login. Verification files are served with a restrictive CSP. Open the file link and then complete verification with the provider.
+4. Use **Generate / view sitemap.xml** or **Generate / view sitemap.html**. These are generated on request, so metadata edits, city updates and profile publication changes are reflected automatically. Submit `https://yourdomain.com/sitemap.xml` to Search Console. `/robots.txt` contains the absolute sitemap URL.
+
+The API startup creates `seo_settings`, `seo_pages` and `seo_verification_files`. Deploy/restart the API and deploy the Cloudflare Pages frontend plus root `functions/` directory. Keep the existing Pages `API_ORIGIN` and `API_PROXY_SECRET`. The new `_middleware.js` serves initial HTML with title, description, canonical, Open Graph, Twitter metadata and robots; client navigation updates them too. No static root canonical is placed in `index.html` because Vite can treat it as an asset during builds. Assets remain excluded from Function execution. Pages HTML is not cached so saved metadata is current. Unknown routes return 404/noindex on Pages. If the metadata API is unavailable, Pages returns a temporary 503 instead of indexable fallback content.
+
+Local `pnpm ... run dev` supports the same sitemap/file URLs and injects metadata using Vite's HTML transform. `vite preview` is a static preview; production behavior comes from Pages Functions. The website origin must be set before sitemap generation; without it the sitemap endpoint returns a clear 503 setup message. Canonical URLs pointing to a different path/domain and noindex pages are excluded from the generated sitemaps. Historical/deactivated profile metadata is retained in storage but not listed publicly.

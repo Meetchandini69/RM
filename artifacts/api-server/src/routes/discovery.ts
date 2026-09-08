@@ -213,7 +213,7 @@ const toProfile = (profile: ProfileRecord) => ({
   favouriteCount: profile.favouriteCount,
 });
 
-const allProfiles = async (): Promise<ProfileRecord[]> => [
+export const allProfiles = async (): Promise<ProfileRecord[]> => [
   ...profiles,
   ...(await getRegisteredPublicProfiles()),
 ];
