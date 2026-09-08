@@ -1,4 +1,4 @@
-﻿import assert from 'node:assert/strict';
+import assert from 'node:assert/strict';
 import { injectSeo, seoFilePath } from './seo-render.mjs';
 import { onRequest } from '../functions/_middleware.js';
 const shell='<!doctype html><html><head><title>Old</title><meta name="description" content="Old"><meta property="og:title" content="Old"><link rel="canonical" href="https://old.test"><meta name="robots" content="index, follow"></head><body><div id="root"></div></body></html>';
@@ -16,6 +16,10 @@ try{
  res=await onRequest(context('/sitemap.xml'));assert.equal(await res.text(),'<urlset/>');assert.ok(lastRequest.url.endsWith('/api/seo/sitemap/xml'));
  res=await onRequest(context('/googleabc.html'));assert.equal(await res.text(),'google-site-verification: googleabc.html');
  meta.found=false;meta.noindex=true;res=await onRequest(context('/not-found'));assert.equal(res.status,404);assert.equal(res.headers.get('x-robots-tag'),'noindex, nofollow');
- globalThis.fetch=async()=>{throw Error('offline');};res=await onRequest(context('/men'));assert.equal(res.status,503);
+ globalThis.fetch=async()=>{throw Error('offline');};res=await onRequest(context('/men'));assert.equal(res.status,200);assert.ok((await res.text()).includes('id="root"'));assert.equal(res.headers.get('x-seo-status'),'fallback');
+ res=await onRequest(context('/admin'));assert.equal(res.status,200);assert.equal(res.headers.get('x-robots-tag'),'noindex, nofollow');
+ globalThis.fetch=async()=>new Response('Missing route',{status:404});res=await onRequest(context('/men'));assert.equal(res.status,200);
+ globalThis.fetch=async()=>new Response('<html>invalid json</html>');res=await onRequest(context('/admin'));assert.equal(res.status,200);
+ globalThis.fetch=async()=>{throw Error('offline');};res=await onRequest(context('/sitemap.xml'));assert.equal(res.status,503);
  console.log('PASS: Cloudflare metadata rendering, tag deduplication, escaping, root sitemap/verification routing, no cookie forwarding, 404/noindex and outage handling.');
 }finally{globalThis.fetch=originalFetch;}
