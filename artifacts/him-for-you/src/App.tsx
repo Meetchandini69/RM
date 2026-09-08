@@ -1,9 +1,12 @@
+import { useDiscoveryOptions } from "@/pages/discovery-options";
+import { AccountMenu, WomenPanel } from "@/pages/account-panels";
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
+import ViewerAccess, { useViewer, UnlockNotice } from '@/pages/viewer-access';
 import Registration, { MemberArea, RegistrationAdmin, RegistrationPolicy } from '@/pages/registration';
 import {
   ArrowUpRight,
@@ -20,7 +23,6 @@ import {
   Compass,
   Gem,
   Heart,
-  HeartHandshake,
   LockKeyhole,
   MapPin,
   Menu,
@@ -116,6 +118,7 @@ function ProfileSkeleton({ count = 3 }: { count?: number }) {
 }
 
 function ProfileCard({ profile, featured = false }: { profile: Profile; featured?: boolean }) {
+  const viewer = useViewer();
   const queryClient = useQueryClient();
   const [saved, setSaved] = useState(false);
   const favoriteMutation = useToggleFavorite();
@@ -135,7 +138,7 @@ function ProfileCard({ profile, featured = false }: { profile: Profile; featured
       <Link href={`/profile/${profile.slug}`} className="block focus-ring" data-testid={`link-profile-${profile.id}`}>
         <div className="relative h-[350px] overflow-hidden bg-muted">
           {photoFor(profile) ? (
-            <img src={photoFor(profile)} alt={`${profile.displayName} profile`} className="profile-image h-full w-full object-cover" data-testid={`img-profile-${profile.id}`} />
+            <img src={photoFor(profile)} alt={`${profile.displayName} profile`} className={`profile-image h-full w-full object-cover ${viewer.data ? "photos-unlocked" : ""}`} data-testid={`img-profile-${profile.id}`} />
           ) : (
             <div className="flex h-full items-center justify-center bg-secondary text-5xl font-editorial text-accent" data-testid={`img-fallback-${profile.id}`}>{initials(profile.displayName)}</div>
           )}
@@ -177,7 +180,7 @@ function Shell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-50 border-b border-foreground/10 bg-background/90 backdrop-blur-xl">
         <div className="mx-auto flex h-[72px] max-w-[1320px] items-center justify-between px-5 sm:px-8 lg:px-12">
           <Link href="/" className="group flex items-center gap-3 focus-ring" onClick={() => setOpen(false)} data-testid="link-logo">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-accent/70 text-accent"><HeartHandshake size={15} /></span>
+            <img src="/rm-logo.png" alt="Men For You logo" width={457} height={546} className="h-12 w-auto shrink-0 object-contain" />
             <span className="font-editorial text-[23px] tracking-[-.02em] text-foreground">men <span className="text-primary">for</span> you</span>
           </Link>
           <nav className="hidden items-center gap-7 lg:flex" aria-label="Main navigation">
@@ -191,14 +194,14 @@ function Shell({ children }: { children: ReactNode }) {
           <div className="hidden items-center gap-5 md:flex">
             <button className="text-muted-foreground transition hover:text-accent" aria-label="Notifications" data-testid="button-notifications"><Bell size={17} /></button>
             <span className="h-5 w-px bg-foreground/15" />
-            <Link href="/dashboard" className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[.16em] text-foreground transition hover:text-accent" data-testid="link-sign-in"><CircleUserRound size={16} /> Log in</Link>
+            <AccountMenu />
             <Link href="/join" className="rounded-md bg-primary px-4 py-2.5 text-[10px] font-bold uppercase tracking-[.14em] text-foreground transition hover:bg-primary/85" data-testid="link-header-join">Join now</Link>
           </div>
           <button className="flex h-10 w-10 items-center justify-center rounded-full border border-foreground/15 text-foreground md:hidden" onClick={() => setOpen(!open)} aria-label="Open navigation" data-testid="button-mobile-menu">{open ? <X size={18} /> : <Menu size={18} />}</button>
         </div>
         {open && (
           <div className="border-t border-foreground/10 bg-card px-5 py-5 md:hidden" data-testid="mobile-navigation">
-            <nav className="grid gap-1">
+            <nav className="grid gap-1"><AccountMenu />
               <Link href="/men" className="flex items-center justify-between border-b hairline py-4 text-sm font-semibold uppercase tracking-[.15em]" onClick={() => setOpen(false)} data-testid="mobile-link-browse">Discover men <ChevronRight size={16} className="text-accent" /></Link>
               <Link href="/premium" className="flex items-center justify-between border-b hairline py-4 text-sm font-semibold uppercase tracking-[.15em]" onClick={() => setOpen(false)} data-testid="mobile-link-premium">Membership <ChevronRight size={16} className="text-accent" /></Link>
               <Link href="/join" className="flex items-center justify-between py-4 text-sm font-semibold uppercase tracking-[.15em]" onClick={() => setOpen(false)} data-testid="mobile-link-join">For men <ChevronRight size={16} className="text-accent" /></Link>
@@ -210,7 +213,7 @@ function Shell({ children }: { children: ReactNode }) {
        <footer id="footer" className="border-t border-foreground/10 bg-[#0d0d0f]">
          <div className="mx-auto grid max-w-[1320px] gap-10 px-5 py-12 sm:px-8 md:grid-cols-[1.5fr_1fr_1fr_1fr] lg:px-12 lg:py-16">
           <div>
-            <div className="flex items-center gap-3"><span className="flex h-7 w-7 items-center justify-center rounded-full border border-accent/70 text-accent"><HeartHandshake size={13} /></span><span className="font-editorial text-xl">men <span className="text-primary">for</span> you</span></div>
+            <div className="flex items-center gap-3"><img src="/rm-logo.png" alt="Men For You logo" width={457} height={546} className="h-12 w-auto shrink-0 object-contain" /><span className="font-editorial text-xl">men <span className="text-primary">for</span> you</span></div>
              <p className="mt-5 max-w-xs text-sm leading-6 text-muted-foreground">A premium dating and companionship platform for women who know what they want.</p>
              <div className="mt-7 flex gap-2 text-[10px] font-semibold uppercase tracking-[.14em] text-muted-foreground"><span className="rounded-full border border-foreground/15 px-3 py-1.5">Private</span><span className="rounded-full border border-foreground/15 px-3 py-1.5">18+ only</span></div>
           </div>
@@ -220,7 +223,7 @@ function Shell({ children }: { children: ReactNode }) {
           </div>
           <div>
              <p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Members</p>
-             <div className="mt-4 grid gap-3 text-sm text-muted-foreground"><Link href="/join" className="hover:text-foreground" data-testid="footer-link-create">Create profile</Link><Link href="/join" className="hover:text-foreground" data-testid="footer-link-login">Login</Link><Link href="/premium" className="hover:text-foreground" data-testid="footer-link-upgrade">Upgrade profile</Link><Link href="/join" className="hover:text-foreground" data-testid="footer-link-manage">Manage profile</Link></div>
+             <div className="mt-4 grid gap-3 text-sm text-muted-foreground"><Link href="/join" className="hover:text-foreground" data-testid="footer-link-create">Create profile</Link><Link href="/login" className="hover:text-foreground" data-testid="footer-link-login">Login</Link><Link href="/premium" className="hover:text-foreground" data-testid="footer-link-upgrade">Upgrade profile</Link><Link href="/dashboard" className="hover:text-foreground" data-testid="footer-link-manage">Manage profile</Link></div>
            </div>
            <div>
              <p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Information</p>
@@ -240,7 +243,8 @@ function Home() {
   const [, setLocation] = useLocation();
   const summary = useGetDiscoverySummary();
   const featured = useGetFeaturedProfiles({}, { query: { queryKey: getGetFeaturedProfilesQueryKey({}) } });
-  const cities = useListCities({ query: { queryKey: getListCitiesQueryKey() } });
+  const searchOptions = useDiscoveryOptions();
+  const cities = useListCities({ query: { queryKey: getListCitiesQueryKey(), refetchInterval: 30000 } });
   const plans = useListPlans({ query: { queryKey: getListPlansQueryKey() } });
   const featuredProfiles = featured.data ?? [];
   return (
@@ -267,7 +271,7 @@ function Home() {
             <div className="mb-4 flex items-end justify-between"><div><h2 className="font-editorial text-2xl text-[#fff8ee]">Find Your Perfect Match</h2><p className="mt-1 text-xs text-muted-foreground">Search men based on your preferences and location.</p></div><Search size={18} className="hidden text-accent sm:block" /></div>
             <div className="grid gap-3 md:grid-cols-[1.05fr_1.05fr_.8fr_auto]">
               <label className="grid gap-1.5 text-[10px] font-semibold uppercase tracking-[.12em] text-muted-foreground">Location<select className="h-11 rounded-md border border-foreground/15 bg-[#0f0e10] px-3 text-xs font-normal normal-case tracking-normal text-foreground outline-none focus:border-accent" value={chosenCity} onChange={(event) => setChosenCity(event.target.value)} data-testid="select-home-city"><option value="">Select city</option>{(cities.data ?? []).map((city) => <option value={city.slug} key={city.id}>{city.name}</option>)}</select></label>
-              <label className="grid gap-1.5 text-[10px] font-semibold uppercase tracking-[.12em] text-muted-foreground">I’m looking for<select className="h-11 rounded-md border border-foreground/15 bg-[#0f0e10] px-3 text-xs font-normal normal-case tracking-normal text-foreground outline-none focus:border-accent" value={intent} onChange={(event) => setIntent(event.target.value)} data-testid="select-home-intent"><option value="">Dating &amp; companionship</option><option value="Dating">Dating</option><option value="Companionship">Companionship</option><option value="Dinner & Social Companion">Dinner &amp; social companion</option><option value="Travel Companion">Travel companion</option><option value="Events & Parties">Events &amp; parties</option></select></label>
+              <label className="grid gap-1.5 text-[10px] font-semibold uppercase tracking-[.12em] text-muted-foreground">I’m looking for<select className="h-11 rounded-md border border-foreground/15 bg-[#0f0e10] px-3 text-xs font-normal normal-case tracking-normal text-foreground outline-none focus:border-accent" value={intent} onChange={(event) => setIntent(event.target.value)} data-testid="select-home-intent"><option value="">Any preference</option>{searchOptions.data?.lookingFor.map(option => <option key={option} value={option}>{option}</option>)}</select></label>
               <label className="grid gap-1.5 text-[10px] font-semibold uppercase tracking-[.12em] text-muted-foreground">Age<select className="h-11 rounded-md border border-foreground/15 bg-[#0f0e10] px-3 text-xs font-normal normal-case tracking-normal text-foreground outline-none focus:border-accent" value={ageRange} onChange={(event) => setAgeRange(event.target.value)} data-testid="select-home-age"><option>21 - 50+</option><option>21 - 30</option><option>31 - 40</option><option>41 - 50+</option></select></label>
               <button className="mt-auto flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-5 text-[10px] font-bold uppercase tracking-[.12em] text-foreground transition hover:bg-primary/85" onClick={() => setLocation(chosenCity ? `/men/${chosenCity}` : '/men')} data-testid="button-browse-men"><Search size={14} /> Browse Men</button>
             </div>
@@ -297,7 +301,7 @@ function Home() {
       <section className="bg-background">
         <div className="mx-auto max-w-[1320px] px-5 pb-5 sm:px-8 lg:px-12">
           <div className="mb-6 flex items-end justify-between gap-5"><div><h2 className="font-editorial text-3xl tracking-[-.03em] sm:text-4xl">Featured Men Near You</h2><p className="mt-1 text-xs text-muted-foreground">Discover men who are currently active and ready to connect with women looking for genuine companionship.</p></div><Link href="/men" className="hidden items-center gap-2 text-[10px] font-bold uppercase tracking-[.15em] text-primary sm:flex" data-testid="link-view-all">View all men <ArrowUpRight size={14} /></Link></div>
-          {featured.isLoading ? <ProfileSkeleton count={5} /> : featured.isError ? <ErrorState onRetry={() => featured.refetch()} /> : featuredProfiles.length === 0 ? <div className="rounded-2xl border hairline p-12 text-center text-muted-foreground" data-testid="empty-featured">New profiles are arriving soon.</div> : <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{featuredProfiles.slice(0, 5).map((profile) => <ProfileCard key={profile.id} profile={profile} featured />)}</div>}
+          {featured.isLoading ? <ProfileSkeleton count={5} /> : featured.isError ? <ErrorState onRetry={() => featured.refetch()} /> : featuredProfiles.length === 0 ? <div className="rounded-2xl border hairline p-12 text-center text-muted-foreground" data-testid="empty-featured">New profiles are arriving soon.</div> : <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{featuredProfiles.map((profile) => <ProfileCard key={profile.id} profile={profile} featured />)}</div>}
           <Link href="/men" className="mt-6 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[.15em] text-primary sm:hidden" data-testid="mobile-link-view-all">View all men <ArrowUpRight size={14} /></Link>
         </div>
       </section>
@@ -337,7 +341,7 @@ function Home() {
       <section className="bg-[#f5f0e7] text-[#292323]">
         <div className="mx-auto max-w-[1320px] px-5 py-12 sm:px-8 lg:px-12 lg:py-14">
           <div className="text-center"><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-[#a12c63]">Choose your visibility</p><h2 className="mt-2 font-editorial text-3xl sm:text-4xl">Get More Profile Views With Premium</h2><p className="mt-2 text-xs text-[#6e625b]">Stand out from other profiles and increase your visibility.</p></div>
-          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">{plans.isLoading ? <div className="h-80 animate-pulse rounded-md bg-[#e9e1d6] xl:col-span-4" /> : (plans.data ?? []).map((plan) => <article className={`relative rounded-md border bg-[#fbf8f2] p-5 ${plan.popular ? 'border-primary shadow-lg' : 'border-[#ddd0c3]'}`} key={plan.id} data-testid={`home-plan-${plan.id}`}>{plan.popular && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-[9px] font-bold uppercase tracking-[.14em] text-white">Most popular</span>}<p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#a12c63]">{plan.name}</p><p className="mt-3 font-editorial text-4xl text-[#292323]">₹{plan.price}</p><p className="mt-1 text-xs text-[#6e625b]">/ {plan.duration}</p><ul className="mt-5 grid min-h-[104px] gap-2 border-t border-[#e4d9ce] pt-4 text-xs text-[#6e625b]">{plan.features.slice(0, 5).map((feature) => <li className="flex items-start gap-2" key={feature}><Check size={13} className="mt-0.5 shrink-0 text-[#a12c63]" />{feature}</li>)}</ul><Link href="/premium" className={`mt-5 flex w-full items-center justify-center rounded-md px-4 py-3 text-[10px] font-bold uppercase tracking-[.12em] ${plan.popular ? 'bg-primary text-white' : 'border border-[#c9b9ab] text-[#6e2a48]'}`} data-testid={`home-plan-cta-${plan.id}`}>{plan.cta}</Link></article>)}</div>
+          <div className="mt-8 grid gap-4 md:grid-cols-3">{plans.isLoading ? <div className="h-80 animate-pulse rounded-md bg-[#e9e1d6] md:col-span-3" /> : (plans.data ?? []).map((plan) => <article className={`relative rounded-md border bg-[#fbf8f2] p-5 ${plan.popular ? 'border-primary shadow-lg' : 'border-[#ddd0c3]'}`} key={plan.id} data-testid={`home-plan-${plan.id}`}>{plan.popular && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-[9px] font-bold uppercase tracking-[.14em] text-white">Most popular</span>}<p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#a12c63]">{plan.name}</p><p className="mt-3 font-editorial text-4xl text-[#292323]">₹{plan.price}</p><p className="mt-1 text-xs text-[#6e625b]">/ {plan.duration}</p><ul className="mt-5 grid min-h-[104px] gap-2 border-t border-[#e4d9ce] pt-4 text-xs text-[#6e625b]">{plan.features.slice(0, 5).map((feature) => <li className="flex items-start gap-2" key={feature}><Check size={13} className="mt-0.5 shrink-0 text-[#a12c63]" />{feature}</li>)}</ul><Link href="/premium" className={`mt-5 flex w-full items-center justify-center rounded-md px-4 py-3 text-[10px] font-bold uppercase tracking-[.12em] ${plan.popular ? 'bg-primary text-white' : 'border border-[#c9b9ab] text-[#6e2a48]'}`} data-testid={`home-plan-cta-${plan.id}`}>{plan.cta}</Link></article>)}</div>
         </div>
       </section>
       <section id="popular-cities" className="bg-[#111012]">
@@ -356,7 +360,8 @@ function Browse({ forcedCity }: { forcedCity?: string }) {
   const [sort, setSort] = useState<ListProfilesParams['sort']>('featured');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [savedSearch, setSavedSearch] = useState(false);
-  const cities = useListCities({ query: { queryKey: getListCitiesQueryKey() } });
+  const searchOptions = useDiscoveryOptions();
+  const cities = useListCities({ query: { queryKey: getListCitiesQueryKey(), refetchInterval: 30000 } });
   const params = useMemo<ListProfilesParams>(() => ({ ...(city ? { city } : {}), ...(intent ? { lookingFor: intent } : {}), ...(verified ? { verified: true } : {}), ...(active ? { active: true } : {}), sort }), [city, intent, verified, active, sort]);
   const profiles = useListProfiles(params, { query: { queryKey: getListProfilesQueryKey(params) } });
   const cityName = cities.data?.find((item) => item.slug === forcedCity)?.name;
@@ -371,7 +376,7 @@ function Browse({ forcedCity }: { forcedCity?: string }) {
         <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-[.16em] text-accent lg:hidden" onClick={() => setFiltersOpen(!filtersOpen)} data-testid="button-toggle-filters"><SlidersHorizontal size={15} /> {filtersOpen ? 'Hide filters' : 'Show filters'}</button>
         <div className={`${filtersOpen ? 'grid' : 'hidden'} mt-5 gap-3 lg:grid lg:grid-cols-[1.2fr_1.2fr_1fr_1fr_auto]`}>
           <FilterSelect label="City" value={city} onChange={setCity} options={cities.data ?? []} placeholder="Everywhere" testId="select-filter-city" />
-          <FilterSelect label="Looking for" value={intent} onChange={setIntent} options={['Conversation', 'Companionship', 'Something lasting', 'A little adventure'].map((name) => ({ id: name, slug: name, name, profileCount: 0 }))} placeholder="Any intention" testId="select-filter-intent" />
+          <FilterSelect label="Looking for" value={intent} onChange={setIntent} options={(searchOptions.data?.lookingFor ?? []).map((name) => ({ id: name, slug: name, name, profileCount: 0 }))} placeholder="Any intention" testId="select-filter-intent" />
           <label className="flex h-12 cursor-pointer items-center gap-3 rounded-xl border border-foreground/15 bg-card px-4 text-xs text-muted-foreground"><input type="checkbox" checked={verified} onChange={(event) => setVerified(event.target.checked)} className="accent-[hsl(var(--primary))]" data-testid="checkbox-verified" /> Verified only</label>
           <label className="flex h-12 cursor-pointer items-center gap-3 rounded-xl border border-foreground/15 bg-card px-4 text-xs text-muted-foreground"><input type="checkbox" checked={active} onChange={(event) => setActive(event.target.checked)} className="accent-[hsl(var(--primary))]" data-testid="checkbox-active" /> Available now</label>
           <select className="h-12 rounded-xl border border-foreground/15 bg-card px-4 text-xs text-foreground outline-none focus:border-accent" value={sort} onChange={(event) => setSort(event.target.value as ListProfilesParams['sort'])} data-testid="select-sort"><option value="featured">Sort: Featured</option><option value="active">Sort: Active</option><option value="newest">Sort: Newest</option><option value="age">Sort: Age</option></select>
@@ -394,6 +399,8 @@ function EmptyBrowse({ clear }: { clear: () => void }) {
 }
 
 function ProfileDetailPage() {
+  const viewer = useViewer();
+  useEffect(() => { if (viewer.data) { setContactType(viewer.data.contactType); setContact(viewer.data.contact); } }, [viewer.data]);
   const { slug = '' } = useParams<{ slug: string }>();
   const [note, setNote] = useState('');
   const [contactType, setContactType] = useState<'telegram' | 'whatsapp'>('telegram');
@@ -407,7 +414,7 @@ function ProfileDetailPage() {
   const favorite = useToggleFavorite();
   const data = profile.data as ProfileDetail | undefined;
   const submitInterest = () => {
-    if (!data) return;
+    if (!data || !viewer.data) return;
     if (interest.isPending) return;
     const normalized = contactType === 'telegram' ? contact.trim().replace(/^@/, '') : contact.trim().replace(/[\s()-]/g, '');
     const valid = contactType === 'telegram' ? /^[a-zA-Z][a-zA-Z0-9_]{4,31}$/.test(normalized) : /^\+[1-9]\d{7,14}$/.test(normalized);
@@ -416,10 +423,10 @@ function ProfileDetailPage() {
       return;
     }
     setContactError('');
-    interest.mutate({ id: data.id, data: { note: note.trim() || undefined, contactType, contact: normalized } }, { onSuccess: () => { setSent(true); queryClient.invalidateQueries({ queryKey: getGetProfileQueryKey(slug) }); } });
+    interest.mutate({ id: data.id, data: { note: note.trim() || undefined, contactType, contact: normalized } }, { onSuccess: () => { setSent(true); queryClient.invalidateQueries({ queryKey: ['account-interests'] }); queryClient.invalidateQueries({ queryKey: getGetProfileQueryKey(slug) }); } });
   };
   const toggleFavorite = () => {
-    if (!data) return;
+    if (!data || !viewer.data) return;
     favorite.mutate({ id: data.id }, { onSuccess: (result) => { setSaved(result.isFavourite ?? !saved); queryClient.invalidateQueries({ queryKey: getGetProfileQueryKey(slug) }); queryClient.invalidateQueries({ queryKey: getListProfilesQueryKey() }); } });
   };
   if (profile.isLoading) return <div className="mx-auto max-w-[1320px] px-5 py-14 sm:px-8 lg:px-12"><div className="grid animate-pulse gap-8 lg:grid-cols-[1fr_1fr]"><div className="h-[570px] rounded-2xl bg-muted" /><div className="space-y-6 pt-10"><div className="h-8 w-2/3 rounded bg-muted" /><div className="h-20 w-full rounded bg-muted" /></div></div></div>;
@@ -430,7 +437,7 @@ function ProfileDetailPage() {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,.9fr)] lg:gap-16">
         <div className="relative overflow-hidden rounded-2xl border hairline bg-card">
           <div className="aspect-[4/5] max-h-[700px] bg-muted">
-            {photoFor(data) ? <img src={photoFor(data)} alt={`${data.displayName} portrait`} className="public-men-photo h-full w-full object-cover" data-testid="img-profile-detail" /> : <div className="flex h-full items-center justify-center font-editorial text-8xl text-accent">{initials(data.displayName)}</div>}
+            {photoFor(data) ? <img src={photoFor(data)} alt={`${data.displayName} portrait`} className={`${viewer.data ? "photos-unlocked" : ""} public-men-photo h-full w-full object-cover`} data-testid="img-profile-detail" /> : <div className="flex h-full items-center justify-center font-editorial text-8xl text-accent">{initials(data.displayName)}</div>}
           </div>
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-background/90 via-background/20 to-transparent p-6 pt-28">
             <div><p className="font-mono-label text-[10px] uppercase tracking-[.18em] text-accent">{data.isPremium ? 'Private member' : 'Verified member'}</p><p className="mt-2 flex items-center gap-2 text-sm text-foreground"><span className={`h-2 w-2 rounded-full ${data.isOnline ? 'bg-[#b9d7a7]' : 'bg-muted-foreground'}`} />{data.isOnline ? 'Available for conversation' : `Last active ${data.lastActive}`}</p></div>
@@ -447,16 +454,17 @@ function ProfileDetailPage() {
           <div className="mt-7 flex flex-wrap gap-2">{[...(data.interests ?? []), ...(data.lookingFor ?? [])].slice(0, 8).map((tag) => <span className="rounded-full border border-foreground/15 px-3 py-1.5 text-xs text-muted-foreground" key={tag}>{tag}</span>)}</div>
           <div className="mt-7 rounded-xl border border-accent/35 bg-accent/10 p-5" data-testid="profile-photo-interest-info">
             <p className="flex items-center gap-2 text-sm font-semibold text-accent"><LockKeyhole size={17} /> Want to see his photo and connect?</p>
-            <p className="mt-3 text-sm leading-6 text-foreground/85">Send your interest below and leave your Telegram or WhatsApp details. Our team can follow up with his photo and help you take the next step toward a connection, subject to his availability and consent.</p>
-            <p className="mt-2 text-xs leading-5 text-muted-foreground">Photos stay blurred here. Photo sharing and introductions are arranged privately after your request.</p>
+            <p className="mt-3 text-sm leading-6 text-foreground/85">Approved members can view clear photos and send interest. Our team will follow up using your registered contact details to arrange an introduction.</p>
+            <p className="mt-2 text-xs leading-5 text-muted-foreground">Register with your basic details. After admin approval, log in to unlock photos and send interest.</p>
             <a href="#profile-interest" className="mt-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.12em] text-accent">Send your interest <Send size={14} /></a>
           </div>
-          <div id="profile-interest" className="mt-6 scroll-mt-24 rounded-2xl border border-primary/25 bg-primary/8 p-5 sm:p-6">
-            {sent ? <div className="flex items-start gap-4" data-testid="status-interest-success"><CheckCircle2 className="mt-0.5 text-accent" size={22} /><div><h2 className="font-editorial text-2xl">A thoughtful first step.</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Your interest has been sent. Our team can follow up on your chosen contact method about photo sharing and an introduction, subject to availability and consent.</p></div></div> : <><p className="font-mono-label text-[10px] uppercase tracking-[.18em] text-accent">Make an introduction</p><h2 className="mt-3 font-editorial text-2xl">Send your interest. Get to know him.</h2><div className="mt-4"><label htmlFor="interest-contact-type" className="block text-xs text-muted-foreground">How can we contact you?</label><select id="interest-contact-type" value={contactType} onChange={(event) => { setContactType(event.target.value as 'telegram' | 'whatsapp'); setContact(''); setContactError(''); }} className="mt-2 w-full rounded-xl border border-foreground/15 bg-background p-3 text-sm text-foreground"><option value="telegram">Telegram</option><option value="whatsapp">WhatsApp</option></select><label htmlFor="interest-contact" className="mt-4 block text-xs text-muted-foreground">{contactType === 'telegram' ? 'Telegram username' : 'WhatsApp number with country code'} <span aria-hidden="true">*</span></label><input id="interest-contact" type={contactType === 'whatsapp' ? 'tel' : 'text'} autoComplete={contactType === 'whatsapp' ? 'tel' : 'off'} required maxLength={64} value={contact} onChange={(event) => { setContact(event.target.value); setContactError(''); }} placeholder={contactType === 'telegram' ? '@your_username' : '+919876543210'} aria-invalid={!!contactError} aria-describedby="interest-contact-help interest-contact-error" className="mt-2 w-full rounded-xl border border-foreground/15 bg-background/60 p-3 text-sm text-foreground outline-none focus:border-accent" data-testid="input-interest-contact" /><p id="interest-contact-help" className="mt-2 text-xs leading-5 text-muted-foreground">Your message and contact details will be shared privately with our team so we can respond.</p><p id="interest-contact-error" role="alert" className="mt-2 text-xs text-primary">{contactError}</p></div><label htmlFor="interest-note" className="mt-4 block text-xs text-muted-foreground">Message (optional)</label><textarea id="interest-note" value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} placeholder="A note is optional. A little context goes a long way." className="mt-4 min-h-[92px] w-full resize-none rounded-xl border border-foreground/15 bg-background/60 p-4 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground focus:border-accent" data-testid="textarea-interest-note" />{interest.isError && <p className="mt-3 text-xs text-primary" data-testid="status-interest-error">That introduction could not be sent. Please try once more.</p>}<div className="mt-3 flex items-center justify-between gap-3"><span className="text-[11px] text-muted-foreground">{note.length}/500</span><button className="flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-xs font-bold uppercase tracking-[.14em] text-foreground transition hover:bg-primary/85 disabled:opacity-50" onClick={submitInterest} disabled={interest.isPending} data-testid="button-send-interest">{interest.isPending ? 'Sending…' : 'Send interest'} <Send size={14} /></button></div></>}
-          </div>
+          <UnlockNotice />
+          {viewer.data && <div id="profile-interest" className="mt-6 scroll-mt-24 rounded-2xl border border-primary/25 bg-primary/8 p-5 sm:p-6">
+            {sent ? <div className="flex items-start gap-4" data-testid="status-interest-success"><CheckCircle2 className="mt-0.5 text-accent" size={22} /><div><h2 className="font-editorial text-2xl">A thoughtful first step.</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Your interest has been sent. Our team will follow up using your registered contact details about an introduction, subject to availability and consent.</p></div></div> : <><p className="font-mono-label text-[10px] uppercase tracking-[.18em] text-accent">Make an introduction</p><h2 className="mt-3 font-editorial text-2xl">Send your interest. Get to know him.</h2><div className="mt-4"><label htmlFor="interest-contact-type" className="block text-xs text-muted-foreground">How can we contact you?</label><select id="interest-contact-type" disabled value={contactType} onChange={(event) => { setContactType(event.target.value as 'telegram' | 'whatsapp'); setContact(''); setContactError(''); }} className="mt-2 w-full rounded-xl border border-foreground/15 bg-background p-3 text-sm text-foreground"><option value="telegram">Telegram</option><option value="whatsapp">WhatsApp</option></select><label htmlFor="interest-contact" className="mt-4 block text-xs text-muted-foreground">{contactType === 'telegram' ? 'Telegram username' : 'WhatsApp number with country code'} <span aria-hidden="true">*</span></label><input id="interest-contact" readOnly type={contactType === 'whatsapp' ? 'tel' : 'text'} autoComplete={contactType === 'whatsapp' ? 'tel' : 'off'} required maxLength={64} value={contact} onChange={(event) => { setContact(event.target.value); setContactError(''); }} placeholder={contactType === 'telegram' ? '@your_username' : '+919876543210'} aria-invalid={!!contactError} aria-describedby="interest-contact-help interest-contact-error" className="mt-2 w-full rounded-xl border border-foreground/15 bg-background/60 p-3 text-sm text-foreground outline-none focus:border-accent" data-testid="input-interest-contact" /><p id="interest-contact-help" className="mt-2 text-xs leading-5 text-muted-foreground">Your message and contact details will be shared privately with our team so we can respond.</p><p id="interest-contact-error" role="alert" className="mt-2 text-xs text-primary">{contactError}</p></div><label htmlFor="interest-note" className="mt-4 block text-xs text-muted-foreground">Message (optional)</label><textarea id="interest-note" value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} placeholder="A note is optional. A little context goes a long way." className="mt-4 min-h-[92px] w-full resize-none rounded-xl border border-foreground/15 bg-background/60 p-4 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground focus:border-accent" data-testid="textarea-interest-note" />{interest.isError && <p className="mt-3 text-xs text-primary" data-testid="status-interest-error">That introduction could not be sent. Please try once more.</p>}<div className="mt-3 flex items-center justify-between gap-3"><span className="text-[11px] text-muted-foreground">{note.length}/500</span><button className="flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-xs font-bold uppercase tracking-[.14em] text-foreground transition hover:bg-primary/85 disabled:opacity-50" onClick={submitInterest} disabled={interest.isPending || !viewer.data} data-testid="button-send-interest">{interest.isPending ? 'Sending…' : 'Send interest'} <Send size={14} /></button></div></>}
+          </div>}
         </div>
       </div>
-      {data.gallery?.length > 0 && <div className="mt-16 border-t border-foreground/10 pt-10"><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">A little more of his world</p><div className="scroll-row mt-5 flex gap-4 overflow-auto">{data.gallery.map((image, index) => <img src={image} alt={`${data.displayName} gallery ${index + 1}`} className="public-men-photo h-56 w-44 shrink-0 rounded-xl object-cover sm:h-72 sm:w-56" key={image} data-testid={`img-gallery-${index}`} />)}</div></div>}
+      {data.gallery?.length > 0 && <div className="mt-16 border-t border-foreground/10 pt-10"><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">A little more of his world</p><div className="scroll-row mt-5 flex gap-4 overflow-auto">{data.gallery.map((image, index) => <img src={image} alt={`${data.displayName} gallery ${index + 1}`} className={`public-men-photo h-56 w-44 shrink-0 rounded-xl object-cover sm:h-72 sm:w-56 ${viewer.data ? "photos-unlocked" : ""}`} key={image} data-testid={`img-gallery-${index}`} />)}</div></div>}
     </div>
   );
 }
@@ -542,7 +550,7 @@ function Router() {
       <PageMeta />
       <Switch>
         <Route path="/"><Shell><Home /></Shell></Route>
-        <Route path="/men"><Shell><Browse /></Shell></Route>
+        <Route path="/men"><Shell><div className="mx-auto max-w-7xl px-5"><UnlockNotice /></div><Browse /></Shell></Route>
         <Route path="/men/:city" component={CityBrowseRoute} />
         <Route path="/profile/:slug"><Shell><ProfileDetailPage /></Shell></Route>
         <Route path="/premium"><Shell><Premium /></Shell></Route>
@@ -551,6 +559,13 @@ function Router() {
         <Route path="/complete-profile"><Shell><MemberArea complete /></Shell></Route>
         <Route path="/dashboard"><Shell><MemberArea /></Shell></Route>
         <Route path="/admin"><Shell><RegistrationAdmin /></Shell></Route>
+        <Route path="/account/profile"><Shell><WomenPanel profile /></Shell></Route>
+        <Route path="/account/interests"><Shell><WomenPanel interests /></Shell></Route>
+        <Route path="/account"><Shell><WomenPanel /></Shell></Route>
+        <Route path="/member-interests"><Shell><MemberArea interests /></Shell></Route>
+        <Route path="/boost-profile"><Shell><MemberArea boost /></Shell></Route>
+        <Route path="/unlock"><Shell><ViewerAccess /></Shell></Route>
+        <Route path="/login"><Shell><ViewerAccess login /></Shell></Route>
         <Route path="/admin/registration"><Shell><RegistrationAdmin /></Shell></Route>
         <Route path="/terms"><Shell><RegistrationPolicy /></Shell></Route>
         <Route path="/privacy"><Shell><RegistrationPolicy privacy /></Shell></Route>

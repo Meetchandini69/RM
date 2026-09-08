@@ -1,0 +1,75 @@
+// Integration tests use an isolated PostgreSQL schema inside a rolled-back transaction.
+// Telegram is mocked; no messages or persistent test accounts are created.
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
+import {resolve,dirname} from 'node:path';
+import {randomBytes,createHash} from 'node:crypto';
+import ts from 'typescript';
+try {process.loadEnvFile('.env');} catch {}
+try {process.loadEnvFile('artifacts/api-server/.env');} catch {}
+const req=createRequire(resolve('artifacts/api-server/package.json'));
+const dbRequire=createRequire(resolve('lib/db/package.json'));
+const zodRequire=createRequire(resolve('lib/api-zod/package.json'));
+const client=new (dbRequire('pg').Client)({connectionString:process.env.DATABASE_URL,connectionTimeoutMillis:15000});
+const cache=new Map();let failTelegram=false;
+function load(file){file=resolve(file);if(cache.has(file))return cache.get(file).exports;const m={exports:{}};cache.set(file,m);const code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText;new Function('require','module','exports',code)(name=>name==='@workspace/db'?{pool:client}:name==='@workspace/api-zod'?load('lib/api-zod/src/generated/api.ts'):name==='zod'?zodRequire('zod'):name.includes('/telegram')?{sendAdminTelegram:async()=>{if(failTelegram)throw Error('mock failure');},sendTelegramInterest:async()=>{if(failTelegram)throw Error('mock failure');}}:name.startsWith('.')?load(resolve(dirname(file),name+'.ts')):req(name),m,m.exports);return m.exports;}
+await client.connect();let server;
+try {
+ await client.query('BEGIN');
+ const schema='test_accounts_'+randomBytes(6).toString('hex');
+ await client.query(`CREATE SCHEMA ${schema}`);await client.query(`SET LOCAL search_path TO ${schema}`);
+ await client.query(load('lib/db/src/storage-schema.ts').registrationSchemaSql);
+ const express=req('express');const app=express();app.use(express.json({limit:'12mb'}));app.use('/api',load('artifacts/api-server/src/routes/viewers.ts').default);app.use('/api',load('artifacts/api-server/src/routes/registration.ts').default);app.use('/api',load('artifacts/api-server/src/routes/accounts.ts').default);app.use('/api',load('artifacts/api-server/src/routes/discovery.ts').default);
+ app.use((err,_req,res,_next)=>{console.error(err.message);res.status(500).json({message:err.message});});
+ server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+ const base=`http://127.0.0.1:${server.address().port}/api/`;
+ async function call(path,body,cookie='',method=body?'POST':'GET'){const r=await fetch(base+path,{method,headers:{'Content-Type':'application/json',cookie},...(body?{body:JSON.stringify(body)}:{})});const data=await r.json();return {status:r.status,data,cookie:r.headers.get('set-cookie')?.split(';')[0]||''};}
+ const token=randomBytes(32).toString('hex');await client.query('INSERT INTO registration_admin_sessions VALUES ($1,$2)',[createHash('sha256').update(token).digest('hex'),Date.now()+3600000]);const admin=`ram_admin=${token}`;
+ const defaults = (await call('discovery-options')).data;
+ assert.ok(defaults.locations.includes('Chennai'));
+ assert.equal((await call('registration/admin/discovery-options', {locations:['Test City'],lookingFor:['Coffee']})).status,401);
+ assert.equal((await call('registration/admin/discovery-options', {locations:['Test City','test city'],lookingFor:['Coffee']},admin)).status,400);
+ assert.equal((await call('registration/admin/discovery-options', {locations:[],lookingFor:['Coffee']},admin)).status,400);
+ assert.equal((await call('registration/admin/discovery-options', {locations:['Test City','Chennai'],lookingFor:['Coffee','Dating']},admin)).status,200);
+ assert.deepEqual((await call('discovery-options')).data.lookingFor,['Coffee','Dating']);
+ const configuredCities=(await call('cities')).data;
+ assert.deepEqual(configuredCities.map(c=>c.name),['Test City','Chennai']);
+ assert.equal(configuredCities[0].profileCount,0);
+ assert.equal(configuredCities[0].slug,'test-city');
+ await call('registration/admin/discovery-options',defaults,admin);
+ const dob='2000-01-01';const age=new Date().getUTCFullYear()-2000;
+ const member={displayName:'Integration Test',age,dateOfBirth:dob,email:'test@example.invalid',mobile:'+919999999999',password:'test-password-123',confirmPassword:'test-password-123',headline:'',about:'',interests:[],languages:[],country:'India',state:'',city:'',area:'',pinCode:'',photos:[],mainPhoto:0,preferences:[],minAge:18,maxAge:60,availability:[],status:'available',listing:'free',partnerOptIn:false,accurate:true,terms:true,adult:true};
+ let r=await call('registrations',member);assert.equal(r.status,200,JSON.stringify(r.data));const id=r.data.id;
+ assert.equal((await call('registration/login',member)).status,403);
+ assert.equal((await call(`registration/admin/registrations/${id}/review`,{action:'approve'},admin)).status,200);
+ r=await call('registration/login',member);assert.equal(r.status,200);let mc=r.cookie;
+ const complete={...member,headline:'Good company',about:'I enjoy conversation and travel.',interests:['Travel'],languages:['English'],state:'Tamil Nadu',city:'Chennai',area:'Central',preferences:['Dating'],availability:['Weekends'],photos:[{dataUrl:'data:image/png;base64,iVBORw0KGgo=',category:'profile'}]};
+ r=await call('registration/profile',complete,mc,'PUT');assert.equal(r.status,200,JSON.stringify(r.data));assert.equal(r.data.reviewStatus,'Profile pending');assert.equal(r.data.isPublished,false);mc=r.cookie;
+ assert.equal((await call('registration/me',null,mc)).status,200);
+ assert.equal((await call('registration/login',member)).status,200);
+ assert.equal((await call(`profiles/member-${id}`)).status,404);
+ r=await call(`registration/admin/registrations/${id}/review`,{action:'reject'},admin);assert.equal(r.data.reviewStatus,'Profile rejected');assert.equal((await call('registration/me',null,mc)).status,200);
+ r=await call('registration/profile',complete,mc,'PUT');assert.equal(r.data.reviewStatus,'Profile pending');mc=r.cookie;
+ r=await call(`registration/admin/registrations/${id}/review`,{action:'approve'},admin);assert.equal(r.data.isPublished,true);
+ const publicProfile=await call(`profiles/member-${id}`);assert.equal(publicProfile.status,200);assert.ok((await call('profiles/featured')).data.some(p=>p.slug===`member-${id}`));
+ const woman={name:'Test Woman',contactType:'telegram',contact:'@test_woman',lookingFor:'Dating',age:27,location:'Chennai',password:'test-password-123'};
+ assert.equal((await call('viewer/register',woman)).status,201);const wid=(await client.query('SELECT id FROM viewers')).rows[0].id;
+ await call(`registration/admin/viewers/${wid}/review`,{status:'Approved'},admin);r=await call('viewer/login',woman);const wc=r.cookie;
+ assert.equal((await call('viewer/interests')).status,403);
+ failTelegram=true;
+ r=await call(`profiles/${publicProfile.data.id}/interest`,{contactType:'telegram',contact:'@spoof_name',note:'Hello, I would like to meet you.'},wc);assert.equal(r.status,201,JSON.stringify(r.data));
+ failTelegram=false;
+ const history=(await call('viewer/interests',null,wc)).data;assert.equal(history.length,1);assert.equal(history[0].note,'Hello, I would like to meet you.');assert.equal(history[0].delivery,'Failed');
+ assert.equal((await call('registration/interests',null,mc)).data[0].name,'Test Woman');
+ await call('viewer/logout',{},wc);r=await call('viewer/login',woman);assert.equal((await call('viewer/interests',null,r.cookie)).data.length,1);
+ const second={...woman,contact:'@another_woman'};await call('viewer/register',second);const secondId=(await client.query('SELECT id FROM viewers WHERE contact=$1',['another_woman'])).rows[0].id;await call(`registration/admin/viewers/${secondId}/review`,{status:'Approved'},admin);const other=await call('viewer/login',second);assert.equal((await call('viewer/interests',null,other.cookie)).data.length,0);
+ r=await call('registration/boosts',{plan:'quarterly'},mc);assert.equal(r.status,201,JSON.stringify(r.data));const bid=r.data.id;
+ assert.equal((await call('registration/boosts',{plan:'yearly'},mc)).status,409);
+ assert.equal((await call(`registration/admin/boosts/${bid}/review`,{status:'Approved'},mc)).status,401);
+ assert.equal((await call(`registration/admin/boosts/${bid}/review`,{status:'Approved'},admin)).status,200);
+ assert.equal((await call(`profiles/member-${id}`)).data.isPremium,true);
+ await client.query("UPDATE profile_boosts SET expires=now()-interval '1 day' WHERE id=$1",[bid]);assert.equal((await call(`profiles/member-${id}`)).data.isPremium,false);
+ await call('registration/logout',{},mc);assert.equal((await call('registration/interests',null,mc)).status,401);
+ console.log('PASS: saved discovery options, admin protection, option validation/order, two-stage approval, pending/rejected member access, public homepage cards, persisted interests after relogin, cross-account isolation, Telegram failure persistence, boost activation and expiry, logout. All database test changes rolled back; Telegram mocked.');
+} finally {if(server){server.closeAllConnections();server.close();}await client.query('ROLLBACK');await client.end();}

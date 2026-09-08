@@ -756,7 +756,7 @@ components:
             "listing":
               {
                 "type": "string",
-                "enum": ["free", "weekly", "monthly", "quarterly"],
+                "enum": ["free", "quarterly", "yearly"],
               },
             "partnerOptIn": { "type": "boolean" },
             "accurate": { "type": "boolean" },
@@ -861,7 +861,7 @@ components:
             "listing":
               {
                 "type": "string",
-                "enum": ["free", "weekly", "monthly", "quarterly"],
+                "enum": ["free", "quarterly", "yearly"],
               },
             "partnerOptIn": { "type": "boolean" },
             "accurate": { "type": "boolean" },
@@ -943,7 +943,7 @@ components:
         "properties":
           {
             "id":
-              { "type": "string", "enum": ["weekly", "monthly", "quarterly"] },
+              { "type": "string", "enum": ["quarterly", "yearly"] },
             "price": { "type": "number", "minimum": 0 },
             "enabled": { "type": "boolean" },
           },

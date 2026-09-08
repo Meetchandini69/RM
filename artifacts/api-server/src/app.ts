@@ -2,7 +2,9 @@ import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import router from "./routes";
+import accountsRouter from "./routes/accounts";
 import registrationRouter from "./routes/registration";
+import viewerRouter from "./routes/viewers";
 import { logger } from "./lib/logger";
 import { createHash, timingSafeEqual } from "node:crypto";
 
@@ -46,8 +48,13 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/api", viewerRouter);
 app.use("/api", router);
 app.use("/api", registrationRouter);
+app.use("/api", accountsRouter);
+app.use("/api", (_req, res) => {
+  res.status(404).json({ message: "This API endpoint is unavailable. Please update and restart the API server." });
+});
 
 app.use(
   (

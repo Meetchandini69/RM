@@ -1,6 +1,10 @@
+import { discoveryOptions, locationSlug } from "../lib/discovery-options";
 import { Router, type IRouter } from "express";
 import { sendTelegramInterest } from "../lib/telegram";
-import { getRegisteredPublicProfiles } from "./registration";
+import { getRegisteredPublicProfiles, settings } from "./registration";
+import { pool } from "@workspace/db";
+import { randomUUID } from "node:crypto";
+import { requireViewer } from "./viewers";
 import {
   GetDiscoverySummaryResponse,
   GetFeaturedProfilesQueryParams,
@@ -176,87 +180,19 @@ const profiles: ProfileRecord[] = [
   },
 ];
 
-const cities = [
-  "Coimbatore",
-  "Chennai",
-  "Bangalore",
-  "Hyderabad",
-  "Mumbai",
-  "Delhi",
-  "Pune",
-  "Kochi",
-  "Madurai",
-  "Trichy",
-].map((name, index) => ({
-  id: index + 1,
-  name,
-  slug: name.toLowerCase().replaceAll(" ", "-"),
-  profileCount: profiles.filter((profile) => profile.city === name).length,
-}));
-
-const plans = [
-  {
-    id: 1,
-    name: "Free",
-    price: 0,
-    duration: "forever",
-    description: "A thoughtful start to being discovered.",
-    features: [
-      "Basic profile",
-      "3 profile photos",
-      "City listing",
-      "Standard visibility",
-    ],
-    popular: false,
-    cta: "Create free profile",
-  },
-  {
-    id: 2,
-    name: "Weekly Premium",
-    price: 299,
-    duration: "per week",
-    description: "A quick boost when you want to be seen.",
-    features: [
-      "Featured listing",
-      "Higher search ranking",
-      "More profile photos",
-      "Premium badge",
-    ],
-    popular: false,
-    cta: "Go premium",
-  },
-  {
-    id: 3,
-    name: "Monthly Premium",
-    price: 799,
-    duration: "per month",
-    description: "The most visibility for a more intentional presence.",
-    features: [
-      "Homepage visibility",
-      "Top search placement",
-      "Unlimited photos",
-      "Premium badge",
-      "Increased profile exposure",
-    ],
-    popular: true,
-    cta: "Get monthly premium",
-  },
-  {
-    id: 4,
-    name: "Featured Profile",
-    price: 149,
-    duration: "3 days",
-    description: "Put your profile in front of more of the right people.",
-    features: [
-      "Highlighted profile",
-      "Homepage visibility",
-      "Higher search placement",
-      "Quick visibility boost",
-    ],
-    popular: false,
-    cta: "Feature my profile",
-  },
-];
+async function publicPlans() {
+  const config = await settings();
+  return [{ id: 1, name: "Free", price: 0, duration: "forever", description: "Create your profile and get discovered.", features: ["Basic profile", "Profile photos", "City listing", "Standard visibility"], popular: false, cta: "Create free profile" },
+    ...config.plans.filter(plan => plan.enabled).map(plan => ({
+      id: plan.id === "quarterly" ? 2 : 3,
+      name: plan.id === "quarterly" ? "Quarterly Premium" : "Yearly Premium",
+      price: plan.price,
+      duration: plan.id === "quarterly" ? "3 months" : "1 year",
+      description: "More visibility for your approved profile.",
+      features: ["Priority featured placement", "Premium badge", "Profile boost"],
+      popular: plan.id === "yearly", cta: plan.id === "quarterly" ? "Choose quarterly" : "Choose yearly",
+    }))];
+}
 
 const toProfile = (profile: ProfileRecord) => ({
   id: profile.id,
@@ -289,12 +225,12 @@ router.get("/profiles", async (req, res) => {
   if (query.city)
     result = result.filter(
       (profile) =>
-        profile.citySlug === query.city ||
+        locationSlug(profile.city) === query.city ||
         profile.city.toLowerCase() === query.city?.toLowerCase(),
     );
   if (query.lookingFor)
     result = result.filter((profile) =>
-      profile.lookingFor.includes(query.lookingFor!),
+      profile.lookingFor.some(value => value.toLowerCase() === query.lookingFor!.toLowerCase()),
     );
   if (query.minAge !== undefined)
     result = result.filter((profile) => profile.age >= query.minAge!);
@@ -308,7 +244,7 @@ router.get("/profiles", async (req, res) => {
   if (query.sort === "age") result.sort((a, b) => a.age - b.age);
   if (query.sort === "newest") result.sort((a, b) => b.id - a.id);
   if (query.sort === "featured")
-    result.sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured));
+    result.sort((a, b) => Number(b.isPremium) - Number(a.isPremium) || Number(b.isFeatured) - Number(a.isFeatured));
   res.json(ListProfilesResponse.parse(result.map(toProfile)));
 });
 
@@ -318,7 +254,7 @@ router.get("/profiles/featured", async (req, res) => {
     (profile) =>
       profile.isFeatured && (!query.city || profile.citySlug === query.city),
   );
-  res.json(GetFeaturedProfilesResponse.parse(result.map(toProfile)));
+  res.json(GetFeaturedProfilesResponse.parse(result.sort((a, b) => Number(b.isPremium) - Number(a.isPremium)).map(toProfile)));
 });
 
 router.get("/profiles/:slug", async (req, res) => {
@@ -339,7 +275,8 @@ router.get("/profiles/:slug", async (req, res) => {
   );
 });
 
-router.post("/profiles/:id/interest", async (req, res) => {
+router.post("/profiles/:id/interest", requireViewer, async (req, res) => {
+  req.body = { ...req.body, contactType: res.locals.viewer.contactType, contact: res.locals.viewer.contact };
   const params = SendInterestParams.safeParse(req.params);
   const body = SendInterestBody.safeParse(req.body ?? {});
   if (!params.success || !body.success) {
@@ -378,6 +315,8 @@ router.post("/profiles/:id/interest", async (req, res) => {
       });
     return;
   }
+  const interestId = randomUUID();
+  await pool.query("INSERT INTO member_interests (id, viewer_id, profile_id, profile_slug, profile_name, note) VALUES ($1,$2,$3,$4,$5,$6)", [interestId, res.locals.viewer.id, profile.id, profile.slug, profile.displayName, note?.trim() || ""]);
   try {
     await sendTelegramInterest({
       profileName: profile.displayName,
@@ -386,6 +325,7 @@ router.post("/profiles/:id/interest", async (req, res) => {
       contact: contactType === "telegram" ? `@${contact}` : contact,
       note: note?.trim(),
     });
+    await pool.query("UPDATE member_interests SET delivery = 'Sent' WHERE id = $1", [interestId]);
     res
       .status(201)
       .json(
@@ -395,14 +335,8 @@ router.post("/profiles/:id/interest", async (req, res) => {
         }),
       );
   } catch {
-    // Do not log provider errors: request URLs contain the bot token.
-    res
-      .status(503)
-      .json({
-        success: false,
-        message:
-          "Your introduction could not be delivered. Please try again later.",
-      });
+    await pool.query("UPDATE member_interests SET delivery = 'Failed' WHERE id = $1", [interestId]);
+    res.status(201).json({ success: true, message: "Your interest is saved. Team notification is delayed." });
   }
 });
 
@@ -424,23 +358,17 @@ router.post("/profiles/:id/favorite", async (req, res) => {
 });
 
 router.get("/cities", async (_req, res) => {
-  const result = cities.map((city) => ({ ...city }));
-  for (const profile of await getRegisteredPublicProfiles()) {
-    const city = result.find((item) => item.slug === profile.citySlug);
-    if (city) city.profileCount++;
-    else
-      result.push({
-        id: profile.id,
-        name: profile.city,
-        slug: profile.citySlug,
-        profileCount: 1,
-      });
-  }
+  const configured = await discoveryOptions();
+  const profiles = await allProfiles();
+  const result = configured.locations.map((name, index) => ({
+    id: index + 1, name, slug: locationSlug(name),
+    profileCount: profiles.filter(profile => locationSlug(profile.city) === locationSlug(name)).length,
+  }));
   res.json(ListCitiesResponse.parse(result));
 });
 
 router.get("/plans", async (_req, res) => {
-  res.json(ListPlansResponse.parse(plans));
+  res.json(ListPlansResponse.parse(await publicPlans()));
 });
 
 router.get("/discovery-summary", async (_req, res) => {

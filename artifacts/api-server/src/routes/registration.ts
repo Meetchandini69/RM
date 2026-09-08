@@ -53,7 +53,8 @@ router.use((req, res, next) => {
   next();
 });
 
-function recordView(record: RegistrationRecord): RegistrationRecord {
+export function recordView(record: RegistrationRecord): RegistrationRecord {
+  if (["weekly", "monthly"].includes(record.listing)) record = { ...record, listing: "free", listingPrice: 0 };
   const missing: string[] = [];
   if (
     !record.headline.trim() ||
@@ -72,7 +73,7 @@ function recordView(record: RegistrationRecord): RegistrationRecord {
     missing.push("Photos");
   if (!record.preferences.length || !record.availability.length)
     missing.push("Preferences");
-  if (!["free", "weekly", "monthly", "quarterly"].includes(record.listing))
+  if (!["free", "quarterly", "yearly"].includes(record.listing))
     missing.push("Listing Plan");
   if (!record.accurate || !record.terms || !record.adult)
     missing.push("Review");
@@ -91,7 +92,7 @@ function recordView(record: RegistrationRecord): RegistrationRecord {
   };
 }
 
-const requireAdmin: import("express").RequestHandler = async (
+export const requireAdmin: import("express").RequestHandler = async (
   req,
   res,
   next,
@@ -157,6 +158,14 @@ router.post(
         return;
       }
       let record = recordView(JSON.parse(row.record));
+      if (parsed.data.action === "reject" && ["Profile pending", "Profile rejected"].includes(record.reviewStatus)) {
+        const result = await pool.query("UPDATE registrations SET record = jsonb_set(record, '{reviewStatus}', '\"Profile rejected\"') WHERE id = $1 RETURNING record::text AS record", [id]);
+        res.json(recordView(JSON.parse(result.rows[0].record)));
+        return;
+      }
+      if (parsed.data.action === "approve" && record.reviewStatus.startsWith("Profile") && !record.isComplete) {
+        res.status(400).json({ message: "The member must complete all profile steps before publication." }); return;
+      }
       if (parsed.data.action === "reject") {
         const result = await pool.query(
           "UPDATE registrations SET record = record || jsonb_build_object('reviewStatus', 'Rejected', 'notificationStatus', 'Not sent') WHERE id = $1 RETURNING record::text AS record",
@@ -184,7 +193,7 @@ router.post(
       let notificationStatus = "Sent";
       try {
         await sendAdminTelegram(
-          `Profile approved\n\nName: ${record.displayName}\nRegistration: ${record.id}\nPlan: ${record.listing}\nThe member can now log in with their registered password.\n${record.isComplete ? "Profile complete and visible on the website." : "Profile will be visible after all profile steps are completed."}`,
+          `Profile approved\n\nName: ${record.displayName}\nRegistration: ${record.id}\nPlan: ${record.listing}\nThe member can now log in with their registered password.\n${record.isComplete ? "Profile complete and visible on the website." : "Completed profile details require another admin review before publication."}`,
         );
       } catch {
         notificationStatus = "Failed";
@@ -212,6 +221,7 @@ export async function getRegisteredPublicProfiles() {
       "SELECT public_id AS \"publicId\", record::text AS record FROM registrations WHERE record->>'reviewStatus' = 'Approved'",
     )
   ).rows;
+  const boosted = new Set((await pool.query("SELECT member FROM profile_boosts WHERE status = 'Approved' AND expires > now()")).rows.map(row => row.member));
   return rows.flatMap((row) => {
     const record = recordView(JSON.parse(row.record as string));
     if (!record.isPublished) return [];
@@ -232,8 +242,8 @@ export async function getRegisteredPublicProfiles() {
         interests: record.interests,
         lookingFor: record.preferences,
         isVerified: false,
-        isPremium: false,
-        isFeatured: false,
+        isPremium: boosted.has(record.id),
+        isFeatured: true,
         isOnline: false,
         lastActive: "Registered member",
         favouriteCount: 0,
@@ -269,7 +279,7 @@ router.get("/member-photos/:id/:index", async (req, res) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.type(metadata.slice(5).split(";")[0]).send(Buffer.from(base64, "base64"));
 });
-async function settings() {
+export async function settings() {
   const stored = (
     await pool.query(
       "SELECT value::text AS value FROM registration_settings WHERE id = 1",
@@ -277,10 +287,8 @@ async function settings() {
   ).rows[0];
   if (stored) return JSON.parse(stored.value as string) as RegistrationSettings;
   return {
-    plans: (["weekly", "monthly", "quarterly"] as const).map((id) => {
-      const raw =
-        process.env[`REGISTRATION_PRICE_${id.toUpperCase()}`] ||
-        { weekly: "499", monthly: "1499", quarterly: "3999" }[id];
+    plans: (["quarterly", "yearly"] as const).map((id) => {
+      const raw = { quarterly: "499", yearly: "999" }[id];
       const price = Number(raw);
       return {
         id,
@@ -356,8 +364,8 @@ router.put("/registration/admin/settings", async (req, res) => {
   const parsed = UpdateRegistrationSettingsBody.safeParse(req.body);
   if (
     !parsed.success ||
-    parsed.data.plans.length !== 3 ||
-    new Set(parsed.data.plans.map((p) => p.id)).size !== 3 ||
+    parsed.data.plans.length !== 2 ||
+    new Set(parsed.data.plans.map((p) => p.id)).size !== 2 ||
     parsed.data.plans.some(
       (p) =>
         !Number.isFinite(p.price) ||
@@ -367,7 +375,7 @@ router.put("/registration/admin/settings", async (req, res) => {
   ) {
     res
       .status(400)
-      .json({ message: "Provide valid prices for all three plans." });
+      .json({ message: "Provide valid prices for both paid plans." });
     return;
   }
   for (const url of [parsed.data.termsUrl, parsed.data.privacyUrl]) {
@@ -416,7 +424,7 @@ const saveRegistration: import("express").RequestHandler = async (req, res) => {
       return;
     }
     existing = recordView(JSON.parse(row.record as string));
-    if (existing.reviewStatus !== "Approved") {
+    if (!["Approved", "Profile pending", "Profile rejected"].includes(existing.reviewStatus)) {
       res.status(403).json({
         message:
           "Your registration must be approved before you can edit your profile.",
@@ -562,7 +570,7 @@ const saveRegistration: import("express").RequestHandler = async (req, res) => {
   try {
     if (existing) {
       const result = await pool.query(
-        "UPDATE registrations SET email = $1, mobile = $2, record = $3::jsonb || jsonb_build_object('reviewStatus', record->>'reviewStatus', 'notificationStatus', record->>'notificationStatus') WHERE id = $4 AND record->>'reviewStatus' = 'Approved' RETURNING record::text AS record",
+        "UPDATE registrations SET email = $1, mobile = $2, record = $3::jsonb || jsonb_build_object('reviewStatus', 'Profile pending', 'notificationStatus', 'Not sent') WHERE id = $4 AND record->>'reviewStatus' IN ('Approved', 'Profile pending', 'Profile rejected') RETURNING record::text AS record",
         [email, mobile, JSON.stringify(record), existing.id],
       );
       if (!result.rows[0]) {
@@ -586,7 +594,10 @@ const saveRegistration: import("express").RequestHandler = async (req, res) => {
     });
     return;
   }
-  if (existing) await session(record.id, res);
+  if (existing) {
+    await session(record.id, res);
+    try { await sendAdminTelegram(`Profile details submitted for review\nName: ${record.displayName}\nRegistration: ${record.id}\nReview in /admin/registration`); } catch { /* Submission remains saved for admin review. */ }
+  }
   else res.clearCookie("ram_session", { path: cookieOptions.path });
   res.json(recordView(record));
 };
@@ -611,7 +622,7 @@ router.get("/registration/me", async (req, res) => {
     return;
   }
   const record = recordView(JSON.parse(row.record as string));
-  if (record.reviewStatus !== "Approved") {
+  if (!["Approved", "Profile pending", "Profile rejected"].includes(record.reviewStatus)) {
     res.status(403).json({
       message:
         "Your registration is awaiting admin approval. Login will be available after approval.",
@@ -641,7 +652,7 @@ router.post("/registration/login", async (req, res) => {
     return;
   }
   const record = recordView(JSON.parse(row.record as string));
-  if (record.reviewStatus !== "Approved") {
+  if (!["Approved", "Profile pending", "Profile rejected"].includes(record.reviewStatus)) {
     res.status(403).json({
       message:
         record.reviewStatus === "Rejected"

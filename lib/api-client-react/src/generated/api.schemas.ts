@@ -116,9 +116,8 @@ export type RegistrationInputListing = typeof RegistrationInputListing[keyof typ
 
 export const RegistrationInputListing = {
   free: 'free',
-  weekly: 'weekly',
-  monthly: 'monthly',
   quarterly: 'quarterly',
+  yearly: 'yearly',
 } as const;
 
 export interface RegistrationInput {
@@ -261,9 +260,8 @@ export type RegistrationRecordListing = typeof RegistrationRecordListing[keyof t
 
 export const RegistrationRecordListing = {
   free: 'free',
-  weekly: 'weekly',
-  monthly: 'monthly',
   quarterly: 'quarterly',
+  yearly: 'yearly',
 } as const;
 
 export interface RegistrationRecord {
@@ -409,9 +407,8 @@ export type RegistrationPlanId = typeof RegistrationPlanId[keyof typeof Registra
 
 
 export const RegistrationPlanId = {
-  weekly: 'weekly',
-  monthly: 'monthly',
   quarterly: 'quarterly',
+  yearly: 'yearly',
 } as const;
 
 export interface RegistrationPlan {

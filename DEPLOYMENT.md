@@ -125,3 +125,29 @@ Open http://localhost:5000. If testing a protected API locally, put `API_PROXY_S
 - **Approval succeeds but Telegram fails:** check the bot token, receiving chat ID and bot access, then use Retry Telegram in admin.
 
 Provider references: [Pages Functions routing](https://developers.cloudflare.com/pages/functions/routing/), [Pages build configuration](https://developers.cloudflare.com/pages/configuration/build-configuration/), [Railway healthchecks](https://docs.railway.com/deployments/healthchecks), [Neon connections](https://neon.com/docs/connect/connect-from-any-app).
+
+
+## Browsing access approval
+
+- `/unlock`: basic browsing registration (name, Telegram username or WhatsApp number, looking for, age, location and password).
+- `/login`: approved browsers sign in with their contact and password; `/dashboard` remains the separate men's profile management login.
+- `/admin/registration`: the Registrations tab includes Browsing access requests with approve/reject controls. Rejection revokes existing browsing sessions.
+- Restart the API after updating: startup creates `viewers` and `viewer_sessions` automatically in the existing PostgreSQL database.
+- New browsing requests notify the existing `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` admin chat. The queue shows delivery status; failed Telegram delivery does not discard the registration. Approval is checked at login and on every interest request.
+- Profile blur is a visual UI restriction on the existing public photo assets, not private media storage. Direct static asset URLs remain public.
+- Verification: `node scripts/test-viewer-access.mjs` exercises the access lifecycle with mocked database and Telegram; it does not send real messages.
+
+
+## Account panels, profile review and boosts
+
+- Women land on `/account` after login. `/account/profile` shows their details; `/account/interests` retains every new interest and message, including requests whose Telegram notification failed. Earlier Telegram-only introductions cannot be reconstructed automatically.
+- The signed-in header shows the account name with Profile, Dashboard, Interests and Logout links. Men also have an Upgrade / Boost link. Mobile navigation includes the same account menu.
+- Men use `/dashboard`, `/my-profile`, `/complete-profile`, `/member-interests` and `/boost-profile`.
+- Initial registration approval enables login. Saving profile details changes the status to `Profile pending`, removes public visibility and requests a second admin review. Members retain login while pending or `Profile rejected`, and can edit/resubmit. Admin approval publishes complete profiles in Browse and the homepage card grid. Guests continue to see blurred cards.
+- Boost requests use the admin-configured quarterly/yearly prices. Admin must confirm payment separately before activation. Activation lasts 3 months / 1 year, adds premium status and prioritizes featured placement; expiry removes that benefit automatically. A boost does not override profile approval. No automatic payment collection is added.
+- Restart the API to create `member_interests` and `profile_boosts` and their indexes. New tables preserve existing registrations.
+- `node scripts/test-account-panels.mjs` runs integration checks using the configured PostgreSQL connection, an isolated schema in a transaction, and mocked Telegram. The transaction is rolled back, leaving no test records or schema. Covers profile resubmission/review, login while pending, interest history/isolation, notification failure, boost approval/expiry and logout.
+
+Current plans: Free INR 0, Quarterly INR 499 (3 months), Yearly INR 999 (1 year). Admin settings control both paid prices. Startup migrates the previous pricing settings once; historical activated boosts retain their existing expiry.
+
+Admin ? Search options controls the ordered Location and I?m looking for lists on homepage and Browse Men. Enter one option per line and save. Settings persist in `discovery_settings`; existing profile values are retained. Search options refresh within 30 seconds on open public pages and on returning to the tab.

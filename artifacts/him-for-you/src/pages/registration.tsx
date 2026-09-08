@@ -1,3 +1,6 @@
+import { DiscoveryOptionsAdmin } from "./discovery-options";
+import { BoostPanel, InterestHistory } from "./account-panels";
+import { ViewerQueue } from "./viewer-access";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
@@ -630,7 +633,7 @@ export default function Registration({
         </h1>
         <p className="mt-6 text-sm leading-7 text-muted-foreground">
           {existing
-            ? "Your profile changes have been saved. Complete profiles are now visible on the website."
+            ? "Your profile has been submitted for admin review. Your card will appear after approval. You can still use your dashboard."
             : "Your registration is awaiting admin approval. Once approved, log in with your registered email and password and complete every profile step to appear on the website."}
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -1289,9 +1292,13 @@ export default function Registration({
 export function MemberArea({
   profile = false,
   complete = false,
+  interests = false,
+  boost = false,
 }: {
   profile?: boolean;
   complete?: boolean;
+  interests?: boolean;
+  boost?: boolean;
 }) {
   const query = useGetMyRegistration({
     query: { queryKey: ["/api/registration/me"], retry: false },
@@ -1305,7 +1312,7 @@ export function MemberArea({
         Loading your profile…
       </p>
     );
-  if (query.isError || !query.data || query.data.reviewStatus !== "Approved")
+  if (query.isError || !query.data || !["Approved", "Profile pending", "Profile rejected"].includes(query.data.reviewStatus))
     return (
       <div className="mx-auto max-w-md px-5 py-16">
         <h1 className="font-editorial text-4xl">Welcome back.</h1>
@@ -1362,6 +1369,7 @@ export function MemberArea({
       </div>
     );
   if (complete) return <Registration existing={query.data} />;
+  if (interests || boost) return <div className="mx-auto max-w-4xl px-5 py-12"><Link href="/dashboard" className="text-accent">? Dashboard</Link>{interests ? <InterestHistory men /> : <BoostPanel />}</div>;
   return (
     <div className="mx-auto max-w-3xl px-5 py-12">
       <p className="text-xs uppercase tracking-widest text-accent">
@@ -1377,7 +1385,7 @@ export function MemberArea({
       <Notice>
         {query.data.isPublished
           ? "Your profile is approved, complete, and visible on the website."
-          : "Your registration is approved. Complete all profile steps to make your profile visible on the website."}
+          : "Complete your profile and submit it for admin review. Your card appears publicly only after the completed profile is approved."}
       </Notice>
       {!query.data.isComplete && (
         <section className="mt-5 rounded-2xl border border-primary/30 bg-primary/5 p-5">
@@ -1430,7 +1438,7 @@ export function MemberArea({
           </p>
         </div>
       )}
-      {!profile && <PlanComparison />}
+      {!profile && <><InterestHistory men /><BoostPanel /><PlanComparison /></>}
     </div>
   );
 }
@@ -1440,7 +1448,7 @@ export function RegistrationAdmin() {
   const [checking, setChecking] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
   const [sessionError, setSessionError] = useState("");
-  const [tab, setTab] = useState<"registrations" | "settings">("registrations");
+  const [tab, setTab] = useState<"registrations" | "settings" | "discovery">("registrations");
   const login = useLoginRegistrationAdmin();
   const update = useUpdateRegistrationSettings();
   const [password, setPassword] = useState("");
@@ -1464,6 +1472,10 @@ export function RegistrationAdmin() {
     try {
       const response = await fetch("/api/registration/admin/logout", { method: "POST", credentials: "same-origin" });
       if (!response.ok) throw new Error("Logout failed");
+      await queryClient.cancelQueries({ queryKey: ["admin-boosts"] });
+      queryClient.removeQueries({ queryKey: ["admin-boosts"] });
+      await queryClient.cancelQueries({ queryKey: ["admin-viewers"] });
+      queryClient.removeQueries({ queryKey: ["admin-viewers"] });
       await queryClient.cancelQueries({ queryKey: ["/api/registration/admin/registrations"] });
       queryClient.removeQueries({ queryKey: ["/api/registration/admin/registrations"] });
       setData(undefined);
@@ -1499,6 +1511,7 @@ export function RegistrationAdmin() {
           >
             Pricing & Policies
           </button>
+          <button className={tab === "discovery" ? primary : secondary} onClick={() => setTab("discovery")}>Search options</button>
           <button type="button" className={`${secondary} sm:ml-auto`} disabled={loggingOut} onClick={logout}>
             {loggingOut ? "Logging out…" : "Log out"}
           </button>
@@ -1540,8 +1553,8 @@ export function RegistrationAdmin() {
             {login.isPending ? "Signing in…" : "Sign in"}
           </button>
         </form>
-      ) : tab === "registrations" ? (
-        <AdminRegistrationQueue />
+      ) : tab === "discovery" ? <DiscoveryOptionsAdmin /> : tab === "registrations" ? (
+        <><ViewerQueue /><AdminRegistrationQueue /><BoostPanel admin /></>
       ) : (
         <form
           className="mt-8 grid gap-6"
@@ -1753,7 +1766,7 @@ function AdminRegistrationQueue() {
         onSuccess: (result) => {
           setNotice(
             action === "reject"
-              ? `${result.displayName}: approval denied. Login and public listing are disabled.`
+              ? `${result.displayName}: ${result.reviewStatus === "Profile rejected" ? "Profile changes rejected. The member can log in and resubmit." : "Approval denied. Login and public listing are disabled."}`
               : result.notificationStatus === "Sent"
                 ? `${result.displayName}: approved. Telegram notification sent to your admin chat.`
                 : `${result.displayName}: approved, but Telegram delivery failed. Check the bot settings and use Retry Telegram.`,
@@ -1766,7 +1779,7 @@ function AdminRegistrationQueue() {
   return (
     <section className="mt-8">
       <div className="grid gap-3 sm:grid-cols-3">
-        {["Pending approval", "Approved", "Rejected"].map((status) => (
+        {["Pending approval", "Profile pending", "Approved", "Profile rejected", "Rejected"].map((status) => (
           <button
             key={status}
             onClick={() => setFilter(status)}
@@ -1796,7 +1809,7 @@ function AdminRegistrationQueue() {
           value={filter}
           onChange={(event) => setFilter(event.target.value)}
         >
-          {["All", "Pending approval", "Approved", "Rejected"].map((status) => (
+          {["All", "Pending approval", "Profile pending", "Profile rejected", "Approved", "Rejected"].map((status) => (
             <option key={status}>{status}</option>
           ))}
         </select>
@@ -1889,7 +1902,7 @@ function AdminRegistrationQueue() {
                   disabled={review.isPending}
                   onClick={() => act(record, "approve")}
                 >
-                  Approve registration <Check size={16} />
+                  {record.reviewStatus.startsWith("Profile") ? "Approve completed profile" : "Approve registration"} <Check size={16} />
                 </button>
               )}
               {record.reviewStatus === "Approved" &&
