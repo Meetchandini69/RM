@@ -184,7 +184,7 @@ function Shell({ children }: { children: ReactNode }) {
             <img src="/rm-logo.png" alt="Men For You logo" width={457} height={546} className="h-12 w-auto shrink-0 object-contain" />
             <span className="font-editorial text-[23px] tracking-[-.02em] text-foreground">men <span className="text-primary">for</span> you</span>
           </Link>
-          <nav className="hidden items-center gap-7 lg:flex" aria-label="Main navigation">
+          <nav className="hidden items-center gap-4 xl:gap-7 xl:flex" aria-label="Main navigation">
             <Link href="/" className={`underlined-link text-[11px] font-semibold uppercase tracking-[.14em] transition ${location === '/' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`} data-testid="link-home">Home</Link>
             <Link href="/men" className={`underlined-link text-[11px] font-semibold uppercase tracking-[.14em] transition ${isBrowse ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`} data-testid="link-browse">Browse Men</Link>
             <a href="#how-it-works" className="underlined-link text-[11px] font-semibold uppercase tracking-[.14em] text-muted-foreground transition hover:text-foreground" data-testid="link-how-it-works">How It Works</a>
@@ -192,17 +192,19 @@ function Shell({ children }: { children: ReactNode }) {
             <a href="#popular-cities" className="underlined-link text-[11px] font-semibold uppercase tracking-[.14em] text-muted-foreground transition hover:text-foreground" data-testid="link-cities">Popular Cities</a>
             <a href="#footer" className="underlined-link text-[11px] font-semibold uppercase tracking-[.14em] text-muted-foreground transition hover:text-foreground" data-testid="link-blog">Blog</a>
           </nav>
-          <div className="hidden items-center gap-5 md:flex">
+          <div className="hidden items-center gap-3 xl:flex">
             <button className="text-muted-foreground transition hover:text-accent" aria-label="Notifications" data-testid="button-notifications"><Bell size={17} /></button>
             <span className="h-5 w-px bg-foreground/15" />
             <AccountMenu />
+            <Link href="/dashboard" className="whitespace-nowrap rounded-md border border-accent/50 px-4 py-2.5 text-[10px] font-bold uppercase tracking-[.14em] text-accent hover:bg-accent/10" data-testid="link-header-men-login">Men login</Link>
             <Link href="/join" className="rounded-md bg-primary px-4 py-2.5 text-[10px] font-bold uppercase tracking-[.14em] text-foreground transition hover:bg-primary/85" data-testid="link-header-join">Join now</Link>
           </div>
-          <button className="flex h-10 w-10 items-center justify-center rounded-full border border-foreground/15 text-foreground md:hidden" onClick={() => setOpen(!open)} aria-label="Open navigation" data-testid="button-mobile-menu">{open ? <X size={18} /> : <Menu size={18} />}</button>
+          <button className="flex h-10 w-10 items-center justify-center rounded-full border border-foreground/15 text-foreground xl:hidden" onClick={() => setOpen(!open)} aria-label="Open navigation" data-testid="button-mobile-menu">{open ? <X size={18} /> : <Menu size={18} />}</button>
         </div>
         {open && (
-          <div className="border-t border-foreground/10 bg-card px-5 py-5 md:hidden" data-testid="mobile-navigation">
+          <div className="border-t border-foreground/10 bg-card px-5 py-5 xl:hidden" data-testid="mobile-navigation">
             <nav className="grid gap-1"><AccountMenu />
+              <Link href="/dashboard" className="mt-3 rounded-md border border-accent/50 px-4 py-3 text-sm font-semibold text-accent" onClick={() => setOpen(false)} data-testid="mobile-link-men-login">Men login</Link>
               <Link href="/men" className="flex items-center justify-between border-b hairline py-4 text-sm font-semibold uppercase tracking-[.15em]" onClick={() => setOpen(false)} data-testid="mobile-link-browse">Discover men <ChevronRight size={16} className="text-accent" /></Link>
               <Link href="/premium" className="flex items-center justify-between border-b hairline py-4 text-sm font-semibold uppercase tracking-[.15em]" onClick={() => setOpen(false)} data-testid="mobile-link-premium">Membership <ChevronRight size={16} className="text-accent" /></Link>
               <Link href="/join" className="flex items-center justify-between py-4 text-sm font-semibold uppercase tracking-[.15em]" onClick={() => setOpen(false)} data-testid="mobile-link-join">For men <ChevronRight size={16} className="text-accent" /></Link>

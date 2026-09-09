@@ -663,13 +663,18 @@ router.get("/registration/me", async (req, res) => {
 router.post("/registration/login", async (req, res) => {
   const parsed = LoginRegistrationBody.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ message: "Enter your email and password." });
+    res.status(400).json({ message: "Enter your mobile number and password." });
+    return;
+  }
+  const mobile = parsed.data.mobile.replace(/[\s()-]/g, "");
+  if (!/^\+[1-9]\d{7,14}$/.test(mobile)) {
+    res.status(400).json({ message: "Enter your registered mobile number with country code (for example, +91 98765 43210)." });
     return;
   }
   const row = (
     await pool.query(
-      "SELECT id, password, record::text AS record FROM registrations WHERE email = $1",
-      [parsed.data.email.trim().toLowerCase()],
+      "SELECT id, password, record::text AS record FROM registrations WHERE mobile = $1",
+      [mobile],
     )
   ).rows[0];
   const [salt, hash] = (
@@ -677,7 +682,7 @@ router.post("/registration/login", async (req, res) => {
   ).split(":");
   const candidate = (await derive(parsed.data.password, salt, 64)) as Buffer;
   if (!row || !timingSafeEqual(candidate, Buffer.from(hash, "hex"))) {
-    res.status(401).json({ message: "Email or password is incorrect." });
+    res.status(401).json({ message: "Mobile number or password is incorrect." });
     return;
   }
   const record = recordView(JSON.parse(row.record as string));

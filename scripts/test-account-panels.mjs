@@ -75,7 +75,11 @@ try {
  failTelegram=true;const failedSignup=await call('registrations',{...member,email:'failure@example.invalid',mobile:'+918888888888'});assert.equal(failedSignup.status,200);assert.equal(failedSignup.data.notificationStatus,'Failed');failTelegram=false;assert.equal((await call(`registration/admin/registrations/${failedSignup.data.id}/notify`,{},admin)).data.notificationStatus,'Sent');
  assert.equal((await call('registration/login',member)).status,403);
  assert.equal((await call(`registration/admin/registrations/${id}/review`,{action:'approve'},admin)).status,200);
- r=await call('registration/login',member);assert.equal(r.status,200);let mc=r.cookie;
+ assert.equal((await call('registration/login',{mobile:member.mobile,password:'incorrect-password'})).status,401);
+ assert.equal((await call('registration/login',{mobile:'+917777777777',password:member.password})).status,401);
+ assert.equal((await call('registration/login',{email:member.email,password:member.password})).status,400);
+ assert.equal((await call('registration/login',{mobile:'9999999999',password:member.password})).status,400);
+ r=await call('registration/login',{mobile:'+91 (99999) 99999',password:member.password});assert.equal(r.status,200);let mc=r.cookie;
  const complete={...member,headline:'Good company',about:'I enjoy conversation and travel.',interests:['Travel'],languages:['English'],state:'Tamil Nadu',city:'Chennai',area:'Central',preferences:['Dating'],availability:['Weekends'],photos:[{dataUrl:'data:image/png;base64,iVBORw0KGgo=',category:'profile'}]};
  assert.equal((await call('registration/profile',complete,mc,'PUT')).status,403);
  assert.equal((await call('registration/membership',null,mc)).data.membership,null);

@@ -427,9 +427,9 @@ export interface RegistrationSettings {
 export interface RegistrationLogin {
   /**
      * @minLength 1
-     * @maxLength 254
+     * @maxLength 30
      */
-  email: string;
+  mobile: string;
   /**
      * @minLength 1
      * @maxLength 128

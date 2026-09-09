@@ -1188,7 +1188,7 @@ export function MemberArea({
     query: { queryKey: ["/api/registration/me"], retry: false },
   });
   const login = useLoginRegistration();
-  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   if (query.isLoading)
     return (
@@ -1208,7 +1208,7 @@ export function MemberArea({
           onSubmit={(e) => {
             e.preventDefault();
             login.mutate(
-              { data: { email, password } },
+              { data: { mobile, password } },
               {
                 onSuccess: () => {
                   setPassword("");
@@ -1218,14 +1218,16 @@ export function MemberArea({
             );
           }}
         >
-          <Field label="Email Address">
+          <Field label="Mobile number (with country code)">
             <input
               className={inputClass}
-              type="email"
-              autoComplete="email"
+              type="tel"
+              autoComplete="username"
+              placeholder="+91 98765 43210"
+              maxLength={30}
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
             />
           </Field>
           <Field label="Password">

@@ -202,7 +202,7 @@ test("registration, private access, admin persistence, and Telegram delivery", a
     assert.equal(
       (
         await request("/registration/login", {
-          email: input.email,
+          mobile: input.mobile,
           password: input.password,
         })
       ).status,
@@ -256,7 +256,7 @@ test("registration, private access, admin persistence, and Telegram delivery", a
       sentLog,
     );
     const login = await request("/registration/login", {
-      email: input.email,
+      mobile: input.mobile,
       password: input.password,
     });
     assert.equal(login.status, 200);
@@ -330,7 +330,7 @@ test("registration, private access, admin persistence, and Telegram delivery", a
     assert.equal(partialApproved.body.isPublished, false);
     assert.ok(partialApproved.body.missingSteps.includes("Photos"));
     const partialLogin = await request("/registration/login", {
-      email: basicOnly.email,
+      mobile: basicOnly.mobile,
       password: basicOnly.password,
     });
     assert.equal(partialLogin.status, 200);
@@ -409,7 +409,7 @@ test("registration, private access, admin persistence, and Telegram delivery", a
     assert.equal(
       (
         await request("/registration/login", {
-          email: basicOnly.email,
+          mobile: basicOnly.mobile,
           password: basicOnly.password,
         })
       ).status,
@@ -464,7 +464,7 @@ test("registration, private access, admin persistence, and Telegram delivery", a
     assert.equal(
       (
         await request("/registration/login", {
-          email: basicOnly.email,
+          mobile: basicOnly.mobile,
           password: basicOnly.password,
         })
       ).status,

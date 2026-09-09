@@ -898,14 +898,14 @@ export const GetMyRegistrationResponse = zod.object({
 })
 
 
-export const loginRegistrationBodyEmailMax = 254;
+export const loginRegistrationBodyMobileMax = 30;
 
 export const loginRegistrationBodyPasswordMax = 128;
 
 
 
 export const LoginRegistrationBody = zod.object({
-  "email": zod.string().min(1).max(loginRegistrationBodyEmailMax),
+  "mobile": zod.string().min(1).max(loginRegistrationBodyMobileMax),
   "password": zod.string().min(1).max(loginRegistrationBodyPasswordMax)
 })
 
