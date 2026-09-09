@@ -10,6 +10,6 @@ export type RegistrationPlanId = typeof RegistrationPlanId[keyof typeof Registra
 
 
 export const RegistrationPlanId = {
-  quarterly: 'quarterly',
+  halfyearly: 'halfyearly',
   yearly: 'yearly',
 } as const;

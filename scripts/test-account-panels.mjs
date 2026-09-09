@@ -12,8 +12,8 @@ const req=createRequire(resolve('artifacts/api-server/package.json'));
 const dbRequire=createRequire(resolve('lib/db/package.json'));
 const zodRequire=createRequire(resolve('lib/api-zod/package.json'));
 const client=new (dbRequire('pg').Client)({connectionString:process.env.DATABASE_URL,connectionTimeoutMillis:15000});
-const cache=new Map();let failTelegram=false;
-function load(file){file=resolve(file);if(cache.has(file))return cache.get(file).exports;const m={exports:{}};cache.set(file,m);const code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText;new Function('require','module','exports',code)(name=>name==='@workspace/db'?{pool:client}:name==='@workspace/api-zod'?load('lib/api-zod/src/generated/api.ts'):name==='zod'?zodRequire('zod'):name.includes('/telegram')?{sendAdminTelegram:async()=>{if(failTelegram)throw Error('mock failure');},sendTelegramInterest:async()=>{if(failTelegram)throw Error('mock failure');}}:name.startsWith('.')?load(resolve(dirname(file),name+'.ts')):req(name),m,m.exports);return m.exports;}
+const cache=new Map();let failTelegram=false;let telegramMessages=0;
+function load(file){file=resolve(file);if(cache.has(file))return cache.get(file).exports;const m={exports:{}};cache.set(file,m);const code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText;new Function('require','module','exports',code)(name=>name==='@workspace/db'?{pool:client}:name==='@workspace/api-zod'?load('lib/api-zod/src/generated/api.ts'):name==='zod'?zodRequire('zod'):name.includes('/telegram')?{sendAdminTelegram:async()=>{telegramMessages++;if(failTelegram)throw Error('mock failure');},sendTelegramInterest:async()=>{if(failTelegram)throw Error('mock failure');}}:name.startsWith('.')?load(resolve(dirname(file),name+'.ts')):req(name),m,m.exports);return m.exports;}
 await client.connect();let server;
 try {
  await client.query('BEGIN');
@@ -69,8 +69,11 @@ try {
  const html=await (await fetch(base+'seo/sitemap/html')).text();assert.ok(html.includes('Sitemap'));assert.ok(html.includes('rel="canonical"'));assert.ok(!html.includes('/account'));
  assert.ok((await (await fetch(base+'seo/sitemap/robots')).text()).includes('Sitemap: https://example.test/sitemap.xml'));
  const dob='2000-01-01';const age=new Date().getUTCFullYear()-2000;
- const member={displayName:'Integration Test',age,dateOfBirth:dob,email:'test@example.invalid',mobile:'+919999999999',password:'test-password-123',confirmPassword:'test-password-123',headline:'',about:'',interests:[],languages:[],country:'India',state:'',city:'',area:'',pinCode:'',photos:[],mainPhoto:0,preferences:[],minAge:18,maxAge:60,availability:[],status:'available',listing:'free',partnerOptIn:false,accurate:true,terms:true,adult:true};
- let r=await call('registrations',member);assert.equal(r.status,200,JSON.stringify(r.data));const id=r.data.id;
+ const member={displayName:'Integration Test',age,dateOfBirth:dob,email:'test@example.invalid',mobile:'+919999999999',password:'test-password-123',confirmPassword:'test-password-123',headline:'',about:'',interests:[],languages:[],country:'India',state:'',city:'',area:'',pinCode:'',photos:[],mainPhoto:0,preferences:[],minAge:18,maxAge:60,availability:[],status:'available',listing:'halfyearly',partnerOptIn:false,accurate:true,terms:true,adult:true};
+ assert.equal((await call('registrations',{...member,listing:'free'})).status,400);
+ const beforeNotifications=telegramMessages;
+ let r=await call('registrations',member);assert.equal(r.status,200,JSON.stringify(r.data));const id=r.data.id;assert.equal(r.data.notificationStatus,'Sent');assert.equal(telegramMessages,beforeNotifications+1);
+ failTelegram=true;const failedSignup=await call('registrations',{...member,email:'failure@example.invalid',mobile:'+918888888888'});assert.equal(failedSignup.status,200);assert.equal(failedSignup.data.notificationStatus,'Failed');failTelegram=false;assert.equal((await call(`registration/admin/registrations/${failedSignup.data.id}/notify`,{},admin)).data.notificationStatus,'Sent');
  assert.equal((await call('registration/login',member)).status,403);
  assert.equal((await call(`registration/admin/registrations/${id}/review`,{action:'approve'},admin)).status,200);
  r=await call('registration/login',member);assert.equal(r.status,200);let mc=r.cookie;
@@ -95,7 +98,7 @@ try {
  assert.equal((await call('registration/interests',null,mc)).data[0].name,'Test Woman');
  await call('viewer/logout',{},wc);r=await call('viewer/login',woman);assert.equal((await call('viewer/interests',null,r.cookie)).data.length,1);
  const second={...woman,contact:'@another_woman'};await call('viewer/register',second);const secondId=(await client.query('SELECT id FROM viewers WHERE contact=$1',['another_woman'])).rows[0].id;await call(`registration/admin/viewers/${secondId}/review`,{status:'Approved'},admin);const other=await call('viewer/login',second);assert.equal((await call('viewer/interests',null,other.cookie)).data.length,0);
- r=await call('registration/boosts',{plan:'quarterly'},mc);assert.equal(r.status,201,JSON.stringify(r.data));const bid=r.data.id;
+ r=await call('registration/boosts',{plan:'halfyearly'},mc);assert.equal(r.status,201,JSON.stringify(r.data));const bid=r.data.id;
  assert.equal((await call('registration/boosts',{plan:'yearly'},mc)).status,409);
  assert.equal((await call(`registration/admin/boosts/${bid}/review`,{status:'Approved'},mc)).status,401);
  assert.equal((await call(`registration/admin/boosts/${bid}/review`,{status:'Approved'},admin)).status,200);

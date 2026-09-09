@@ -1,3 +1,4 @@
+import { viewerApi } from "./viewer-access";
 import { SeoAdmin } from "./seo";
 import { DiscoveryOptionsAdmin } from "./discovery-options";
 import { BoostPanel, InterestHistory } from "./account-panels";
@@ -336,8 +337,8 @@ export function RegistrationSummary({
         <>
           <p className="capitalize">
             {data.listing === "free"
-              ? "Free Registration"
-              : `${data.listing} Premium Profile`}
+              ? "Choose a membership plan"
+              : `${data.listing === 'halfyearly' ? 'Half-yearly' : 'Annual'} Membership`}
           </p>
           <p className="mt-2 text-xs text-muted-foreground">
             {data.partnerOptIn
@@ -476,11 +477,10 @@ export default function Registration({
     }
     if (
       value === 5 &&
-      data.listing !== "free" &&
       !settings.data?.plans.find((p) => p.id === data.listing)?.enabled
     )
       next.listing =
-        "Select an available plan or continue with Free Registration.";
+        "Choose Half-yearly or Annual to continue.";
     if (value === 6 && (!data.accurate || !data.terms || !data.adult))
       next.confirmations = "Please check all three required confirmations.";
     return next;
@@ -1005,132 +1005,11 @@ export default function Registration({
               {step === 5 && (
                 <>
                   <div className="grid gap-5 md:grid-cols-2">
-                    <div
-                      className={`rounded-2xl border p-6 ${data.listing === "free" ? "border-accent bg-accent/5" : "border-foreground/15"}`}
-                    >
-                      <ShieldCheck className="text-accent" />
-                      <h3 className="mt-4 font-editorial text-3xl">
-                        Free Registration
-                      </h3>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        Create and submit your profile for free.
-                      </p>
-                      <p className="my-6 font-editorial text-4xl">FREE</p>
-                      <ul className="space-y-3 text-sm text-muted-foreground">
-                        {[
-                          "Basic profile listing",
-                          "Add profile details",
-                          "Add profile photos",
-                          "Select your location",
-                          "Create your public profile",
-                        ].map((x) => (
-                          <li key={x}>
-                            <Check
-                              size={14}
-                              className="mr-2 inline text-accent"
-                            />
-                            {x}
-                          </li>
-                        ))}
-                      </ul>
-                      <button
-                        type="button"
-                        aria-pressed={data.listing === "free"}
-                        className={`${secondary} mt-7 w-full`}
-                        onClick={() => patch("listing", "free")}
-                      >
-                        {data.listing === "free"
-                          ? "✓ Free Registration Selected"
-                          : "Select Free Registration"}
-                      </button>
-                    </div>
-                    <div
-                      className={`rounded-2xl border p-6 ${data.listing !== "free" ? "border-primary bg-primary/10" : "border-primary/30 bg-primary/5"}`}
-                    >
-                      <Crown className="text-primary" />
-                      <h3 className="mt-4 font-editorial text-3xl">
-                        Premium Profile
-                      </h3>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        Get additional visibility and exposure for your profile.
-                      </p>
-                      <Field label="Choose duration">
-                        <select
-                          className={`${inputClass} mt-4`}
-                          aria-label="Premium duration"
-                          value={data.listing === "free" ? "" : data.listing}
-                          onChange={(e) =>
-                            patch(
-                              "listing",
-                              e.target.value as RegistrationInput["listing"],
-                            )
-                          }
-                        >
-                          <option value="" disabled>
-                            Select a premium plan
-                          </option>
-                          {settings.data?.plans.map((p) => (
-                            <option
-                              key={p.id}
-                              value={p.id}
-                              disabled={!p.enabled}
-                            >
-                              {p.id[0].toUpperCase() + p.id.slice(1)} Plan — ₹
-                              {p.price.toLocaleString("en-IN")}
-                              {!p.enabled ? " (unavailable)" : ""}
-                            </option>
-                          ))}
-                        </select>
-                      </Field>
-                      <p className="my-5 font-editorial text-4xl">
-                        {data.listing === "free"
-                          ? "Optional"
-                          : `₹${settings.data?.plans.find((p) => p.id === data.listing)?.price.toLocaleString("en-IN") ?? "—"}`}
-                      </p>
-                      <ul className="space-y-3 text-sm text-muted-foreground">
-                        {[
-                          "Everything included in Free Registration",
-                          "Premium profile visibility",
-                          "Featured placement opportunities",
-                          "Higher profile exposure",
-                          "Priority profile display",
-                          "Premium badge or highlighted profile where applicable",
-                        ].map((x) => (
-                          <li key={x}>
-                            <Check
-                              size={14}
-                              className="mr-2 inline text-primary"
-                            />
-                            {x}
-                          </li>
-                        ))}
-                      </ul>
-                      <p className="mt-5 text-xs leading-6 text-muted-foreground">
-                        No payment is collected during registration. Premium
-                        activation is a separate next step.
-                      </p>
-                      {settings.isLoading && (
-                        <p role="status">Loading plans…</p>
-                      )}
-                      {settings.isError && (
-                        <button
-                          type="button"
-                          className="mt-3 text-sm underline"
-                          onClick={() => settings.refetch()}
-                        >
-                          Could not load prices. Retry
-                        </button>
-                      )}
-                    </div>
+                    {settings.data?.plans.filter(plan => plan.enabled).map(plan => <button type="button" key={plan.id} aria-pressed={data.listing === plan.id} onClick={() => patch("listing", plan.id)} className={`rounded-2xl border p-6 text-left ${data.listing === plan.id ? "border-accent bg-accent/10" : "border-foreground/20"}`}><h3 className="font-editorial text-3xl">{plan.id === 'halfyearly' ? 'Half-yearly' : 'Annual'}</h3><p className="mt-2 text-muted-foreground">{plan.id === 'halfyearly' ? '6 months' : '12 months'}</p><p className="my-5 font-editorial text-4xl">?{plan.price.toLocaleString('en-IN')}</p><p className="text-accent">{data.listing === plan.id ? 'Selected ?' : 'Choose this plan'}</p></button>)}
                   </div>
-                  <Notice>
-                    <strong className="text-foreground">
-                      Premium membership is completely optional.
-                    </strong>{" "}
-                    You are not required or forced to purchase a premium plan to
-                    register or submit your profile. You can continue with Free
-                    Registration at any time.
-                  </Notice>
+                  {settings.isLoading && <p>Loading plans?</p>}
+                  {settings.isError && <button type="button" onClick={() => settings.refetch()}>Could not load plans. Retry</button>}
+                  <Notice>A Half-yearly or Annual plan is required. Payment confirmation and activation are arranged separately after submission.</Notice>
                   <section className="rounded-2xl border border-foreground/10 p-5">
                     <h3 className="font-editorial text-2xl">
                       Additional Profile Opportunities
@@ -1229,13 +1108,12 @@ export default function Registration({
                 </p>
               )}
             </div>
-            {!existing && step > 0 && step < 6 && (
+            {!existing && step > 0 && step < 5 && (
               <div className="mt-6 text-center">
                 <button
                   type="button"
                   disabled={uploading || register.isPending}
                   onClick={() => {
-                    if (step === 5) patch("listing", "free");
                     go(step + 1);
                   }}
                   className="rounded-full px-5 py-3 text-sm text-muted-foreground underline underline-offset-4 hover:text-accent disabled:opacity-50"
@@ -1260,7 +1138,7 @@ export default function Registration({
                 </button>
               ) : (
                 <span className="text-xs text-muted-foreground">
-                  Free to get started
+                  Choose your membership plan
                 </span>
               )}
               <button
@@ -1431,7 +1309,7 @@ export function MemberArea({
           </p>
           <p className="text-sm text-muted-foreground">
             {query.data.listing === "free"
-              ? "Free Registration. No payment is required."
+              ? "Choose Half-yearly or Annual when updating your profile."
               : "Premium selected. No payment has been collected and premium is not yet activated."}
           </p>
           <p className="text-sm">
@@ -1566,8 +1444,7 @@ export function RegistrationAdmin() {
           }}
         >
           <Notice>
-            The initial prices are demo values. Update them before launch. Free
-            Registration always remains available. Prices are in INR.
+            Manage Half-yearly and Annual membership prices here. Prices are in INR.
           </Notice>
           {data.plans.map((plan, i) => (
             <div
@@ -1647,97 +1524,8 @@ export function RegistrationAdmin() {
   );
 }
 function PlanComparison() {
-  const settings = useGetRegistrationSettings();
-  const rows = [
-    ["Registration & profile creation", "Free", "Included"],
-    ["Public profile after approval and completion", "Included", "Included"],
-    ["Profile details, photos & city discovery", "Included", "Included"],
-    ["Member dashboard & profile editing", "Included", "Included"],
-    [
-      "Listing visibility",
-      "Standard listing",
-      "Additional visibility after activation",
-    ],
-    [
-      "Featured placement opportunities",
-      "Not included",
-      "Eligible after activation",
-    ],
-    [
-      "Priority display & premium badge",
-      "Not included",
-      "Available after activation",
-    ],
-  ];
-  return (
-    <section className="mt-8 rounded-2xl border border-foreground/10 bg-card p-5 sm:p-7">
-      <p className="text-xs uppercase tracking-widest text-accent">
-        Choose what works for you
-      </p>
-      <h2 className="mt-3 font-editorial text-3xl">Free vs Premium</h2>
-      <p className="mt-3 text-sm leading-6 text-muted-foreground">
-        Free members can appear on the website too. Every member must be
-        approved and complete their profile, regardless of plan.
-      </p>
-      <div className="mt-5 overflow-x-auto">
-        <table className="w-full min-w-[480px] text-left text-sm">
-          <caption className="sr-only">Free and Premium plan benefits</caption>
-          <thead>
-            <tr className="border-b border-foreground/15">
-              <th scope="col" className="py-4 pr-4">
-                Benefit
-              </th>
-              <th scope="col" className="p-4 text-accent">
-                Free
-              </th>
-              <th scope="col" className="p-4 text-primary">
-                Premium
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map(([benefit, free, premium]) => (
-              <tr key={benefit} className="border-b border-foreground/10">
-                <th scope="row" className="py-4 pr-4 font-normal">
-                  {benefit}
-                </th>
-                <td className="p-4 text-muted-foreground">{free}</td>
-                <td className="p-4 text-muted-foreground">{premium}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="mt-5 flex flex-wrap gap-3">
-        <span className="rounded-xl border border-accent/30 px-4 py-3 text-sm">
-          Free · ₹0
-        </span>
-        {settings.data?.plans
-          .filter((plan) => plan.enabled)
-          .map((plan) => (
-            <span
-              key={plan.id}
-              className="rounded-xl border border-primary/30 px-4 py-3 text-sm capitalize"
-            >
-              {plan.id} · ₹{plan.price.toLocaleString("en-IN")}
-            </span>
-          ))}
-      </div>
-      {settings.isError && (
-        <button
-          className="mt-3 text-sm underline"
-          onClick={() => settings.refetch()}
-        >
-          Retry loading current prices
-        </button>
-      )}
-      <p className="mt-5 text-xs leading-6 text-muted-foreground">
-        Premium is optional. Selecting a paid plan does not collect payment or
-        activate premium benefits. Your profile remains a standard listing until
-        premium activation is available and completed.
-      </p>
-    </section>
-  );
+ const settings = useGetRegistrationSettings();
+ return <section className="mt-8 rounded-2xl border border-foreground/15 p-6"><h2 className="font-editorial text-3xl">Membership plans</h2><p className="mt-3 text-sm text-muted-foreground">Choose Half-yearly or Annual. All profiles require admin approval. Payment confirmation and activation are arranged separately.</p><div className="mt-5 grid gap-4 sm:grid-cols-2">{settings.data?.plans.filter(p => p.enabled).map(p => <div key={p.id} className="rounded-xl border border-accent/30 p-5"><h3>{p.id === 'halfyearly' ? 'Half-yearly ? 6 months' : 'Annual ? 12 months'}</h3><p className="mt-3 text-2xl text-accent">?{p.price.toLocaleString('en-IN')}</p></div>)}</div></section>;
 }
 
 function AdminRegistrationQueue() {
@@ -1907,6 +1695,7 @@ function AdminRegistrationQueue() {
                   {record.reviewStatus.startsWith("Profile") ? "Approve completed profile" : "Approve registration"} <Check size={16} />
                 </button>
               )}
+              {record.reviewStatus !== "Approved" && <button className={secondary} onClick={async e => { const button = e.currentTarget; button.disabled = true; try { const result = await viewerApi(`registration/admin/registrations/${record.id}/notify`, {}); setNotice(result.notificationStatus === 'Sent' ? 'Registration notification sent to Telegram.' : 'Telegram delivery failed. Check bot token and chat ID on Railway.'); await query.refetch(); } catch { setNotice('Could not retry Telegram notification.'); } finally { button.disabled = false; } }}>Retry registration Telegram</button>}
               {record.reviewStatus === "Approved" &&
                 record.notificationStatus !== "Sent" && (
                   <button

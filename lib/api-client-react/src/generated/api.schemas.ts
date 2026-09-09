@@ -116,7 +116,7 @@ export type RegistrationInputListing = typeof RegistrationInputListing[keyof typ
 
 export const RegistrationInputListing = {
   free: 'free',
-  quarterly: 'quarterly',
+  halfyearly: 'halfyearly',
   yearly: 'yearly',
 } as const;
 
@@ -260,7 +260,7 @@ export type RegistrationRecordListing = typeof RegistrationRecordListing[keyof t
 
 export const RegistrationRecordListing = {
   free: 'free',
-  quarterly: 'quarterly',
+  halfyearly: 'halfyearly',
   yearly: 'yearly',
 } as const;
 
@@ -407,7 +407,7 @@ export type RegistrationPlanId = typeof RegistrationPlanId[keyof typeof Registra
 
 
 export const RegistrationPlanId = {
-  quarterly: 'quarterly',
+  halfyearly: 'halfyearly',
   yearly: 'yearly',
 } as const;
 

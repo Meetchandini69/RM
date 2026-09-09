@@ -182,15 +182,14 @@ const profiles: ProfileRecord[] = [
 
 async function publicPlans() {
   const config = await settings();
-  return [{ id: 1, name: "Free", price: 0, duration: "forever", description: "Create your profile and get discovered.", features: ["Basic profile", "Profile photos", "City listing", "Standard visibility"], popular: false, cta: "Create free profile" },
-    ...config.plans.filter(plan => plan.enabled).map(plan => ({
-      id: plan.id === "quarterly" ? 2 : 3,
-      name: plan.id === "quarterly" ? "Quarterly Premium" : "Yearly Premium",
+  return [...config.plans.filter(plan => plan.enabled).map(plan => ({
+      id: plan.id === "halfyearly" ? 2 : 3,
+      name: plan.id === "halfyearly" ? "Half-yearly" : "Annual",
       price: plan.price,
-      duration: plan.id === "quarterly" ? "3 months" : "1 year",
+      duration: plan.id === "halfyearly" ? "6 months" : "1 year",
       description: "More visibility for your approved profile.",
       features: ["Priority featured placement", "Premium badge", "Profile boost"],
-      popular: plan.id === "yearly", cta: plan.id === "quarterly" ? "Choose quarterly" : "Choose yearly",
+      popular: plan.id === "yearly", cta: plan.id === "halfyearly" ? "Choose half-yearly" : "Choose annual",
     }))];
 }
 

@@ -36,7 +36,7 @@ router.post('/registration/boosts', requireMember, async (req, res) => {
 router.get('/registration/admin/boosts', requireAdmin, async (_req,res) => res.json((await pool.query("SELECT b.*, r.record->>'displayName' AS name FROM profile_boosts b JOIN registrations r ON r.id=b.member ORDER BY b.created_at DESC")).rows));
 router.post('/registration/admin/boosts/:id/review', requireAdmin, async (req,res) => {
  if (!['Approved','Rejected'].includes(req.body.status)) {res.status(400).json({message:'Choose approve or reject.'}); return;}
- const result = await pool.query("UPDATE profile_boosts SET status=$1, expires=CASE WHEN $1='Approved' THEN now() + CASE plan WHEN 'weekly' THEN interval '7 days' WHEN 'monthly' THEN interval '30 days' WHEN 'yearly' THEN interval '1 year' ELSE interval '3 months' END ELSE NULL END WHERE id=$2 AND status='Pending' RETURNING *", [req.body.status,req.params.id]);
+ const result = await pool.query("UPDATE profile_boosts SET status=$1, expires=CASE WHEN $1='Approved' THEN now() + CASE plan WHEN 'weekly' THEN interval '7 days' WHEN 'monthly' THEN interval '30 days' WHEN 'halfyearly' THEN interval '6 months' WHEN 'yearly' THEN interval '1 year' ELSE interval '3 months' END ELSE NULL END WHERE id=$2 AND status='Pending' RETURNING *", [req.body.status,req.params.id]);
  if (!result.rows.length) {res.status(409).json({message:'Request already reviewed or not found.'}); return;}
  res.json(result.rows[0]);
 });

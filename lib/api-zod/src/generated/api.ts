@@ -104,7 +104,7 @@ export const ListAdminRegistrationsResponseItem = zod.object({
   "minAge": zod.number().min(listAdminRegistrationsResponseMinAgeMin).max(listAdminRegistrationsResponseMinAgeMax),
   "maxAge": zod.number().min(listAdminRegistrationsResponseMaxAgeMin).max(listAdminRegistrationsResponseMaxAgeMax),
   "status": zod.enum(['available', 'unavailable']),
-  "listing": zod.enum(['free', 'quarterly', 'yearly']),
+  "listing": zod.enum(['free', 'halfyearly', 'yearly']),
   "partnerOptIn": zod.boolean(),
   "accurate": zod.boolean(),
   "terms": zod.boolean(),
@@ -231,7 +231,7 @@ export const ReviewRegistrationResponse = zod.object({
   "minAge": zod.number().min(reviewRegistrationResponseMinAgeMin).max(reviewRegistrationResponseMinAgeMax),
   "maxAge": zod.number().min(reviewRegistrationResponseMaxAgeMin).max(reviewRegistrationResponseMaxAgeMax),
   "status": zod.enum(['available', 'unavailable']),
-  "listing": zod.enum(['free', 'quarterly', 'yearly']),
+  "listing": zod.enum(['free', 'halfyearly', 'yearly']),
   "partnerOptIn": zod.boolean(),
   "accurate": zod.boolean(),
   "terms": zod.boolean(),
@@ -349,7 +349,7 @@ export const UpdateMyRegistrationBody = zod.object({
   "minAge": zod.number().min(updateMyRegistrationBodyMinAgeMin).max(updateMyRegistrationBodyMinAgeMax),
   "maxAge": zod.number().min(updateMyRegistrationBodyMaxAgeMin).max(updateMyRegistrationBodyMaxAgeMax),
   "status": zod.enum(['available', 'unavailable']),
-  "listing": zod.enum(['free', 'quarterly', 'yearly']),
+  "listing": zod.enum(['free', 'halfyearly', 'yearly']),
   "partnerOptIn": zod.boolean(),
   "accurate": zod.boolean(),
   "terms": zod.boolean(),
@@ -466,7 +466,7 @@ export const UpdateMyRegistrationResponse = zod.object({
   "minAge": zod.number().min(updateMyRegistrationResponseMinAgeMin).max(updateMyRegistrationResponseMinAgeMax),
   "maxAge": zod.number().min(updateMyRegistrationResponseMaxAgeMin).max(updateMyRegistrationResponseMaxAgeMax),
   "status": zod.enum(['available', 'unavailable']),
-  "listing": zod.enum(['free', 'quarterly', 'yearly']),
+  "listing": zod.enum(['free', 'halfyearly', 'yearly']),
   "partnerOptIn": zod.boolean(),
   "accurate": zod.boolean(),
   "terms": zod.boolean(),
@@ -502,7 +502,7 @@ export const loginRegistrationAdminResponsePlansItemPriceMin = 0;
 
 export const LoginRegistrationAdminResponse = zod.object({
   "plans": zod.array(zod.object({
-  "id": zod.enum(['quarterly', 'yearly']),
+  "id": zod.enum(['halfyearly', 'yearly']),
   "price": zod.number().min(loginRegistrationAdminResponsePlansItemPriceMin),
   "enabled": zod.boolean()
 })),
@@ -517,7 +517,7 @@ export const updateRegistrationSettingsBodyPlansItemPriceMin = 0;
 
 export const UpdateRegistrationSettingsBody = zod.object({
   "plans": zod.array(zod.object({
-  "id": zod.enum(['quarterly', 'yearly']),
+  "id": zod.enum(['halfyearly', 'yearly']),
   "price": zod.number().min(updateRegistrationSettingsBodyPlansItemPriceMin),
   "enabled": zod.boolean()
 })),
@@ -531,7 +531,7 @@ export const updateRegistrationSettingsResponsePlansItemPriceMin = 0;
 
 export const UpdateRegistrationSettingsResponse = zod.object({
   "plans": zod.array(zod.object({
-  "id": zod.enum(['quarterly', 'yearly']),
+  "id": zod.enum(['halfyearly', 'yearly']),
   "price": zod.number().min(updateRegistrationSettingsResponsePlansItemPriceMin),
   "enabled": zod.boolean()
 })),
@@ -546,7 +546,7 @@ export const getRegistrationSettingsResponsePlansItemPriceMin = 0;
 
 export const GetRegistrationSettingsResponse = zod.object({
   "plans": zod.array(zod.object({
-  "id": zod.enum(['quarterly', 'yearly']),
+  "id": zod.enum(['halfyearly', 'yearly']),
   "price": zod.number().min(getRegistrationSettingsResponsePlansItemPriceMin),
   "enabled": zod.boolean()
 })),
@@ -650,7 +650,7 @@ export const RegisterProfileBody = zod.object({
   "minAge": zod.number().min(registerProfileBodyMinAgeMin).max(registerProfileBodyMinAgeMax),
   "maxAge": zod.number().min(registerProfileBodyMaxAgeMin).max(registerProfileBodyMaxAgeMax),
   "status": zod.enum(['available', 'unavailable']),
-  "listing": zod.enum(['free', 'quarterly', 'yearly']),
+  "listing": zod.enum(['free', 'halfyearly', 'yearly']),
   "partnerOptIn": zod.boolean(),
   "accurate": zod.boolean(),
   "terms": zod.boolean(),
@@ -758,7 +758,7 @@ export const RegisterProfileResponse = zod.object({
   "minAge": zod.number().min(registerProfileResponseMinAgeMin).max(registerProfileResponseMinAgeMax),
   "maxAge": zod.number().min(registerProfileResponseMaxAgeMin).max(registerProfileResponseMaxAgeMax),
   "status": zod.enum(['available', 'unavailable']),
-  "listing": zod.enum(['free', 'quarterly', 'yearly']),
+  "listing": zod.enum(['free', 'halfyearly', 'yearly']),
   "partnerOptIn": zod.boolean(),
   "accurate": zod.boolean(),
   "terms": zod.boolean(),
@@ -876,7 +876,7 @@ export const GetMyRegistrationResponse = zod.object({
   "minAge": zod.number().min(getMyRegistrationResponseMinAgeMin).max(getMyRegistrationResponseMinAgeMax),
   "maxAge": zod.number().min(getMyRegistrationResponseMaxAgeMin).max(getMyRegistrationResponseMaxAgeMax),
   "status": zod.enum(['available', 'unavailable']),
-  "listing": zod.enum(['free', 'quarterly', 'yearly']),
+  "listing": zod.enum(['free', 'halfyearly', 'yearly']),
   "partnerOptIn": zod.boolean(),
   "accurate": zod.boolean(),
   "terms": zod.boolean(),
@@ -1005,7 +1005,7 @@ export const LoginRegistrationResponse = zod.object({
   "minAge": zod.number().min(loginRegistrationResponseMinAgeMin).max(loginRegistrationResponseMinAgeMax),
   "maxAge": zod.number().min(loginRegistrationResponseMaxAgeMin).max(loginRegistrationResponseMaxAgeMax),
   "status": zod.enum(['available', 'unavailable']),
-  "listing": zod.enum(['free', 'quarterly', 'yearly']),
+  "listing": zod.enum(['free', 'halfyearly', 'yearly']),
   "partnerOptIn": zod.boolean(),
   "accurate": zod.boolean(),
   "terms": zod.boolean(),
