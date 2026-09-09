@@ -11,6 +11,6 @@ export type RegistrationInputListing = typeof RegistrationInputListing[keyof typ
 
 export const RegistrationInputListing = {
   free: 'free',
-  halfyearly: 'halfyearly',
+  quarterly: 'quarterly',
   yearly: 'yearly',
 } as const;

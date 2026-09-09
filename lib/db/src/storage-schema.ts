@@ -47,7 +47,8 @@ CREATE TABLE IF NOT EXISTS seo_settings (id INTEGER PRIMARY KEY, site_url TEXT N
 CREATE TABLE IF NOT EXISTS seo_pages (path TEXT PRIMARY KEY, title TEXT NOT NULL, description TEXT NOT NULL, canonical TEXT NOT NULL DEFAULT '', noindex BOOLEAN NOT NULL DEFAULT false);
 CREATE TABLE IF NOT EXISTS seo_verification_files (filename TEXT PRIMARY KEY, content TEXT NOT NULL, uploaded_at TIMESTAMPTZ NOT NULL DEFAULT now());
 UPDATE registration_settings SET value = jsonb_set(value, '{plans}', (
- SELECT jsonb_agg(CASE WHEN plan->>'id' = 'quarterly' THEN jsonb_set(plan, '{id}', '"halfyearly"') ELSE plan END)
+ SELECT jsonb_agg(CASE WHEN plan->>'id' = 'halfyearly' THEN jsonb_set(plan, '{id}', '"quarterly"') ELSE plan END)
  FROM jsonb_array_elements(value->'plans') AS plan
-)) WHERE id=1 AND EXISTS (SELECT 1 FROM jsonb_array_elements(value->'plans') AS plan WHERE plan->>'id'='quarterly');
+)) WHERE id=1 AND EXISTS (SELECT 1 FROM jsonb_array_elements(value->'plans') AS plan WHERE plan->>'id'='halfyearly');
+CREATE TABLE IF NOT EXISTS membership_payment_settings (id INTEGER PRIMARY KEY, username TEXT NOT NULL);
 `;

@@ -1,3 +1,4 @@
+import { activeMembership } from "../lib/member-access";
 import { Router } from "express";
 import cookieParser from "cookie-parser";
 import { pool } from "@workspace/db";
@@ -55,7 +56,7 @@ router.use((req, res, next) => {
 
 export function recordView(record: RegistrationRecord): RegistrationRecord {
   if (["weekly", "monthly"].includes(record.listing)) record = { ...record, listing: "free", listingPrice: 0 };
-  if (record.listing === ("quarterly" as string)) record = { ...record, listing: "halfyearly" };
+  if (record.listing === ("halfyearly" as string)) record = { ...record, listing: "quarterly" };
   const missing: string[] = [];
   if (
     !record.headline.trim() ||
@@ -74,7 +75,7 @@ export function recordView(record: RegistrationRecord): RegistrationRecord {
     missing.push("Photos");
   if (!record.preferences.length || !record.availability.length)
     missing.push("Preferences");
-  if (!["free", "halfyearly", "yearly"].includes(record.listing))
+  if (!["free", "quarterly", "yearly"].includes(record.listing))
     missing.push("Listing Plan");
   if (!record.accurate || !record.terms || !record.adult)
     missing.push("Review");
@@ -164,8 +165,8 @@ router.post(
         res.json(recordView(JSON.parse(result.rows[0].record)));
         return;
       }
-      if (parsed.data.action === "approve" && record.reviewStatus.startsWith("Profile") && !record.isComplete) {
-        res.status(400).json({ message: "The member must complete all profile steps before publication." }); return;
+      if (parsed.data.action === "approve" && record.reviewStatus.startsWith("Profile") && (!record.isComplete || !(await activeMembership(record.id)))) {
+        res.status(400).json({ message: "An active paid membership and completed profile are required before publication." }); return;
       }
       if (parsed.data.action === "reject") {
         const result = await pool.query(
@@ -225,7 +226,7 @@ export async function getRegisteredPublicProfiles() {
   const boosted = new Set((await pool.query("SELECT member FROM profile_boosts WHERE status = 'Approved' AND expires > now()")).rows.map(row => row.member));
   return rows.flatMap((row) => {
     const record = recordView(JSON.parse(row.record as string));
-    if (!record.isPublished) return [];
+    if (!record.isPublished || !boosted.has(record.id)) return [];
     const citySlug = record.city
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
@@ -271,7 +272,7 @@ router.get("/member-photos/:id/:index", async (req, res) => {
   const record = row ? recordView(JSON.parse(row.record as string)) : undefined;
   const index = Number(req.params.index);
   const photo = Number.isInteger(index) ? record?.photos[index] : undefined;
-  if (!record?.isPublished || !photo) {
+  if (!record?.isPublished || !photo || !(await activeMembership(record.id))) {
     res.sendStatus(404);
     return;
   }
@@ -288,8 +289,8 @@ export async function settings() {
   ).rows[0];
   if (stored) return JSON.parse(stored.value as string) as RegistrationSettings;
   return {
-    plans: (["halfyearly", "yearly"] as const).map((id) => {
-      const raw = { halfyearly: "499", yearly: "999" }[id];
+    plans: (["quarterly", "yearly"] as const).map((id) => {
+      const raw = { quarterly: "499", yearly: "999" }[id];
       const price = Number(raw);
       return {
         id,
@@ -408,7 +409,7 @@ async function session(member: string, res: import("express").Response) {
 async function notifyRegistration(record: RegistrationRecord) {
   let status = "Sent";
   try {
-    await sendAdminTelegram(`${record.reviewStatus === "Profile pending" ? "Profile details submitted for review" : "New registration"}\n\nName: ${record.displayName}\nRegistration: ${record.id}\nEmail: ${record.email}\nMobile: ${record.mobile}\nAge: ${record.age}\nLocation: ${[record.city, record.state, record.country].filter(Boolean).join(', ')}\nPlan: ${record.listing === 'halfyearly' ? 'Half-yearly' : record.listing === 'yearly' ? 'Annual' : record.listing}\nPrice: INR ${record.listingPrice}\nReview in /admin/registration`);
+    await sendAdminTelegram(`${record.reviewStatus === "Profile pending" ? "Profile details submitted for review" : "New registration"}\n\nName: ${record.displayName}\nRegistration: ${record.id}\nEmail: ${record.email}\nMobile: ${record.mobile}\nAge: ${record.age}\nLocation: ${[record.city, record.state, record.country].filter(Boolean).join(', ')}\nPlan: ${record.listing === 'quarterly' ? 'Quarterly' : record.listing === 'yearly' ? 'Annual' : 'Account only - membership not selected'}\nPrice: INR ${record.listingPrice}\nReview in /admin/registration`);
   } catch { status = "Failed"; }
   await pool.query("UPDATE registrations SET record = jsonb_set(record, '{notificationStatus}', to_jsonb($1::text)) WHERE id = $2 AND record->>'reviewStatus' = $3", [status, record.id, record.reviewStatus]);
   return status;
@@ -452,6 +453,17 @@ const saveRegistration: import("express").RequestHandler = async (req, res) => {
       password: "unchanged-password",
       confirmPassword: "unchanged-password",
     };
+  }
+  if (!existing) {
+    const basic = req.body || {};
+    req.body = { displayName: basic.displayName, dateOfBirth: basic.dateOfBirth, age: basic.age, email: basic.email, mobile: basic.mobile, password: basic.password, confirmPassword: basic.confirmPassword,
+      headline: '', about: '', interests: [], languages: [], country: '', state: '', city: '', area: '', pinCode: '', photos: [], mainPhoto: 0,
+      preferences: [], minAge: 18, maxAge: 100, availability: [], status: 'available', listing: 'free', partnerOptIn: false,
+      accurate: basic.accurate, terms: basic.terms, adult: basic.adult };
+  } else {
+    const membership = await activeMembership(existing.id);
+    if (!membership) { res.status(403).json({message:'Upgrade your plan and wait for payment confirmation to complete your profile.'}); return; }
+    req.body.listing = membership.plan === 'yearly' ? 'yearly' : 'quarterly';
   }
   const parsed = RegisterProfileBody.safeParse(req.body);
   if (!parsed.success) {
@@ -549,10 +561,10 @@ const saveRegistration: import("express").RequestHandler = async (req, res) => {
       "Please accept all three required confirmations.",
     );
   const plan = (await settings()).plans.find((p) => p.id === data.listing);
-  if (!["halfyearly", "yearly"].includes(data.listing) || !plan?.enabled)
+  if (existing && !["quarterly", "yearly"].includes(data.listing))
     return fail(
       "listing",
-      "Choose an available Half-yearly or Annual plan to register.",
+      "Choose an available Quarterly or Annual plan to register.",
     );
   const duplicate = (
     await pool.query(

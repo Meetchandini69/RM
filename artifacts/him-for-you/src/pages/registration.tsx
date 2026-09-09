@@ -1,3 +1,4 @@
+import { MembershipGate, PaymentSettings } from "./membership-gate";
 import { viewerApi } from "./viewer-access";
 import { SeoAdmin } from "./seo";
 import { DiscoveryOptionsAdmin } from "./discovery-options";
@@ -338,7 +339,7 @@ export function RegistrationSummary({
           <p className="capitalize">
             {data.listing === "free"
               ? "Choose a membership plan"
-              : `${data.listing === 'halfyearly' ? 'Half-yearly' : 'Annual'} Membership`}
+              : `${data.listing === 'quarterly' ? 'Quarterly' : 'Annual'} Membership`}
           </p>
           <p className="mt-2 text-xs text-muted-foreground">
             {data.partnerOptIn
@@ -480,7 +481,7 @@ export default function Registration({
       !settings.data?.plans.find((p) => p.id === data.listing)?.enabled
     )
       next.listing =
-        "Choose Half-yearly or Annual to continue.";
+        "Choose Quarterly or Annual to continue.";
     if (value === 6 && (!data.accurate || !data.terms || !data.adult))
       next.confirmations = "Please check all three required confirmations.";
     return next;
@@ -491,11 +492,12 @@ export default function Registration({
       setErrors(issues);
       return;
     }
+    if (!existing) { submit(); return; }
     go(step + 1);
   };
   const submit = () => {
     if (register.isPending) return;
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < (existing ? 7 : 1); i++) {
       const issues = validate(i);
       if (Object.keys(issues).length) {
         go(i);
@@ -503,6 +505,7 @@ export default function Registration({
         return;
       }
     }
+    if (!existing && (!data.terms || !data.adult || !data.accurate)) { setErrors({confirmations: "Please accept the required confirmation."}); return; }
     register.mutate(
       {
         data: {
@@ -630,12 +633,12 @@ export default function Registration({
         <h1 className="mt-4 font-editorial text-4xl sm:text-5xl">
           {existing
             ? "Your Profile Has Been Updated!"
-            : "Your Profile Has Been Submitted!"}
+            : "Thank You! Your Account Is Registered."}
         </h1>
         <p className="mt-6 text-sm leading-7 text-muted-foreground">
           {existing
             ? "Your profile has been submitted for admin review. Your card will appear after approval. You can still use your dashboard."
-            : "Your registration is awaiting admin approval. Once approved, log in with your registered email and password and complete every profile step to appear on the website."}
+            : "Thank you! Your account registration is complete and is now under review. Once admin approves, you can log in and upgrade to complete your profile."}
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           {existing && (
@@ -663,7 +666,7 @@ export default function Registration({
           </div>
           <LockKeyhole className="hidden text-accent sm:block" size={28} />
         </div>
-        <div className="mb-8 rounded-2xl border border-foreground/10 bg-card p-4 sm:p-6">
+        {existing && <div className="mb-8 rounded-2xl border border-foreground/10 bg-card p-4 sm:p-6">
           <div className="mb-4 flex justify-between text-xs">
             <span>
               Step {step + 1} of 7 · {labels[step]}
@@ -701,7 +704,7 @@ export default function Registration({
               </li>
             ))}
           </ol>
-        </div>
+        </div>}
         <div className="rounded-3xl border border-foreground/10 bg-card p-5 shadow-xl shadow-black/10 sm:p-9">
           <h2
             ref={top}
@@ -1005,11 +1008,11 @@ export default function Registration({
               {step === 5 && (
                 <>
                   <div className="grid gap-5 md:grid-cols-2">
-                    {settings.data?.plans.filter(plan => plan.enabled).map(plan => <button type="button" key={plan.id} aria-pressed={data.listing === plan.id} onClick={() => patch("listing", plan.id)} className={`rounded-2xl border p-6 text-left ${data.listing === plan.id ? "border-accent bg-accent/10" : "border-foreground/20"}`}><h3 className="font-editorial text-3xl">{plan.id === 'halfyearly' ? 'Half-yearly' : 'Annual'}</h3><p className="mt-2 text-muted-foreground">{plan.id === 'halfyearly' ? '6 months' : '12 months'}</p><p className="my-5 font-editorial text-4xl">?{plan.price.toLocaleString('en-IN')}</p><p className="text-accent">{data.listing === plan.id ? 'Selected ?' : 'Choose this plan'}</p></button>)}
+                    {settings.data?.plans.filter(plan => plan.enabled).map(plan => <button type="button" key={plan.id} aria-pressed={data.listing === plan.id} onClick={() => patch("listing", plan.id)} className={`rounded-2xl border p-6 text-left ${data.listing === plan.id ? "border-accent bg-accent/10" : "border-foreground/20"}`}><h3 className="font-editorial text-3xl">{plan.id === 'quarterly' ? 'Quarterly' : 'Annual'}</h3><p className="mt-2 text-muted-foreground">{plan.id === 'quarterly' ? '3 months' : '12 months'}</p><p className="my-5 font-editorial text-4xl">?{plan.price.toLocaleString('en-IN')}</p><p className="text-accent">{data.listing === plan.id ? 'Selected ?' : 'Choose this plan'}</p></button>)}
                   </div>
                   {settings.isLoading && <p>Loading plans?</p>}
                   {settings.isError && <button type="button" onClick={() => settings.refetch()}>Could not load plans. Retry</button>}
-                  <Notice>A Half-yearly or Annual plan is required. Payment confirmation and activation are arranged separately after submission.</Notice>
+                  <Notice>A Quarterly or Annual plan is required. Payment confirmation and activation are arranged separately after submission.</Notice>
                   <section className="rounded-2xl border border-foreground/10 p-5">
                     <h3 className="font-editorial text-2xl">
                       Additional Profile Opportunities
@@ -1125,6 +1128,8 @@ export default function Registration({
                 </p>
               </div>
             )}
+            {!existing && <label className="mt-5 flex gap-3 text-sm"><input type="checkbox" checked={data.terms && data.adult && data.accurate} onChange={e=>setData({...data,terms:e.target.checked,adult:e.target.checked,accurate:e.target.checked})}/>I am 18 or older, my details are accurate, and I agree to the terms and privacy policy.</label>}
+            {!existing && errors.confirmations && <p role="alert" className="mt-3 text-primary">{errors.confirmations}</p>}
             <div className="mt-8 flex items-center justify-between gap-3 border-t border-foreground/10 pt-6">
               {step > 0 ? (
                 <button
@@ -1138,7 +1143,7 @@ export default function Registration({
                 </button>
               ) : (
                 <span className="text-xs text-muted-foreground">
-                  Choose your membership plan
+                  Create your account for review
                 </span>
               )}
               <button
@@ -1148,7 +1153,7 @@ export default function Registration({
               >
                 {register.isPending
                   ? "Submitting…"
-                  : step === 6
+                  : !existing ? "Register account" : step === 6
                     ? "Submit My Profile"
                     : "Continue"}
                 <ArrowRight size={16} />
@@ -1247,10 +1252,10 @@ export function MemberArea({
         </form>
       </div>
     );
-  if (complete) return <Registration existing={query.data} />;
+  if (complete) return <MembershipGate><Registration key={query.data.listing} existing={query.data} /></MembershipGate>;
   if (interests || boost) return <div className="mx-auto max-w-4xl px-5 py-12"><Link href="/dashboard" className="text-accent">? Dashboard</Link>{interests ? <InterestHistory men /> : <BoostPanel />}</div>;
   return (
-    <div className="mx-auto max-w-3xl px-5 py-12">
+    <MembershipGate><div className="mx-auto max-w-3xl px-5 py-12">
       <p className="text-xs uppercase tracking-widest text-accent">
         Rent a Man · Private member area
       </p>
@@ -1309,7 +1314,7 @@ export function MemberArea({
           </p>
           <p className="text-sm text-muted-foreground">
             {query.data.listing === "free"
-              ? "Choose Half-yearly or Annual when updating your profile."
+              ? "Choose Quarterly or Annual when updating your profile."
               : "Premium selected. No payment has been collected and premium is not yet activated."}
           </p>
           <p className="text-sm">
@@ -1318,7 +1323,7 @@ export function MemberArea({
         </div>
       )}
       {!profile && <><InterestHistory men /><BoostPanel /><PlanComparison /></>}
-    </div>
+    </div></MembershipGate>
   );
 }
 
@@ -1327,7 +1332,7 @@ export function RegistrationAdmin() {
   const [checking, setChecking] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
   const [sessionError, setSessionError] = useState("");
-  const [tab, setTab] = useState<"registrations" | "settings" | "discovery" | "seo">("registrations");
+  const [tab, setTab] = useState<"registrations" | "settings" | "discovery" | "seo" | "payments">("registrations");
   const login = useLoginRegistrationAdmin();
   const update = useUpdateRegistrationSettings();
   const [password, setPassword] = useState("");
@@ -1392,6 +1397,7 @@ export function RegistrationAdmin() {
           </button>
           <button className={tab === "discovery" ? primary : secondary} onClick={() => setTab("discovery")}>Search options</button>
           <button className={tab === "seo" ? primary : secondary} onClick={() => setTab("seo")}>SEO & Sitemaps</button>
+          <button className={tab === "payments" ? primary : secondary} onClick={() => setTab("payments")}>Payments</button>
           <button type="button" className={`${secondary} sm:ml-auto`} disabled={loggingOut} onClick={logout}>
             {loggingOut ? "Logging out…" : "Log out"}
           </button>
@@ -1433,8 +1439,8 @@ export function RegistrationAdmin() {
             {login.isPending ? "Signing in…" : "Sign in"}
           </button>
         </form>
-      ) : tab === "seo" ? <SeoAdmin /> : tab === "discovery" ? <DiscoveryOptionsAdmin /> : tab === "registrations" ? (
-        <><ViewerQueue /><AdminRegistrationQueue /><BoostPanel admin /></>
+      ) : tab === "payments" ? <><PaymentSettings /><BoostPanel admin /></> : tab === "seo" ? <SeoAdmin /> : tab === "discovery" ? <DiscoveryOptionsAdmin /> : tab === "registrations" ? (
+        <><ViewerQueue /><AdminRegistrationQueue /></>
       ) : (
         <form
           className="mt-8 grid gap-6"
@@ -1444,7 +1450,7 @@ export function RegistrationAdmin() {
           }}
         >
           <Notice>
-            Manage Half-yearly and Annual membership prices here. Prices are in INR.
+            Manage Quarterly and Annual membership prices here. Prices are in INR.
           </Notice>
           {data.plans.map((plan, i) => (
             <div
@@ -1525,7 +1531,7 @@ export function RegistrationAdmin() {
 }
 function PlanComparison() {
  const settings = useGetRegistrationSettings();
- return <section className="mt-8 rounded-2xl border border-foreground/15 p-6"><h2 className="font-editorial text-3xl">Membership plans</h2><p className="mt-3 text-sm text-muted-foreground">Choose Half-yearly or Annual. All profiles require admin approval. Payment confirmation and activation are arranged separately.</p><div className="mt-5 grid gap-4 sm:grid-cols-2">{settings.data?.plans.filter(p => p.enabled).map(p => <div key={p.id} className="rounded-xl border border-accent/30 p-5"><h3>{p.id === 'halfyearly' ? 'Half-yearly ? 6 months' : 'Annual ? 12 months'}</h3><p className="mt-3 text-2xl text-accent">?{p.price.toLocaleString('en-IN')}</p></div>)}</div></section>;
+ return <section className="mt-8 rounded-2xl border border-foreground/15 p-6"><h2 className="font-editorial text-3xl">Membership plans</h2><p className="mt-3 text-sm text-muted-foreground">Choose Quarterly or Annual. All profiles require admin approval. Payment confirmation and activation are arranged separately.</p><div className="mt-5 grid gap-4 sm:grid-cols-2">{settings.data?.plans.filter(p => p.enabled).map(p => <div key={p.id} className="rounded-xl border border-accent/30 p-5"><h3>{p.id === 'quarterly' ? 'Quarterly ? 3 months' : 'Annual ? 12 months'}</h3><p className="mt-3 text-2xl text-accent">?{p.price.toLocaleString('en-IN')}</p></div>)}</div></section>;
 }
 
 function AdminRegistrationQueue() {

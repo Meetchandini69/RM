@@ -170,3 +170,12 @@ Local `pnpm ... run dev` supports the same sitemap/file URLs and injects metadat
 Men must select Half-yearly (6 months, INR 499) or Annual (12 months, INR 999) when registering or updating their profile. Free is not selectable and is rejected by the submission API; legacy records remain readable. Startup renames the configured quarterly option to halfyearly while preserving admin-set prices. Existing boost expirations are unchanged; new halfyearly activations last 6 months.
 
 Every new men's registration now sends its name, contact, age, location, selected plan and price to the configured admin Telegram chat. A failed notification leaves the registration saved and records Failed status. Admin can retry the registration notification without approving it. Deploy the updated API to Railway as well as the frontend to Pages; verify TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in Railway's service variables if delivery still fails.
+
+
+## Basic account registration and paid profile completion
+
+The current flow supersedes the earlier paid-at-registration flow. `/join` collects basic details and consent only, saves an account pending review, notifies admin Telegram, and immediately shows thanks. Initial admin approval enables login. Unpaid members see the locked completion preview and Quarterly/Annual offers with a softly blurred illustrative photo marquee (reduced-motion support included).
+
+Set the receiving username under **Admin ? Payments ? Pay Now Telegram account**. Pay Now immediately opens that Telegram account in a new tab and records a pending request in admin. Under **Payments**, confirm payment and activate the request to unlock profile completion. Merely clicking Pay Now never grants access. The profile-edit API requires an active paid membership, and completed profiles still require a separate publication review. Active membership is also required for public profile discovery/photos. Existing memberships keep their expiry; new Quarterly activations last three months and Annual activations last one year. Admin-set prices are preserved when renaming Half-yearly to Quarterly.
+
+Deploy both Railway and Pages. API startup creates `membership_payment_settings`. Live Telegram delivery is not exercised by automated tests; integration tests mock Telegram and roll back test data.

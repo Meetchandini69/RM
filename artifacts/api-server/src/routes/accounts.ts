@@ -1,3 +1,4 @@
+import { activeMembership, paymentTelegram } from "../lib/member-access";
 import { discoveryOptions, locationSlug } from "../lib/discovery-options";
 import { Router, type RequestHandler } from 'express';
 import { createHash, randomUUID } from 'node:crypto';
@@ -38,6 +39,10 @@ router.post('/registration/admin/boosts/:id/review', requireAdmin, async (req,re
  if (!['Approved','Rejected'].includes(req.body.status)) {res.status(400).json({message:'Choose approve or reject.'}); return;}
  const result = await pool.query("UPDATE profile_boosts SET status=$1, expires=CASE WHEN $1='Approved' THEN now() + CASE plan WHEN 'weekly' THEN interval '7 days' WHEN 'monthly' THEN interval '30 days' WHEN 'halfyearly' THEN interval '6 months' WHEN 'yearly' THEN interval '1 year' ELSE interval '3 months' END ELSE NULL END WHERE id=$2 AND status='Pending' RETURNING *", [req.body.status,req.params.id]);
  if (!result.rows.length) {res.status(409).json({message:'Request already reviewed or not found.'}); return;}
+ if (req.body.status === 'Approved') {
+  const payment=result.rows[0];
+  await pool.query("UPDATE registrations SET record = record || jsonb_build_object('listing', $1::text, 'listingPrice', $2::numeric) WHERE id=$3", [payment.plan === 'yearly' ? 'yearly' : 'quarterly',payment.price,payment.member]);
+ }
  res.json(result.rows[0]);
 });
 router.get('/discovery-options', async (_req, res) => res.json(await discoveryOptions()));
@@ -57,5 +62,14 @@ router.post('/registration/admin/discovery-options', requireAdmin, async (req, r
  }
  await pool.query('INSERT INTO discovery_settings VALUES (1, $1) ON CONFLICT(id) DO UPDATE SET value = excluded.value', [JSON.stringify(result)]);
  res.json(result);
+});
+router.get('/registration/membership',requireMember,async(_req,res)=>{
+ res.json({membership:await activeMembership(res.locals.member.id),telegram:await paymentTelegram(),plans:(await settings()).plans});
+});
+router.get('/registration/admin/payment-settings',requireAdmin,async(_req,res)=>res.json({telegram:await paymentTelegram()}));
+router.post('/registration/admin/payment-settings',requireAdmin,async(req,res)=>{
+ const username=typeof req.body.telegram==='string'?req.body.telegram.trim().replace(/^https:\/\/t\.me\//i,'').replace(/^@/,''):'';
+ if(!/^[a-zA-Z][a-zA-Z0-9_]{4,31}$/.test(username)){res.status(400).json({message:'Enter a valid Telegram username or https://t.me/username link.'});return;}
+ await pool.query('INSERT INTO membership_payment_settings VALUES (1,$1) ON CONFLICT(id) DO UPDATE SET username=excluded.username',[username]);res.json({telegram:username});
 });
 export default router;
