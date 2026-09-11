@@ -126,6 +126,8 @@
 .profile-image.photos-unlocked, .public-men-photo.photos-unlocked { filter: none; }
 
 @keyframes membership-photo-scroll { to { transform: translateX(-50%); } }
-.membership-photo-track { animation: membership-photo-scroll 38s linear infinite; }
-.membership-photo-strip:hover .membership-photo-track { animation-play-state: paused; }
+.membership-photo-track { animation: membership-photo-scroll 50s linear infinite; will-change: transform; }
+@media (hover: hover) and (pointer: fine) {
+  .membership-photo-strip:hover .membership-photo-track { animation-play-state: paused; }
+}
 @media (prefers-reduced-motion: reduce) { .membership-photo-track { animation: none; } }
