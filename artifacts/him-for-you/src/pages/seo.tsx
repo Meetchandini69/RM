@@ -43,7 +43,7 @@ export function SeoAdmin(){
  {draft&&<form key={draft.path} className="mt-6 grid gap-4 border-t border-white/10 pt-5" onSubmit={async e=>{e.preventDefault();await save('registration/admin/seo/page',draft);}}><h4 className="font-editorial text-xl">Editing {draft.path}</h4><label className="text-sm">Meta title<input required maxLength={200} className={field} value={draft.title} onChange={e=>setDraft({...draft,title:e.target.value})} /><span className="text-xs text-muted-foreground">{draft.title.length} characters</span></label><label className="text-sm">Meta description<textarea required maxLength={1000} rows={3} className={field} value={draft.description} onChange={e=>setDraft({...draft,description:e.target.value})} /><span className="text-xs text-muted-foreground">{draft.description.length} characters</span></label><label className="text-sm">Canonical URL<input type="url" className={field} value={draft.canonical} onChange={e=>setDraft({...draft,canonical:e.target.value})} placeholder={data.siteUrl?data.siteUrl+draft.path:'Automatic from website URL'} /><span className="text-xs text-muted-foreground">Leave blank to use this page’s URL automatically.</span></label><label className="flex gap-3 text-sm"><input type="checkbox" checked={draft.noindex} disabled={draft.private} onChange={e=>setDraft({...draft,noindex:e.target.checked})} />Exclude from search engines and sitemaps (noindex)</label><button disabled={busy} className={button}>Save page metadata</button></form>}</div>
  <div className="rounded-2xl border border-foreground/15 bg-card p-5">
   <h3 className="font-editorial text-2xl">Webmaster verification file</h3>
-  <p className="mt-2 text-sm text-muted-foreground">Upload the original Google Search Console HTML file, BingSiteAuth.xml, or Yandex HTML verification file. Maximum 32 KB. The file is served at the website root with its original filename.</p>
+  <p className="mt-2 text-sm text-muted-foreground">Upload the original Google Search Console HTML file, BingSiteAuth.xml, or Yandex HTML verification file. Maximum 32 KB. The file is served at the website root with its original filename. Download suffixes such as (1) are removed automatically.</p>
   <form onSubmit={async e=>{
    e.preventDefault();
    if(!verificationFile)return;
@@ -52,9 +52,9 @@ export function SeoAdmin(){
    setBusy(true);
    try{
     const content=await verificationFile.text();
-    await viewerApi('registration/admin/seo/verification',{filename:verificationFile.name,content});
-    client.setQueryData<SeoSettings>(['admin-seo'],current=>current?{...current,files:[...current.files.filter(f=>f.filename!==verificationFile.name),{filename:verificationFile.name,uploaded_at:new Date().toISOString()}].sort((a,b)=>a.filename.localeCompare(b.filename))}:current);
-    setVerificationStatus(`${verificationFile.name} saved. The uploaded file is listed below and remains available after refreshing.`);
+    const {filename}=await viewerApi('registration/admin/seo/verification',{filename:verificationFile.name,content}) as {filename:string};
+    client.setQueryData<SeoSettings>(['admin-seo'],current=>current?{...current,files:[...current.files.filter(f=>f.filename!==filename),{filename,uploaded_at:new Date().toISOString()}].sort((a,b)=>a.filename.localeCompare(b.filename))}:current);
+    setVerificationStatus(`${filename} saved. The uploaded file is listed below and remains available after refreshing.`);
     await client.invalidateQueries({queryKey:['admin-seo']});
    }catch(error){setVerificationError(error instanceof Error?error.message:'Could not upload the file. Please try again.');}
    finally{setBusy(false);}

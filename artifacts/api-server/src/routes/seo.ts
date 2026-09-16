@@ -3,6 +3,7 @@ import { pool } from '@workspace/db';
 import { requireAdmin } from './registration';
 import { allProfiles } from './discovery';
 import { discoveryOptions, locationSlug } from '../lib/discovery-options';
+import { verificationFilename, verificationType } from '../lib/verification-filename';
 const router = Router();
 type SeoPage = { path:string; label:string; title:string; description:string; canonical:string; noindex:boolean; private:boolean };
 const pages: [string,string,boolean?][] = [
@@ -45,14 +46,10 @@ router.post('/registration/admin/seo/page',requireAdmin,async(req,res)=>{
  const page=(await seoCatalog()).find(p=>p.path===path);if(!page){res.status(404).json({message:'Page not found. Refresh the page list.'});return;}
  await pool.query('INSERT INTO seo_pages (path,title,description,canonical,noindex) VALUES ($1,$2,$3,$4,$5) ON CONFLICT(path) DO UPDATE SET title=excluded.title,description=excluded.description,canonical=excluded.canonical,noindex=excluded.noindex',[path,title.trim(),description.trim(),canonical.trim(),page.private||noindex]);res.json({success:true});
 });
-export function verificationType(filename:string) {
- if(/^google[a-zA-Z0-9_-]+\.html$/.test(filename)||/^yandex_[a-zA-Z0-9_-]+\.html$/.test(filename))return 'text/html';
- if(filename==='BingSiteAuth.xml')return 'application/xml';
- return null;
-}
 router.post('/registration/admin/seo/verification',requireAdmin,async(req,res)=>{
- const {filename,content}=req.body||{};
- if(typeof filename!=='string'||filename.length>120||!verificationType(filename)||typeof content!=='string'||!content.trim()||Buffer.byteLength(content)>32768){res.status(400).json({message:'Upload a Google verification HTML file, BingSiteAuth.xml, or Yandex verification HTML file (maximum 32 KB).'});return;}
+ const {content}=req.body||{};
+ const filename=verificationFilename(req.body?.filename);
+ if(!filename||typeof content!=='string'||!content.trim()||Buffer.byteLength(content)>32768){res.status(400).json({message:'Upload a Google verification HTML file, BingSiteAuth.xml, or Yandex verification HTML file (maximum 32 KB).'});return;}
  if((filename.startsWith('google') && content.trim()!==`google-site-verification: ${filename}`)||(filename==='BingSiteAuth.xml' && (!/<user>\s*[a-z0-9]+\s*<\/user>/i.test(content)||!/<users>/i.test(content)))||(filename.startsWith('yandex_')&&!/verification/i.test(content))){res.status(400).json({message:'The file does not match the expected verification format.'});return;}
  await pool.query('INSERT INTO seo_verification_files (filename,content) VALUES ($1,$2) ON CONFLICT(filename) DO UPDATE SET content=excluded.content, uploaded_at=now()',[filename,content]);res.json({success:true,filename});
 });
