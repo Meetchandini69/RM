@@ -6,6 +6,7 @@ import { BoostPanel, InterestHistory } from "./account-panels";
 import { ViewerQueue } from "./viewer-access";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "wouter";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
@@ -575,6 +576,7 @@ export default function Registration({
         max={type === "number" ? 100 : undefined}
         autoComplete={type === "password" ? "new-password" : undefined}
         aria-invalid={!!errors[key]}
+        aria-describedby={key === "mobile" ? "telegram-mobile-help" : undefined}
         onChange={(e) =>
           patch(
             key,
@@ -744,6 +746,7 @@ export default function Registration({
                       "you@example.com",
                       254,
                     )}
+                    <div>
                     {field(
                       "mobile",
                       "Mobile Number",
@@ -751,6 +754,29 @@ export default function Registration({
                       "+919876543210",
                       25,
                     )}
+                    <p id="telegram-mobile-help" className="mt-2 text-xs leading-5 text-muted-foreground">
+                      Please use the mobile number linked to your active Telegram account. A Telegram-linked number is required to register.
+                    </p>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <button type="button" className="mt-1 rounded text-xs text-accent underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">Why Telegram?</button>
+                      </DialogTrigger>
+                      <DialogContent className="w-[calc(100%-2rem)] rounded-2xl border-foreground/15 bg-card sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle className="pr-5 font-editorial text-2xl">Why Telegram?</DialogTitle>
+                          <DialogDescription className="pt-2 leading-6">Telegram makes it easy to stay in touch. Please register with the same mobile number you use on Telegram.</DialogDescription>
+                        </DialogHeader>
+                        <ul className="space-y-3 text-sm leading-6 text-muted-foreground">
+                          <li><strong className="text-foreground">More control over your privacy.</strong> Choose who can see your phone number in Telegram’s privacy settings.</li>
+                          <li><strong className="text-foreground">Connect with a username.</strong> Share your Telegram username so others can find you without needing your number.</li>
+                          <li><strong className="text-foreground">Stay connected across devices.</strong> Access your cloud chats on your phone, tablet or computer.</li>
+                        </ul>
+                        <p className="text-xs leading-5 text-muted-foreground">Not on Telegram yet? Set up your account with this mobile number, then return here to register. You can check your linked number in Telegram Settings.</p>
+                        <a href="https://telegram.org/faq" target="_blank" rel="noreferrer" className="text-xs text-accent underline underline-offset-4">Explore Telegram features</a>
+                        <DialogClose asChild><button type="button" className="rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground">Got it</button></DialogClose>
+                      </DialogContent>
+                    </Dialog>
+                    </div>
                     {!existing && (
                       <>
                         {field(
