@@ -6,6 +6,7 @@ import { BoostPanel, InterestHistory } from "./account-panels";
 import { ViewerQueue } from "./viewer-access";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "wouter";
+import { SiTelegram } from "react-icons/si";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -565,8 +566,9 @@ export default function Registration({
     maxLength = 120,
   ) => (
     <Field label={label} error={errors[key]}>
+      <span className="relative block">
       <input
-        className={inputClass}
+        className={`${inputClass}${key === "mobile" ? " pr-12" : ""}`}
         type={type}
         value={String(data[key])}
         placeholder={placeholder}
@@ -584,6 +586,8 @@ export default function Registration({
           )
         }
       />
+      {key === "mobile" && <SiTelegram aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#2AABEE]" />}
+      </span>
     </Field>
   );
   const upload = async (
@@ -754,8 +758,10 @@ export default function Registration({
                       "+919876543210",
                       25,
                     )}
-                    <p id="telegram-mobile-help" className="mt-2 text-xs leading-5 text-muted-foreground">
-                      Please use the mobile number linked to your active Telegram account. A Telegram-linked number is required to register.
+                    </div>
+                    <div className="-mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 sm:col-span-2">
+                    <p id="telegram-mobile-help" className="text-xs leading-5 text-muted-foreground">
+                      A Telegram-linked number is required. Please enter the number you use on Telegram.
                     </p>
                     <Dialog>
                       <DialogTrigger asChild>
