@@ -2,7 +2,7 @@ import { MembershipGate, PaymentSettings } from "./membership-gate";
 import { viewerApi } from "./viewer-access";
 import { SeoAdmin } from "./seo";
 import { DiscoveryOptionsAdmin } from "./discovery-options";
-import { BoostPanel, InterestHistory } from "./account-panels";
+import { BoostPanel, InterestHistory, useAdminBoosts } from "./account-panels";
 import { ViewerQueue } from "./viewer-access";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "wouter";
@@ -1371,6 +1371,8 @@ export function RegistrationAdmin() {
   const update = useUpdateRegistrationSettings();
   const [password, setPassword] = useState("");
   const [data, setData] = useState<RegistrationSettings>();
+  const boosts = useAdminBoosts(!!data && !loggingOut);
+  const pendingBoosts = boosts.data?.filter(boost => boost.status === "Pending") ?? [];
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/registration/admin/session", { credentials: "same-origin", signal: controller.signal })
@@ -1431,12 +1433,22 @@ export function RegistrationAdmin() {
           </button>
           <button className={tab === "discovery" ? primary : secondary} onClick={() => setTab("discovery")}>Search options</button>
           <button className={tab === "seo" ? primary : secondary} onClick={() => setTab("seo")}>SEO & Sitemaps</button>
-          <button className={tab === "payments" ? primary : secondary} onClick={() => setTab("payments")}>Payments</button>
+          <button className={tab === "payments" ? primary : secondary} onClick={() => setTab("payments")}>Payments{pendingBoosts.length > 0 && <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-white">{pendingBoosts.length} pending</span>}</button>
           <button type="button" className={`${secondary} sm:ml-auto`} disabled={loggingOut} onClick={logout}>
             {loggingOut ? "Logging out…" : "Log out"}
           </button>
         </div>
       )}
+      {data && <div aria-live="polite" aria-atomic="true">
+        {pendingBoosts.length > 0 && <section className="mt-6 rounded-xl border border-accent/40 bg-accent/10 p-5" aria-label="Pending boost notifications">
+          <h2 className="font-semibold text-accent">{pendingBoosts.length} profile boost {pendingBoosts.length === 1 ? "request needs" : "requests need"} review</h2>
+          <ul className="mt-3 space-y-2 text-sm">
+            {pendingBoosts.map(boost => <li key={boost.id}>{boost.name || "Member"} · <span className="capitalize">{boost.plan}</span> · INR {boost.price}</li>)}
+          </ul>
+          <button className={`${secondary} mt-4`} onClick={() => setTab("payments")}>Review payment and activate</button>
+        </section>}
+        {boosts.isError && <p role="alert" className="mt-4 text-primary">Could not refresh boost notifications. <button className="underline" onClick={() => boosts.refetch()}>Retry</button></p>}
+      </div>}
       {checking ? <p role="status" className="mt-8">Checking your session…</p> : !data ? (
         <form
           className="mt-8 grid max-w-md gap-5 rounded-2xl border border-foreground/10 bg-card p-6 sm:p-8"

@@ -34,6 +34,9 @@ export function WomenPanel({profile=false,interests=false}:{profile?:boolean;int
 }
 
 type Boost={id:string;plan:string;price:string;status:string;created_at:string;expires?:string;name?:string};
+export function useAdminBoosts(enabled: boolean) {
+ return useQuery<Boost[]>({queryKey:['admin-boosts'],queryFn:()=>viewerApi('registration/admin/boosts'),enabled,refetchInterval:30000,retry:false});
+}
 export function BoostPanel({admin=false}:{admin?:boolean}) {
  const client=useQueryClient();const [error,setError]=useState('');const [busy,setBusy]=useState(false);
  const key=admin?'admin-boosts':'member-boosts';
