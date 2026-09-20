@@ -15,7 +15,7 @@ export function AccountMenu() {
  const [busy,setBusy] = useState(false);
  const woman = !!viewer.data;
  const name = viewer.data?.name || member.data?.displayName;
- if (!name) return <Link href="/login" className="text-xs font-semibold uppercase tracking-widest">Log in</Link>;
+ if (!name) return <Link href="/login" className="text-xs font-semibold uppercase tracking-widest">Women’s login</Link>;
  const base = woman ? '/account' : '/dashboard';
  return <details className="relative"><summary className="max-w-40 cursor-pointer truncate rounded-lg border border-accent/30 px-3 py-2 text-sm text-accent">{name} ▾</summary><div className="absolute right-0 z-50 mt-2 grid w-56 gap-1 rounded-xl border border-foreground/15 bg-card p-3 shadow-xl"><Link className="rounded p-2 hover:bg-muted" href={woman ? '/account/profile' : '/my-profile'}>View profile</Link><Link className="rounded p-2 hover:bg-muted" href={base}>Dashboard</Link><Link className="rounded p-2 hover:bg-muted" href={woman ? '/account/interests' : '/member-interests'}>{woman ? 'Sent interests & messages' : 'Received interests'}</Link>{!woman && <Link className="rounded p-2 hover:bg-muted" href="/boost-profile">Upgrade / boost profile</Link>}<button disabled={busy} className="p-2 text-left text-primary" onClick={async()=>{setBusy(true);try{await viewerApi(woman?'viewer/logout':'registration/logout',{}); client.setQueryData(woman?['viewer']:['/api/registration/me'],null); client.removeQueries({queryKey:['account-interests']}); client.removeQueries({queryKey:['member-boosts']}); await client.invalidateQueries();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}}>Log out</button>{error && <p role="alert" className="text-xs text-primary">{error}</p>}</div></details>;
 }

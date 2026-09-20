@@ -22,6 +22,12 @@ CREATE TABLE IF NOT EXISTS registration_sessions (
   expires BIGINT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS registration_sessions_expires_idx ON registration_sessions(expires);
+CREATE TABLE IF NOT EXISTS password_reset_requests (
+ id TEXT PRIMARY KEY, member TEXT NOT NULL REFERENCES registrations(id) ON DELETE CASCADE,
+ password TEXT, status TEXT NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending', 'Approved', 'Rejected')),
+ created_at TIMESTAMPTZ NOT NULL DEFAULT now(), reviewed_at TIMESTAMPTZ
+);
+CREATE UNIQUE INDEX IF NOT EXISTS password_reset_pending_idx ON password_reset_requests(member) WHERE status='Pending';
 CREATE TABLE IF NOT EXISTS registration_settings (id INTEGER PRIMARY KEY, value JSONB NOT NULL);
 CREATE TABLE IF NOT EXISTS registration_admin_sessions (token TEXT PRIMARY KEY, expires BIGINT NOT NULL);
 CREATE INDEX IF NOT EXISTS registration_admin_sessions_expires_idx ON registration_admin_sessions(expires);

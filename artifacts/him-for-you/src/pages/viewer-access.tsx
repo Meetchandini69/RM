@@ -18,7 +18,7 @@ export function useViewer() {
 export function UnlockNotice() {
   const { data } = useViewer();
   if (data) return null;
-  return <div className="my-6 rounded-xl border border-accent/30 bg-card p-5"><h2 className="font-editorial text-2xl">Register to unlock profile photos</h2><p className="mt-2 text-sm text-muted-foreground">Share your name, Telegram ID or WhatsApp number, what you’re looking for, age and location. After admin approval, log in to view clear photos and send interest.</p><div className="mt-4 flex gap-5"><Link href="/unlock" className="text-accent">Register to unlock ?</Link><Link href="/login" className="text-accent">Log in</Link></div></div>;
+  return <div className="my-6 rounded-xl border border-accent/30 bg-card p-5"><h2 className="font-editorial text-2xl">Register to unlock profile photos</h2><p className="mt-2 text-sm text-muted-foreground">Share your name, Telegram ID or WhatsApp number, what you’re looking for, age and location. After admin approval, log in to view clear photos and send interest.</p><div className="mt-4 flex gap-5"><Link href="/unlock" className="text-accent">Register to unlock ?</Link><Link href="/login" className="text-accent">Women’s login</Link></div></div>;
 }
 export default function ViewerAccess({ login = false }: { login?: boolean }) {
   const viewer = useViewer();
@@ -28,7 +28,7 @@ export default function ViewerAccess({ login = false }: { login?: boolean }) {
   const [submitted, setSubmitted] = useState(false);
   const field = 'mt-2 w-full rounded-xl border border-foreground/20 bg-background p-3';
   if (viewer.data) return <Redirect to="/account" />;
-  return <div className="mx-auto max-w-xl px-5 py-14"><h1 className="font-editorial text-4xl">{login ? 'Log in to unlock profiles' : 'Register to unlock profiles'}</h1><p className="mt-4 text-muted-foreground">{login ? 'Use your registered Telegram username or WhatsApp number and password. Admin approval is required.' : 'A few basic details help our team review your request. Your details are shared privately with our team.'}</p>{submitted ? <div className="mt-8 rounded-xl border border-accent/30 p-6"><p role="status">{message}</p><Link href="/login" className="mt-4 block text-accent">Go to login ?</Link></div> : <form className="mt-8 grid gap-5" onSubmit={async e => {
+  return <div className="mx-auto max-w-xl px-5 py-14"><h1 className="font-editorial text-4xl">{login ? "Women’s login" : "Women’s registration"}</h1><p className="mt-4 text-muted-foreground">{login ? 'For women: log in with your registered Telegram username or WhatsApp number and password to unlock profiles. Admin approval is required.' : 'Registration for women to unlock profiles. A few basic details help our team review your request. Your details are shared privately with our team.'}</p>{submitted ? <div className="mt-8 rounded-xl border border-accent/30 p-6"><p role="status">{message}</p><Link href="/login" className="mt-4 block text-accent">Go to women’s login</Link></div> : <form className="mt-8 grid gap-5" onSubmit={async e => {
     e.preventDefault(); setBusy(true); setMessage('');
     const form = new FormData(e.currentTarget);
     const body = Object.fromEntries(form);
@@ -42,8 +42,8 @@ export default function ViewerAccess({ login = false }: { login?: boolean }) {
     {!login && <><label>What are you looking for?<textarea name="lookingFor" required maxLength={500} className={field} placeholder="Dating, companionship, a dinner partner…" /></label><div className="grid grid-cols-2 gap-4"><label>Age<input name="age" type="number" required min={18} max={100} className={field} /></label><label>Location<input name="location" required maxLength={150} placeholder="City / area" className={field} /></label></div></>}
     <label>Password<input name="password" type="password" required minLength={8} maxLength={128} autoComplete={login ? 'current-password' : 'new-password'} className={field} /></label>
     {!login && <label className="flex items-start gap-3 text-sm"><input type="checkbox" required className="mt-1" />I am 18 or older and agree to the terms and privacy policy.</label>}
-    <p role="alert" className="text-primary">{message}</p><button disabled={busy} className="rounded-xl bg-primary px-5 py-3 font-semibold disabled:opacity-50">{busy ? 'Please wait…' : login ? 'Log in' : 'Submit for approval'}</button>
-    <Link className="text-accent" href={login ? '/unlock' : '/login'}>{login ? 'New here? Register to unlock' : 'Already registered? Log in'}</Link><Link href="/dashboard" className="text-sm text-muted-foreground">Men with a listed profile: manage your profile</Link>
+    <p role="alert" className="text-primary">{message}</p><button disabled={busy} className="rounded-xl bg-primary px-5 py-3 font-semibold disabled:opacity-50">{busy ? 'Please wait…' : login ? "Women’s login" : "Submit for approval"}</button>
+    <Link className="text-accent" href={login ? '/unlock' : '/login'}>{login ? "New here? Women’s registration" : "Already registered? Women’s login"}</Link><Link href="/dashboard" className="text-sm text-muted-foreground">Men with a listed profile: manage your profile</Link>
   </form>}</div>;
 }
 export function ViewerQueue() {

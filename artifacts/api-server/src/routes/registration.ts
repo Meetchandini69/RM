@@ -660,6 +660,50 @@ router.get("/registration/me", async (req, res) => {
   }
   res.json(record);
 });
+router.post("/registration/password-resets", async (req, res) => {
+  const { mobile: rawMobile, password, confirmPassword } = req.body ?? {};
+  const mobile = typeof rawMobile === "string" ? rawMobile.replace(/[\s()-]/g, "") : "";
+  if (!/^\+[1-9]\d{7,14}$/.test(mobile) || typeof password !== "string" || password.length < 8 || password.length > 128 || password !== confirmPassword) {
+    res.status(400).json({ message: "Enter your registered mobile with country code and matching passwords (8–128 characters)." }); return;
+  }
+  const salt = randomBytes(16).toString("hex");
+  const hash = (await derive(password, salt, 64) as Buffer).toString("hex");
+  const result = await pool.query("INSERT INTO password_reset_requests (id, member, password) SELECT $1, id, $2 FROM registrations WHERE mobile=$3 ON CONFLICT DO NOTHING RETURNING id, member", [randomUUID(), `${salt}:${hash}`, mobile]);
+  if (result.rows.length) {
+    const member = (await pool.query("SELECT record->>'displayName' AS name FROM registrations WHERE id=$1", [result.rows[0].member])).rows[0];
+    try {
+      await sendAdminTelegram(`Password reset requested\nMember: ${member.name}\nMobile: ${mobile}\nVerify the member's identity using their registered contact, then approve or reject in admin. The password changes only after approval.`);
+    } catch { /* The persisted request remains available in admin. */ }
+  }
+  res.status(202).json({ message: "If this mobile is registered, your request is awaiting admin approval. If you already have a pending request, that request remains unchanged. Your password changes only after approval." });
+});
+router.get("/registration/admin/password-resets", requireAdmin, async (_req, res) => {
+  res.json((await pool.query("SELECT p.id, p.status, p.created_at, r.mobile, r.record->>'displayName' AS name FROM password_reset_requests p JOIN registrations r ON r.id=p.member WHERE p.status='Pending' ORDER BY p.created_at DESC")).rows);
+});
+router.post("/registration/admin/password-resets/:id/review", requireAdmin, async (req, res) => {
+  const { status, identityVerified } = req.body ?? {};
+  if (!["Approved", "Rejected"].includes(status) || (status === "Approved" && identityVerified !== true)) {
+    res.status(400).json({ message: "Verify the member's identity before approving, or reject the request." }); return;
+  }
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const result = await client.query("SELECT member, password FROM password_reset_requests WHERE id=$1 AND status='Pending' FOR UPDATE", [req.params.id]);
+    if (!result.rows.length) {
+      await client.query("ROLLBACK");
+      res.status(409).json({ message: "Request already reviewed or not found." }); return;
+    }
+    if (status === "Approved") {
+      await client.query("UPDATE registrations SET password=$1 WHERE id=$2", [result.rows[0].password, result.rows[0].member]);
+      await client.query("DELETE FROM registration_sessions WHERE member=$1", [result.rows[0].member]);
+    }
+    await client.query("UPDATE password_reset_requests SET status=$1, password=NULL, reviewed_at=now() WHERE id=$2", [status, req.params.id]);
+    await client.query("COMMIT");
+    res.json({ success: true });
+  } catch (error) {
+    await client.query("ROLLBACK"); throw error;
+  } finally { client.release(); }
+});
 router.post("/registration/login", async (req, res) => {
   const parsed = LoginRegistrationBody.safeParse(req.body);
   if (!parsed.success) {

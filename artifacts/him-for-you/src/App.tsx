@@ -226,7 +226,7 @@ function Shell({ children }: { children: ReactNode }) {
           </div>
           <div>
              <p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Members</p>
-             <div className="mt-4 grid gap-3 text-sm text-muted-foreground"><Link href="/join" className="hover:text-foreground" data-testid="footer-link-create">Create profile</Link><Link href="/login" className="hover:text-foreground" data-testid="footer-link-login">Login</Link><Link href="/premium" className="hover:text-foreground" data-testid="footer-link-upgrade">Upgrade profile</Link><Link href="/dashboard" className="hover:text-foreground" data-testid="footer-link-manage">Manage profile</Link></div>
+             <div className="mt-4 grid gap-3 text-sm text-muted-foreground"><Link href="/join" className="hover:text-foreground" data-testid="footer-link-create">Create profile</Link><Link href="/login" className="hover:text-foreground" data-testid="footer-link-login">Women’s login</Link><Link href="/premium" className="hover:text-foreground" data-testid="footer-link-upgrade">Upgrade profile</Link><Link href="/dashboard" className="hover:text-foreground" data-testid="footer-link-manage">Manage profile</Link></div>
            </div>
            <div>
              <p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Information</p>

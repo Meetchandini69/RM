@@ -1,4 +1,5 @@
 import { MembershipGate, PaymentSettings } from "./membership-gate";
+import { PasswordResetRequest, AdminPasswordResets } from "./password-reset";
 import { viewerApi } from "./viewer-access";
 import { SeoAdmin } from "./seo";
 import { DiscoveryOptionsAdmin } from "./discovery-options";
@@ -1284,6 +1285,7 @@ export function MemberArea({
             Create a profile
           </Link>
         </form>
+        <PasswordResetRequest />
       </div>
     );
   if (complete) return <MembershipGate><Registration key={query.data.listing} existing={query.data} /></MembershipGate>;
@@ -1393,6 +1395,8 @@ export function RegistrationAdmin() {
       const response = await fetch("/api/registration/admin/logout", { method: "POST", credentials: "same-origin" });
       if (!response.ok) throw new Error("Logout failed");
       await queryClient.cancelQueries({ queryKey: ["admin-boosts"] });
+      await queryClient.cancelQueries({ queryKey: ["admin-password-resets"] });
+      queryClient.removeQueries({ queryKey: ["admin-password-resets"] });
       queryClient.removeQueries({ queryKey: ["admin-boosts"] });
       await queryClient.cancelQueries({ queryKey: ["admin-viewers"] });
       queryClient.removeQueries({ queryKey: ["admin-viewers"] });
@@ -1417,6 +1421,7 @@ export function RegistrationAdmin() {
       <h1 className="mt-3 font-editorial text-4xl">{data ? "Member Administration" : "Admin Login"}</h1>
       {!data && <p className="mt-3 text-muted-foreground">Sign in with your admin password to manage registrations and plans.</p>}
       {sessionError && <p role="alert" className="mt-4 text-primary">{sessionError}</p>}
+      {data && !loggingOut && <AdminPasswordResets />}
       {data && (
         <div className="mt-6 flex flex-wrap gap-3">
           <button
