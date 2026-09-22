@@ -44,7 +44,7 @@ try {
  assert.equal((await call('registration/admin/seo/site',{siteUrl:'https://example.test/page'},admin)).status,400);
  assert.equal((await call('registration/admin/seo/site',{siteUrl:'https://example.test'},admin)).status,200);
  const initialSeo=(await call('registration/admin/seo',null,admin)).data;
- assert.ok(initialSeo.pages.some(p=>p.path==='/men/chennai'));
+ assert.ok(initialSeo.pages.some(p=>p.path==='/rent-a-men/chennai'));
  assert.ok(initialSeo.pages.find(p=>p.path==='/account').noindex);
  const seoEdit={path:'/men',title:'Browse <Men> & Company',description:'A "custom" description & more.',canonical:'',noindex:false};
  assert.equal((await call('registration/admin/seo/page',seoEdit)).status,401);

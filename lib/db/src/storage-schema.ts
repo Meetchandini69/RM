@@ -51,6 +51,14 @@ WHERE id = 1 AND NOT EXISTS (SELECT 1 FROM jsonb_array_elements(value->'plans') 
 CREATE TABLE IF NOT EXISTS discovery_settings (id INTEGER PRIMARY KEY, value JSONB NOT NULL);
 CREATE TABLE IF NOT EXISTS seo_settings (id INTEGER PRIMARY KEY, site_url TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS seo_pages (path TEXT PRIMARY KEY, title TEXT NOT NULL, description TEXT NOT NULL, canonical TEXT NOT NULL DEFAULT '', noindex BOOLEAN NOT NULL DEFAULT false);
+-- Preserve existing city SEO settings when moving city pages to the new route.
+INSERT INTO seo_pages (path, title, description, canonical, noindex)
+SELECT '/rent-a-men/' || substring(path FROM 6), title, description,
+ CASE WHEN canonical = (SELECT site_url FROM seo_settings WHERE id=1) || path
+ THEN (SELECT site_url FROM seo_settings WHERE id=1) || '/rent-a-men/' || substring(path FROM 6)
+ ELSE canonical END, noindex
+FROM seo_pages WHERE path LIKE '/men/%'
+ON CONFLICT (path) DO NOTHING;
 CREATE TABLE IF NOT EXISTS seo_verification_files (filename TEXT PRIMARY KEY, content TEXT NOT NULL, uploaded_at TIMESTAMPTZ NOT NULL DEFAULT now());
 UPDATE registration_settings SET value = jsonb_set(value, '{plans}', (
  SELECT jsonb_agg(CASE WHEN plan->>'id' = 'halfyearly' THEN jsonb_set(plan, '{id}', '"quarterly"') ELSE plan END)

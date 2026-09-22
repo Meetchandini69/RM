@@ -175,7 +175,7 @@ function ProfileCard({ profile, featured = false }: { profile: Profile; featured
 function Shell({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const [open, setOpen] = useState(false);
-  const isBrowse = location.startsWith('/men');
+  const isBrowse = (location === '/men' || location.startsWith('/rent-a-men/'));
   return (
     <div className="noise min-h-[100dvh] bg-background text-foreground">
       <header className="sticky top-0 z-50 border-b border-foreground/10 bg-background/90 backdrop-blur-xl">
@@ -261,7 +261,7 @@ function Home() {
             <h1 className="max-w-[570px] font-editorial text-[clamp(3rem,6.4vw,6.2rem)] leading-[.92] tracking-[-.055em] text-[#fff8ee]">Find the Right Man <em className="text-accent">For Your Moments</em></h1>
             <p className="mt-6 max-w-[535px] text-sm leading-6 text-[#f3e8dc]/80 sm:text-[15px]">Meet attractive, interesting and verified men near you. Whether you’re looking for dating, companionship, a dinner partner, travel company or a meaningful private connection, discover profiles that match your preferences.</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <button className="group flex items-center justify-center gap-3 rounded-md bg-primary px-6 py-3.5 text-[11px] font-bold uppercase tracking-[.12em] text-foreground transition hover:bg-primary/85" onClick={() => setLocation(chosenCity ? `/men/${chosenCity}` : '/men')} data-testid="button-start-discovery">Find Men Near You <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></button>
+              <button className="group flex items-center justify-center gap-3 rounded-md bg-primary px-6 py-3.5 text-[11px] font-bold uppercase tracking-[.12em] text-foreground transition hover:bg-primary/85" onClick={() => setLocation(chosenCity ? `/rent-a-men/${chosenCity}` : '/men')} data-testid="button-start-discovery">Find Men Near You <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></button>
               <Link href="/join" className="flex items-center justify-center gap-3 rounded-md border border-[#f3e8dc]/40 bg-black/20 px-6 py-3.5 text-[11px] font-bold uppercase tracking-[.12em] text-[#fff8ee] transition hover:border-accent hover:text-accent" data-testid="link-create-profile">Create Your Profile <ChevronRight size={15} /></Link>
             </div>
             <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-[10px] text-[#f3e8dc]/80">
@@ -276,7 +276,7 @@ function Home() {
               <label className="grid gap-1.5 text-[10px] font-semibold uppercase tracking-[.12em] text-muted-foreground">Location<select className="h-11 rounded-md border border-foreground/15 bg-[#0f0e10] px-3 text-xs font-normal normal-case tracking-normal text-foreground outline-none focus:border-accent" value={chosenCity} onChange={(event) => setChosenCity(event.target.value)} data-testid="select-home-city"><option value="">Select city</option>{(cities.data ?? []).map((city) => <option value={city.slug} key={city.id}>{city.name}</option>)}</select></label>
               <label className="grid gap-1.5 text-[10px] font-semibold uppercase tracking-[.12em] text-muted-foreground">I’m looking for<select className="h-11 rounded-md border border-foreground/15 bg-[#0f0e10] px-3 text-xs font-normal normal-case tracking-normal text-foreground outline-none focus:border-accent" value={intent} onChange={(event) => setIntent(event.target.value)} data-testid="select-home-intent"><option value="">Any preference</option>{searchOptions.data?.lookingFor.map(option => <option key={option} value={option}>{option}</option>)}</select></label>
               <label className="grid gap-1.5 text-[10px] font-semibold uppercase tracking-[.12em] text-muted-foreground">Age<select className="h-11 rounded-md border border-foreground/15 bg-[#0f0e10] px-3 text-xs font-normal normal-case tracking-normal text-foreground outline-none focus:border-accent" value={ageRange} onChange={(event) => setAgeRange(event.target.value)} data-testid="select-home-age"><option>21 - 50+</option><option>21 - 30</option><option>31 - 40</option><option>41 - 50+</option></select></label>
-              <button className="mt-auto flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-5 text-[10px] font-bold uppercase tracking-[.12em] text-foreground transition hover:bg-primary/85" onClick={() => setLocation(chosenCity ? `/men/${chosenCity}` : '/men')} data-testid="button-browse-men"><Search size={14} /> Browse Men</button>
+              <button className="mt-auto flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-5 text-[10px] font-bold uppercase tracking-[.12em] text-foreground transition hover:bg-primary/85" onClick={() => setLocation(chosenCity ? `/rent-a-men/${chosenCity}` : '/men')} data-testid="button-browse-men"><Search size={14} /> Browse Men</button>
             </div>
           </div>
         </div>
@@ -348,7 +348,7 @@ function Home() {
         </div>
       </section>
       <section id="popular-cities" className="bg-[#111012]">
-        <div className="mx-auto max-w-[1320px] px-5 py-10 sm:px-8 lg:px-12"><div className="flex items-end justify-between"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Explore by location</p><h2 className="mt-2 font-editorial text-3xl text-[#fff8ee]">Find Men in Popular Cities</h2><p className="mt-1 text-xs text-muted-foreground">Discover men for dating and companionship in your city.</p></div><Link href="/men" className="hidden text-[10px] font-bold uppercase tracking-[.14em] text-primary sm:block" data-testid="link-view-all-cities">View all cities →</Link></div><div className="mt-6 flex flex-wrap gap-2">{(cities.data ?? []).map((city) => <Link href={`/men/${city.slug}`} className="rounded-md border border-foreground/15 bg-[#1b191b] px-4 py-2.5 text-xs text-[#f0e5d9] transition hover:border-primary hover:text-primary" key={city.id} data-testid={`link-city-${city.slug}`}>{city.name}</Link>)}</div></div>
+        <div className="mx-auto max-w-[1320px] px-5 py-10 sm:px-8 lg:px-12"><div className="flex items-end justify-between"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">Explore by location</p><h2 className="mt-2 font-editorial text-3xl text-[#fff8ee]">Find Men in Popular Cities</h2><p className="mt-1 text-xs text-muted-foreground">Discover men for dating and companionship in your city.</p></div><Link href="/men" className="hidden text-[10px] font-bold uppercase tracking-[.14em] text-primary sm:block" data-testid="link-view-all-cities">View all cities →</Link></div><div className="mt-6 flex flex-wrap gap-2">{(cities.data ?? []).map((city) => <Link href={`/rent-a-men/${city.slug}`} className="rounded-md border border-foreground/15 bg-[#1b191b] px-4 py-2.5 text-xs text-[#f0e5d9] transition hover:border-primary hover:text-primary" key={city.id} data-testid={`link-city-${city.slug}`}>{city.name}</Link>)}</div></div>
       </section>
       <section className="relative overflow-hidden border-t border-foreground/10"><img src="/assets/him-for-you-hero.jpg" alt="" width="1600" height="900" className="absolute inset-0 h-full w-full object-cover object-[70%_center]" /><div className="absolute inset-0 bg-[#151216]/80" /><div className="relative mx-auto flex max-w-[1320px] flex-col items-start justify-between gap-6 px-5 py-12 sm:flex-row sm:items-center sm:px-8 lg:px-12"><div><p className="font-mono-label text-[10px] uppercase tracking-[.2em] text-accent">For men who are ready</p><h2 className="mt-2 font-editorial text-4xl text-[#fff8ee] sm:text-5xl">Are You Ready to Get Discovered?</h2><p className="mt-2 text-sm text-[#f3e8dc]/75">Create your profile and connect with women looking for interesting and compatible men.</p></div><Link href="/join" className="flex shrink-0 items-center gap-2 rounded-md bg-primary px-5 py-3.5 text-[10px] font-bold uppercase tracking-[.14em] text-white" data-testid="link-register-member">Register as a Member <ArrowUpRight size={14} /></Link></div></section>
     </div>
@@ -506,7 +506,7 @@ function Router() {
       <Switch>
         <Route path="/"><Shell><Home /></Shell></Route>
         <Route path="/men"><Shell><div className="mx-auto max-w-7xl px-5"><UnlockNotice /></div><Browse /></Shell></Route>
-        <Route path="/men/:city" component={CityBrowseRoute} />
+        <Route path="/rent-a-men/:city" component={CityBrowseRoute} />
         <Route path="/profile/:slug"><Shell><ProfileDetailPage /></Shell></Route>
         <Route path="/premium"><Shell><Premium /></Shell></Route>
         <Route path="/join"><Shell><Registration /></Shell></Route>

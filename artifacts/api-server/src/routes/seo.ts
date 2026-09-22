@@ -23,7 +23,7 @@ export async function seoSiteUrl() { return (await pool.query('SELECT site_url F
 export async function seoCatalog():Promise<SeoPage[]> {
  const [profiles,options,stored,origin]=await Promise.all([allProfiles(),discoveryOptions(),pool.query('SELECT * FROM seo_pages'),seoSiteUrl()]);
  const catalog:SeoPage[]=pages.map(([path,label,privatePage=false])=>({path,label,title:`${label} | Men For You`,description,canonical:origin?origin+(path==='/'?'/':path):'',noindex:privatePage,private:privatePage}));
- for(const city of options.locations)catalog.push({path:`/men/${locationSlug(city)}`,label:`Men in ${city}`,title:`Browse Men in ${city} | Men For You`,description:`Discover men in ${city} for dating, companionship and meaningful connections.`,canonical:'',noindex:false,private:false});
+ for(const city of options.locations)catalog.push({path:`/rent-a-men/${locationSlug(city)}`,label:`Men in ${city}`,title:`Browse Men in ${city} | Men For You`,description:`Discover men in ${city} for dating, companionship and meaningful connections.`,canonical:'',noindex:false,private:false});
  for(const p of profiles)catalog.push({path:`/profile/${p.slug}`,label:`${p.displayName} – ${p.city}`,title:`${p.displayName}, ${p.age} in ${p.city} | Men For You`,description:p.headline || description,canonical:'',noindex:false,private:false});
  return catalog.map(page=>{const override=stored.rows.find(r=>r.path===page.path);return {...page,title:override?.title || page.title,description:override?.description || page.description,canonicalOverride:override?.canonical || '',canonical:override?.canonical || (origin?origin+page.path:''),noindex:page.private || !!override?.noindex};});
 }
