@@ -2,6 +2,8 @@
 export async function onRequest(context) {
  const { request, env }=context;
  const url=new URL(request.url);
+ // This bundled verification file must remain available during API outages.
+ if(url.pathname==='/googlec51b28265cc4196c.html')return context.next();
  if(url.pathname.startsWith('/api/') || !['GET','HEAD'].includes(request.method))return context.next();
  const special=seoFilePath(url.pathname);
  if(!special && /\.[a-z0-9]+$/i.test(url.pathname))return context.next();

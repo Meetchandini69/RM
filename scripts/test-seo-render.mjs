@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { injectSeo, seoFilePath } from './seo-render.mjs';
 import { onRequest } from '../functions/_middleware.js';
 const shell='<!doctype html><html><head><title>Old</title><meta name="description" content="Old"><meta property="og:title" content="Old"><link rel="canonical" href="https://old.test"><meta name="robots" content="index, follow"></head><body><div id="root"></div></body></html>';
@@ -21,5 +22,11 @@ try{
  globalThis.fetch=async()=>new Response('Missing route',{status:404});res=await onRequest(context('/men'));assert.equal(res.status,200);
  globalThis.fetch=async()=>new Response('<html>invalid json</html>');res=await onRequest(context('/admin'));assert.equal(res.status,200);
  globalThis.fetch=async()=>{throw Error('offline');};res=await onRequest(context('/sitemap.xml'));assert.equal(res.status,503);
+ const verification=readFileSync(new URL('../artifacts/him-for-you/public/googlec51b28265cc4196c.html',import.meta.url),'utf8');
+ assert.equal(verification.trim(),'google-site-verification: googlec51b28265cc4196c.html');
+ for(const method of ['GET','HEAD']) {
+  res=await onRequest({...context('/googlec51b28265cc4196c.html'),env:{},request:new Request('https://example.test/googlec51b28265cc4196c.html',{method}),next:async()=>new Response(method==='HEAD'?null:verification,{headers:{'content-type':'text/html'}})});
+  assert.equal(res.status,200);assert.equal(await res.text(),method==='HEAD'?'':verification);
+ }
  console.log('PASS: Cloudflare metadata rendering, tag deduplication, escaping, root sitemap/verification routing, no cookie forwarding, 404/noindex and outage handling.');
 }finally{globalThis.fetch=originalFetch;}

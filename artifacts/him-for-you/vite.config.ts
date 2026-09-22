@@ -43,6 +43,7 @@ export default defineConfig({
       configureServer(server) {
         server.middlewares.use(async (req, res, next) => {
           const pathname = new URL(req.url || '/', 'http://localhost').pathname;
+          if (pathname === '/googlec51b28265cc4196c.html') return next();
           const endpoint = seoFilePath(pathname);
           if (!endpoint || !['GET', 'HEAD'].includes(req.method || 'GET')) return next();
           try {
